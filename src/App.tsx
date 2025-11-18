@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
@@ -7,7 +7,20 @@ import { useGlobalDispatch, useGlobalState } from '@/global/GlobalProvider'
 import './App.css';
 import './AutoSuggest.css';
 
-import Categories from "@/categories/Categories"
+//import Categories from "@/categories/Categories"
+
+// Dynamic imports
+const Categories = lazy(() =>
+  // named export
+  import("@/categories/Categories").then((module) => ({ default: module.default }))
+);
+
+// const ChatBotPage = lazy(() =>
+//   // named export
+//   import("./ChatBotPage").then((module) => ({ default: module.default }))
+// );
+
+
 //import Groups from "groups/Groups"
 import About from './About';
 import Health from './Health';
@@ -110,23 +123,25 @@ function App() {
       <Row>
         <Col md={10} className="py-0">
           <div className="wrapper">
-            <Routes>
-              <Route path="/" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
-              <Route path="/knowledge" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
-              {/* <Route path="" element={(!isAuthenticated && !everLoggedIn) ? <About /> : <Categories />} /> */}
-              {/* <Route path="/register/:returnUrl" element={<RegisterForm />} />
+            <Suspense fallback={<div>Loading...</div>}>
+              <Routes>
+                <Route path="/" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
+                <Route path="/knowledge" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
+                {/* <Route path="" element={(!isAuthenticated && !everLoggedIn) ? <About /> : <Categories />} /> */}
+                {/* <Route path="/register/:returnUrl" element={<RegisterForm />} />
               <Route path="/sign-in" element={<LoginForm initialValues={formInitialValues} invitationId='' />} /> */}
-              <Route path="/supporter/:source/:tekst" element={<SupportPage />} />
-              <Route path="/supporter/:source/:tekst/:email" element={<SupportPage />} />
-              <Route path="/ChatBotPage/:source/:tekst/:email" element={<ChatBotPage />} />
-              <Route path="/categories/:categoryId_questionId/:fromChatBotDlg" element={<Categories />} />
-              <Route path="/categories" element={<Categories />} />
-              {/* <Route path="/groups/:groupId_AnswerId" element={<Groups />} />
+                <Route path="/supporter/:source/:tekst" element={<SupportPage />} />
+                <Route path="/supporter/:source/:tekst/:email" element={<SupportPage />} />
+                <Route path="/ChatBotPage/:source/:tekst/:email" element={<ChatBotPage />} />
+                <Route path="/categories/:categoryId_questionId/:fromChatBotDlg" element={<Categories />} />
+                <Route path="/categories" element={<Categories />} />
+                {/* <Route path="/groups/:groupId_AnswerId" element={<Groups />} />
               <Route path="/groups" element={<Groups />} /> */}
-              <Route path="/about" element={<About />} />
-              <Route path="/about-short" element={<AboutShort />} />
-              <Route path="/health" element={<Health />} />
-            </Routes>
+                <Route path="/about" element={<About />} />
+                <Route path="/about-short" element={<AboutShort />} />
+                <Route path="/health" element={<Health />} />
+              </Routes>
+            </Suspense>
           </div>
         </Col>
       </Row>
