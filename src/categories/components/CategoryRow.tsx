@@ -117,7 +117,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
 
     const Row1 =
         <div>
-            <div id={`Row${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 category-row${isSelected ? '-selected' : ''}`} >
+            <div id={`Row${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 category-row${isSelected ? '-selected' : ''}`}  style={{ marginTop: '1px' }} >
                 <Button
                     variant='link'
                     size="sm"
@@ -159,12 +159,12 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                 }
 
                 {canEdit && hovering && // && !alreadyAdding
-                    <div className="position-absolute float-end d-flex align-items-center border border-1 rounded-3 px-1 py-0 bg-dark category-row-actions end-0">
+                    <div className="position-absolute text-nowrap d-flex align-items-center border border-0 border-warning p-0 end-0">
                         <div className="d-flex align-items-center">
                             <Button
                                 variant='link'
                                 size="sm"
-                                className="border-0 py-0 ms-0 text-white"
+                                className="border-0 py-0 px-0 ms-0 text-success"
                                 title="Add SubCategory"
                                 onClick={async () => {
                                     //dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM, payload: {} })
@@ -180,18 +180,11 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
 
                         {!inAdding && !hasSubCategories &&
                             // top-0 end-0
-                            <div className="">
-                                <Button variant='link' size="sm" className="d-flex align-items-center"
-                                    disabled={hasSubCategories || numOfQuestions > 0}
-                                    onClick={deleteCategoryRow}
-                                >
-                                    <FontAwesomeIcon icon={faRemove} size='lg' />
-                                </Button>
-
+                            <div className="d-flex align-items-center">
                                 <Button
                                     variant='link'
                                     size="sm"
-                                    className="py-0 mx-0 text-secondary d-flex align-items-center"
+                                    className="p-0 mx-0 text-secondary d-flex align-items-center border border-0 border-warning1"
                                     title="Add Question"
                                     onClick={async () => {
                                         //const categoryInfo: ICategoryInfo = { categoryKey: { workspace: topId, id: categoryRow.id }, level: categoryRow.level }
@@ -202,6 +195,13 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                                     }}
                                 >
                                     <img width="22" height="18" src={QPlus} alt="Add Question" />
+                                </Button>
+                                <Button variant='link' size="sm" 
+                                    className="d-flex align-items-center border border-0 border-warning p-0"
+                                    disabled={hasSubCategories || numOfQuestions > 0}
+                                    onClick={deleteCategoryRow}
+                                >
+                                    <FontAwesomeIcon icon={faRemove} size='lg' />
                                 </Button>
                             </div>
                         }

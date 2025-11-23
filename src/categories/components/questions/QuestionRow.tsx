@@ -79,7 +79,8 @@ const QuestionRow = ({ questionRow, isSelected }: { questionRow: IQuestionRow, i
     }, [canEdit, editQuestion, formMode, id, isSelected, loadingQuestion, questionLoaded, questionRow, viewQuestion]);
 
     const Row1 =
-        <div id={`QuestionRow${id}`} className={`p-0 d-flex justify-content-start align-items-center w-100 position-relative question-row${isSelected ? '-selected' : ''}`}>
+
+        <div id={`QuestionRow${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 question-row${isSelected ? '-selected' : ''}`} style={{ marginTop: '1px' }} >
             <Button
                 variant='link'
                 size="sm"
@@ -113,12 +114,7 @@ const QuestionRow = ({ questionRow, isSelected }: { questionRow: IQuestionRow, i
             } */}
 
             {canEdit && !alreadyAdding && hovering &&
-                <div className="position-absolute d-flex align-items-center top-0 end-0">
-                    <Button variant='link' size="sm" className="ms-0 p-0 text-secondary"
-                        onClick={del}
-                    >
-                        <FontAwesomeIcon icon={faRemove} size='lg' />
-                    </Button>
+                <div className="position-absolute text-nowrap d-flex align-items-center border border-0 border-warning p-0 end-0">
                     <Button
                         variant='link'
                         size="sm"
@@ -131,6 +127,12 @@ const QuestionRow = ({ questionRow, isSelected }: { questionRow: IQuestionRow, i
                     >
                         <img width="22" height="18" src={QPlus} alt="Add Question" />
                     </Button>
+                    <Button variant='link' size="sm" className="ms-0 p-0 text-secondary"
+                        onClick={del}
+                    >
+                        <FontAwesomeIcon icon={faRemove} size='lg' />
+                    </Button>
+
                 </div>
             }
         </div>

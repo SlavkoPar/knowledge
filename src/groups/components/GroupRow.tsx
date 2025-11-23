@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRemove, faCaretRight, faCaretDown, faPlus, faFolder } from '@fortawesome/free-solid-svg-icons'
-import QPlus from '@/assets/QPlus.png';
+import APlus from '@/assets/APlus.png';
 
 import { ListGroup, Button, Badge } from "react-bootstrap";
 
@@ -116,7 +116,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
 
     const Row1 =
         <div>
-            <div id={`Row${id}`} className={`d-flex justify-content-start align-items-center w-100 group-row${isSelected ? '-selected' : ''}`} style={{ marginTop: '1px' }}>
+            <div id={`Row${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 group-row${isSelected ? '-selected' : ''}`} style={{ marginTop: '1px' }}>
                 <Button
                     variant='link'
                     size="sm"
@@ -157,53 +157,54 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                     </Badge>
                 }
 
+
                 {canEdit && hovering && // && !alreadyAdding
-                    // <div className="position-absolute d-flex align-items-center top-0 end-0 me-3">
-                    <div className="position-relative float-end d-flex align-items-center top-0 end-0">
-                        <Button
-                            variant='link'
-                            size="sm"
-                            className="border-0 py-0 ms-0 text-white"
-                            title="Add SubGroup"
-                            onClick={async () => {
-                                //dispatch({ type: ActionTypes.CLOSE_GROUP_FORM, payload: {} })
-                                if (!isExpanded && (hasSubGroups || numOfAnswers > 0)) {
-                                    await handleExpandClick();
-                                }
-                                setTimeout(() => setQueue(true), 500);
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faPlus} size='lg' />
-                        </Button>
-                    </div>
-                }
+                    <div className="position-absolute text-nowrap d-flex align-items-center border border-0 border-warning p-0 end-0">
+                        <div className="d-flex align-items-center">
+                            <Button
+                                variant='link'
+                                size="sm"
+                                className="border-0 py-0 px-0 ms-0 text-success"
+                                title="Add SubGroup"
+                                onClick={async () => {
+                                    //dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM, payload: {} })
+                                    if (!isExpanded && (hasSubGroups || numOfAnswers > 0)) {
+                                        await handleExpandClick();
+                                    }
+                                    setTimeout(() => setQueue(true), 500);
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faPlus} size='lg' />
+                            </Button>
+                        </div>
 
-                {/* TODO what about archive answers  numOfAnswers === 0 &&*/}
-                {canEdit && !inAdding && hovering && !hasSubGroups &&
-                    // top-0 end-0
-                    <div className="">
-                        <Button variant='link' size="sm" className="py-0 mx-0 position-relative float-end d-flex align-items-center"
-                            disabled={hasSubGroups || numOfAnswers > 0}
-                            onClick={deleteGroupRow}
-                        >
-                            <FontAwesomeIcon icon={faRemove} size='lg' />
-                        </Button>
+                        {!inAdding && !hasSubGroups &&
+                            // top-0 end-0
+                            <div className="d-flex align-items-center">
+                                <Button
+                                    variant='link'
+                                    size="sm"
+                                    className="p-0 mx-0 text-secondary position-relative float-end d-flex align-items-center"
+                                    title="Add Answer"
+                                    onClick={async () => {
+                                        //const groupInfo: IGroupInfo = { groupKey: { workspace: topId, id: groupRow.id }, level: groupRow.level }
+                                        if (!isExpanded && (hasSubGroups || numOfAnswers > 0)) {
+                                            await handleExpandClick();
+                                        }
+                                        setTimeout(() => setQueue2(true), 500);
+                                    }}
+                                >
+                                    <img width="22" height="18" src={APlus} alt="Add Answer" />
+                                </Button>
+                                <Button variant='link' size="sm" className="p-0 ms-0 position-relative float-end d-flex align-items-center"
+                                    disabled={hasSubGroups || numOfAnswers > 0}
+                                    onClick={deleteGroupRow}
+                                >
+                                    <FontAwesomeIcon icon={faRemove} size='lg' />
+                                </Button>
+                            </div>
+                        }
 
-                        <Button
-                            variant='link'
-                            size="sm"
-                            className="py-0 mx-0 text-secondary position-relative float-end d-flex align-items-center"
-                            title="Add Answer"
-                            onClick={async () => {
-                                //const groupInfo: IGroupInfo = { groupKey: { workspace: topId, id: groupRow.id }, level: groupRow.level }
-                                if (!isExpanded && (hasSubGroups || numOfAnswers > 0)) {
-                                    await handleExpandClick();
-                                }
-                                setTimeout(() => setQueue2(true), 500);
-                            }}
-                        >
-                            <img width="22" height="18" src={QPlus} alt="Add Answer" />
-                        </Button>
                     </div>
                 }
             </div>

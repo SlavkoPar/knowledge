@@ -79,7 +79,7 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
     }, [canEdit, editAnswer, formMode, id, isSelected, loadingAnswer, answerLoaded, answerRow, viewAnswer]);
 
     const Row1 =
-        <div id={`AnswerRow${id}`} className={`p-0 d-flex justify-content-start align-items-center w-100 position-relative answer-row${isSelected ? '-selected' : ''}`}>
+        <div id={`AnswerRow${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 answer-row${isSelected ? '-selected' : ''}`}  style={{ marginTop: '0px' }} >
             <Button
                 variant='link'
                 size="sm"
@@ -90,7 +90,7 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
             <Button
                 variant='link'
                 size="sm"
-                className={`p-0 px-1 m-1 ms-0 answer-row-title ${showForm ? 'fw-bold' : ''}`}
+                className={`p-0 px-1 m-0 ms-0 answer-row-title ${showForm ? 'fw-bold' : ''}`}
                 title={`id:${id!.toString()}`}
                 onClick={() => onSelectAnswer(id!)}
                 disabled={alreadyAdding}
@@ -108,12 +108,7 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
             } */}
 
             {canEdit && !alreadyAdding && hovering &&
-                <div className="position-absolute d-flex align-items-center top-0 end-0">
-                    <Button variant='link' size="sm" className="ms-0 p-0 text-secondary"
-                        onClick={del}
-                    >
-                        <FontAwesomeIcon icon={faRemove} size='lg' />
-                    </Button>
+                <div className="position-absolute text-nowrap d-flex align-items-center border border-0 border-warning p-0 end-0">
                     <Button
                         variant='link'
                         size="sm"
@@ -125,6 +120,11 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
                         }}
                     >
                         <img width="22" height="18" src={QPlus} alt="Add Answer" />
+                    </Button>
+                    <Button variant='link' size="sm" className="ms-0 p-0 text-secondary"
+                        onClick={del}
+                    >
+                        <FontAwesomeIcon icon={faRemove} size='lg' />
                     </Button>
                 </div>
             }
