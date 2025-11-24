@@ -1,11 +1,11 @@
-import { useState, useRef, lazy, Suspense } from 'react';
+import { useState, useRef,  useEffect } from 'react';
 import { Container, Row, Col, Button, Offcanvas } from "react-bootstrap";
 //import { useNavigate } from "react-router-dom";
 
 import { useGlobalContext, useGlobalState } from '@/global/GlobalProvider';
 
 import { useParams } from 'react-router-dom' // useRouteMatch
-//import { AutoSuggestQuestions } from '@/categories/AutoSuggestQuestions';
+import { AutoSuggestQuestions } from '@/categories/AutoSuggestQuestions';
 
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faFolder } from '@fortawesome/free-solid-svg-icons'
@@ -48,8 +48,8 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     const [chatBotAnswer, setChatBotAnswer] = useState<IChatBotAnswer | null>(null);
     const [hasMoreAnswers, setHasMoreAnswers] = useState<boolean>(false);
 
-    const { getSubCats, getQuestion, addHistory, addHistoryFilter, searchQuestions } = useGlobalContext();
-    const { authUser, isDarkMode, allCategoryRowsGlobal: allCategoryRows, allCategoryRowsGlobalLoaded: catsLoaded } = useGlobalState();
+    const { loadAllCategoryRowsGlobal, getSubCats, getQuestion, addHistory, addHistoryFilter, searchQuestions } = useGlobalContext();
+    const { authUser, isDarkMode, allCategoryRowsGlobal, allCategoryRowsGlobalLoaded } = useGlobalState();
     //const navigate = useNavigate();
 
     const [catsSelected] = useState(true);
@@ -73,11 +73,12 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
         hasMoreAnswers?: boolean
     }
     // const deca: JSX.Element[] = [];
-    // useEffect(() => {
-    // 	(async () => {
-    // 		//await loadCats();
-    // 	})()
-    // }, [])
+    useEffect(() => {
+        (async () => {
+            if (!allCategoryRowsGlobalLoaded)
+                await loadAllCategoryRowsGlobal();
+        })()
+    }, [allCategoryRowsGlobalLoaded, loadAllCategoryRowsGlobal]);
 
     const onEntering = async (/*node: HTMLElement, isAppearing: boolean*/): Promise<any> => {
         setCatLevels([]);
@@ -104,13 +105,13 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     //     scrollToBottom();
     // }, []);
 
-    const AutoSuggestQuestions = lazy(() =>
-        // named export
-        import("@/categories/AutoSuggestQuestions").then((module) => ({ default: module.AutoSuggestQuestions }))
-    );
+    // const AutoSuggestQuestions = lazy(() =>
+    //     // named export
+    //     import("@/categories/AutoSuggestQuestions").then((module) => ({ default: module.AutoSuggestQuestions }))
+    // );
 
-    if (!catsLoaded) // || catsOptions.length === 0)
-        return <div>cats not loaded...</div>
+    if (!allCategoryRowsGlobalLoaded) // || catsOptions.length === 0)
+        return <div>Loading ...</div>
 
     /*
     const onOptionChange = async (id: string, level: number, title: string) => {//event: React.ChangeEvent<HTMLInputElement>) => {
@@ -452,14 +453,12 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                         </div>
                     }
                     {!isDisabled &&
-                        <Suspense fallback={<div>Loading...</div>}>
                             <AutoSuggestQuestions
                                 tekst={txt}
                                 onSelectQuestion={onSelectQuestion}
-                                allCategoryRows={allCategoryRows}
+                                allCategoryRows={allCategoryRowsGlobal}
                                 searchQuestions={searchQuestions}
                             />
-                        </Suspense>
                     }
                 </div>
             </div>

@@ -53,7 +53,7 @@ const RelatedFilters = ({ relatedFilters }: IProps) => {
     return (
         <div className='mx-0 my-1 border rounded-2 px-1 py-1border-light fs-6 related-filters'>
             <div>
-                <label className="text-muted">Most frequently selected Filters (as the next Question in ChatBot)</label>
+                <label className="text-muted">Most frequently selected Filters (for the next Question in ChatBot)</label>
                 {relatedFilters.length > 0
                     ? <ListGroup as="ul" variant={variant} className='my-1'>
                         {relatedFilters.map((relatedFilter: IRelatedFilter) =>

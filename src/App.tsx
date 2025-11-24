@@ -34,7 +34,7 @@ import AboutShort from './AboutShort';
 function App() {
 
   //const { getUser, OpenDB, setLastRouteVisited } = useGlobalContext();
-  const { authUser, isAuthenticated, everLoggedIn, allCategoryRowsGlobalLoaded: allCategoryRowsLoaded, lastRouteVisited } = useGlobalState();
+  const { authUser, isAuthenticated, everLoggedIn, lastRouteVisited } = useGlobalState();
   const { nickName } = authUser;
 
 
@@ -132,13 +132,15 @@ function App() {
                 <Route path="/knowledge" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Groups />} />
                 {/* <Route path="" element={(!isAuthenticated && !everLoggedIn) ? <About /> : <Categories />} /> */}
                 {/* <Route path="/register/:returnUrl" element={<RegisterForm />} />
-              <Route path="/sign-in" element={<LoginForm initialValues={formInitialValues} invitationId='' />} /> */}
+                    <Route path="/sign-in" element={<LoginForm initialValues={formInitialValues} invitationId='' />} /> */}
                 {/* <Route path="/supporter/:source/:tekst" element={<SupportPage />} />
                 <Route path="/supporter/:source/:tekst/:email" element={<SupportPage />} /> */}
                 {/* <Route path="/ChatBotPage/:source/:tekst/:email" element={<ChatBotPage />} /> */}
                 <Route path="/categories/:categoryId_questionId/:fromChatBotDlg" element={<Categories />} />
+                <Route path="/knowledge/categories" element={<Categories />} />
                 <Route path="/categories" element={<Categories />} />
                 <Route path="/groups/:groupId_AnswerId" element={<Groups />} />
+                <Route path="/knowledge/groups" element={<Groups />} />
                 <Route path="/groups" element={<Groups />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/about-short" element={<AboutShort />} />
@@ -149,7 +151,7 @@ function App() {
         </Col>
       </Row>
       {/* {<ModalChatBot show={modalChatBotShow} onHide={() => { setModalChatBotShow(false) }} />} */}
-      {allCategoryRowsLoaded && //nodesReLoaded &&
+      {true && //allCategoryRowsLoaded && //nodesReLoaded &&
         <>
           {modalChatBotShow &&
             <Suspense fallback={<div>Loading...</div>}>

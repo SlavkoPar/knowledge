@@ -115,7 +115,7 @@ const AboutShort: React.FC<IAboutShort> = () => {
             <h6 className="card-subtitle mb-2 text-muted">We use history of users interactions, providing:</h6>
             <ul className="card-text">
               <li>Most rated answer for single question</li>
-              <li>Most frequently used Question filter in Question AutoSuggest as the next Question</li>
+              <li>Most frequently used Question filter in Question AutoSuggest for the next Question</li>
             </ul>
           </div>
         </div>

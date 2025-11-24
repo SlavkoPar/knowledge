@@ -21,6 +21,10 @@ import AddGroup from './components/AddGroup';
 import { AutoSuggestAnswers } from './AutoSuggestAnswers';
 import AddAnswer from './components/answers/AddAnswer';
 
+// const AutoSuggestAnswers = lazy(() =>
+//     import("@/groups/AutoSuggestAnswers").then((module) => ({ default: module.AutoSuggestAnswers }))
+// );
+
 interface IProps {
     groupId_answerId?: string;
     fromChatBotDlg?: string;
@@ -139,12 +143,12 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                     <Col>
                         <div className="d-flex justify-content-start align-items-center">
                             <div className="w-75 my-1 answers">
-                                <AutoSuggestAnswers
-                                    tekst={tekst}
-                                    onSelectAnswer={onSelectAnswer}
-                                    allGroupRows={allGroupRows}
-                                    searchAnswers={searchAnswers}
-                                />
+                                    <AutoSuggestAnswers
+                                        tekst={tekst}
+                                        onSelectAnswer={onSelectAnswer}
+                                        allGroupRows={allGroupRows}
+                                        searchAnswers={searchAnswers}
+                                    />
                             </div>
                         </div>
                     </Col>

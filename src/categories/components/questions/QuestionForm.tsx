@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FormEvent, useState, useEffect, useRef } from "react";
+import { type ChangeEvent, type FormEvent, useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -6,7 +6,7 @@ import { Form, CloseButton, Row, Col, Stack } from "react-bootstrap";
 import { CreatedModifiedForm } from "@/common/CreateModifiedForm"
 import { FormButtons } from "@/common/FormButtons"
 import type { ICategoryRow, IQuestion, IQuestionFormProps } from "@/categories/types";
-import  { ActionTypes } from "@/categories/types";
+import { ActionTypes } from "@/categories/types";
 import { FormMode, QuestionKey } from "@/categories/types";
 
 import { Select } from '@/common/components/Select';
@@ -15,7 +15,7 @@ import CatList from '@/global/Components/SelectCategory/CatList'
 
 import { useCategoryContext, useCategoryDispatch } from "@/categories/CategoryProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
-import AssignedAnswers from './AssignedAnswers';
+//import AssignedAnswers from './AssignedAnswers';
 import RelatedFilters from './RelatedFilters';
 
 const QuestionForm = ({ question, submitForm, children, showCloseButton, source = 0, closeModal }: IQuestionFormProps) => {
@@ -25,6 +25,11 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
 
   const { state, onQuestionTitleChanged } = useCategoryContext();
   let { formMode, topRows } = state;
+
+  const AssignedAnswers = lazy(() =>
+    // named export
+    import("@/categories/components/questions/AssignedAnswers").then((module) => ({ default: module.default }))
+  );
 
   const viewing = formMode === FormMode.ViewingQuestion;
   const editing = formMode === FormMode.EditingQuestion;
@@ -250,12 +255,14 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
 
         {(viewing || editing) &&
           <div className="my-1">
-            <AssignedAnswers
-              questionKey={questionKey!}
-              questionTitle={searchTerm}
-              assignedAnswers={assignedAnswers}
-              isDisabled={isDisabled}
-            />
+            <Suspense fallback={<div>Loading...</div>}>
+              <AssignedAnswers
+                questionKey={questionKey!}
+                questionTitle={searchTerm}
+                assignedAnswers={assignedAnswers}
+                isDisabled={isDisabled}
+              />
+            </Suspense>
 
             <RelatedFilters
               questionKey={questionKey!}

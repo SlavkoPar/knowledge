@@ -8,6 +8,10 @@ import { AutoSuggestAnswers } from '@/groups/AutoSuggestAnswers'
 import { type IAnswer } from "@/groups/types";
 import AddAnswer from "@/categories/components/questions/AddAnswer"
 
+// const AutoSuggestAnswers = lazy(() =>
+//     import("@/groups/AutoSuggestAnswers").then((module) => ({ default: module.AutoSuggestAnswers }))
+// );
+
 interface IProps {
     questionKey: IQuestionKey,
     questionTitle: string,

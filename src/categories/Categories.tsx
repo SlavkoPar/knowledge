@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense } from 'react'
+import { useEffect, useState } from 'react'
 import { Container, Row, Col, Button } from "react-bootstrap";
 
 import { useParams } from 'react-router-dom';
@@ -18,7 +18,7 @@ import EditQuestion from "@/categories/components/questions/EditQuestion";
 import { initialQuestion } from "@/categories/CategoryReducer";
 import ModalAddQuestion from './ModalAddQuestion';
 import AddCategory from './components/AddCategory';
-//import { AutoSuggestQuestions } from './AutoSuggestQuestions';
+import { AutoSuggestQuestions } from './AutoSuggestQuestions';
 import AddQuestion from './components/questions/AddQuestion';
 
 interface IProps {
@@ -27,10 +27,9 @@ interface IProps {
 }
 
 
-const AutoSuggestQuestions = lazy(() =>
-    // named export
-    import("@/categories/AutoSuggestQuestions").then((module) => ({ default: module.AutoSuggestQuestions }))
-);
+// const AutoSuggestQuestions = lazy(() =>
+//     import("@/categories/AutoSuggestQuestions").then((module) => ({ default: module.AutoSuggestQuestions }))
+// );
 
 const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
     const { state, expandNodesUpToTheTree, loadTopRows, addSubCategory } = useCategoryContext();
@@ -145,14 +144,12 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                     <Col>
                         <div className="d-flex justify-content-start align-items-center">
                             <div className="w-75 my-1 questions">
-                                <Suspense fallback={<div>Loading...</div>}>
                                     <AutoSuggestQuestions
                                         tekst={tekst}
                                         onSelectQuestion={onSelectQuestion}
                                         allCategoryRows={allCategoryRows}
                                         searchQuestions={searchQuestions}
                                     />
-                                </Suspense>
                             </div>
                         </div>
                     </Col>
