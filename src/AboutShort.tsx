@@ -129,9 +129,9 @@ const AboutShort: React.FC<IAboutShort> = () => {
                   <div className="bg-warning w-auto"><b>Header</b></div>
                   <code>
                     &lt;link rel="stylesheet" crossorigin <br />
-                    &nbsp;&nbsp;&nbsp;href="https://slavkopar.github.io/knowledge/assets/index.css" /&gt;
+                    &nbsp;&nbsp;&nbsp;href="https://slavkopar.github.io/knowledge-lib/assets/index.css" /&gt;
                     <br />
-                    &lt;base href="https://slavkopar.github.io/knowledge" /&gt;
+                    &lt;base href="https://slavkopar.github.io/knowledge-lib" /&gt;
                   </code>
                   <br /><br />
                   <div className="bg-warning w-auto" style={{ minWidth: '100%' }}><b>Body</b></div>
@@ -144,7 +144,7 @@ const AboutShort: React.FC<IAboutShort> = () => {
                   <code>
                     &lt;script type="module" crossorigin
                     <br />
-                    &nbsp;&nbsp;&nbsp;src="https://slavkopar.github.io/knowledge/assets/index.js"&gt;&lt;/script&gt;
+                    &nbsp;&nbsp;&nbsp;src="https://slavkopar.github.io/knowledge-lib/assets/index.js"&gt;&lt;/script&gt;
                   </code>
                   <br />
                   <br />
