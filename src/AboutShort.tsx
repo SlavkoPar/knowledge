@@ -39,7 +39,7 @@ const AboutShort: React.FC<IAboutShort> = () => {
                 Integrate our Knowledge-Lib<br />
                 <i>'ChatBot JavaScript Library'</i> at your Web site &nbsp;&nbsp;
                 <br />
-                <a href="https://knowledge-share-demo.com" target="_blank" rel="noopener noreferrer">Try it</a>
+                <a href="https://knowledge-share-demo.com" target="_blank" rel="noopener noreferrer">Example with WordPress site</a>
               </li>
             </ol>
           </div>
@@ -123,8 +123,12 @@ const AboutShort: React.FC<IAboutShort> = () => {
         <div className="card card-block col-12 m-3">
           <Accordion defaultActiveKey="null">
             <Accordion.Item eventKey="0">
-              <Accordion.Header>Integrate Knowledge-Lib at WordPress site</Accordion.Header>
+              <Accordion.Header>How to integrate Knowledge-Lib at WordPress site</Accordion.Header>
               <Accordion.Body>
+                <pre> 
+                  <div className="bg-warning w-auto"><b>Plugin</b></div>
+                  <div className="bg-warning w-auto"><b>WPCode Code / Global scripts</b></div>
+                </pre>
                 <pre>
                   <div className="bg-warning w-auto"><b>Header</b></div>
                   <code>

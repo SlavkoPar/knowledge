@@ -103,6 +103,9 @@ export class HistoryFilterDto {
 // 	history: IHistory;
 // }
 
+export interface IChatBotDlgNavigatorMethods {
+  loadSubTree: (categoryRow: ICategoryRow) => void;
+}
 
 export interface IAuthUser {
 	color?: string,
@@ -167,6 +170,7 @@ export interface IGlobalState {
 	loading: boolean;
 	error?: Error;
 	allCategoryRowsGlobal: Map<string, ICategoryRow>;
+	topRows: ICategoryRow[];
 	allCategoryRowsGlobalLoaded?: number;
 	allGroupRows: Map<string, IGroupRow>;
 	allGroupRowsLoaded?: number;
@@ -198,6 +202,7 @@ export interface IGlobalContext {
 	setLastRouteVisited: (lastRouteVisited: string) => void;
 	health: () => void;
 	loadAllCategoryRowsGlobal: () => Promise<boolean>;
+	loadTopRows: () => Promise<any>,
 	getCat: (categoryId: string) => Promise<ICategoryRow | undefined>;
 	getSubCats: (categoryId: string | null) => Promise<any>;
 	getCatsByKind: (kind: number) => Promise<ICategoryRow[]>;
@@ -227,7 +232,9 @@ export enum GlobalActionTypes {
 	SET_ALL_GROUP_ROWS_GLOBAL = 'SET_ALL_GROUP_ROWS_GLOBAL',
 	SET_NODES_RELOADED = 'SET_NODES_RELOADED',
 	SET_QUESTION_AFTER_ASSIGN_ANSWER = 'SET_QUESTION_AFTER_ASSIGN_ANSWER',
-	SET_LAST_ROUTE_VISITED = 'SET_LAST_ROUTE_VISITED'
+	SET_LAST_ROUTE_VISITED = 'SET_LAST_ROUTE_VISITED',
+	SET_TOP_ROWS = 'SET_TOP_ROWS',
+	SET_TOP_ROWS_LOADING = 'SET_TOP_ROWS_LOADING',
 }
 
 export interface ILoginUser {
@@ -306,6 +313,10 @@ export type GlobalPayload = {
 	[GlobalActionTypes.SET_LAST_ROUTE_VISITED]: {
 		lastRouteVisited: string
 	};
+	
+	[GlobalActionTypes.SET_TOP_ROWS_LOADING]: {	loading: boolean };
+
+	[GlobalActionTypes.SET_TOP_ROWS]: {	topRows: ICategoryRow[] };
 };
 
 

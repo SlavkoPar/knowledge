@@ -1,4 +1,4 @@
-import { useState, useRef,  useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Container, Row, Col, Button, Offcanvas } from "react-bootstrap";
 //import { useNavigate } from "react-router-dom";
 
@@ -11,11 +11,12 @@ import { AutoSuggestQuestions } from '@/categories/AutoSuggestQuestions';
 // import { faFolder } from '@fortawesome/free-solid-svg-icons'
 
 import { type ICategoryRow, type IQuestion, type IQuestionEx, type IQuestionKey, QuestionKey } from '@/categories/types';
-import type { IHistory, IHistoryFilter } from '@/global/types';
+import type { IChatBotDlgNavigatorMethods, IHistory, IHistoryFilter } from '@/global/types';
 import { type IChatBotAnswer, type INewQuestion, type INextAnswer, useAI } from '@/hooks/useAI'
 
 import Q from '@/assets/Q.png';
 import A from '@/assets/A.png';
+import ChatBotDlgNavigator from './ChatBotDlgNavigator';
 // import { useCategoryDispatch } from '@/categories/CategoryProvider';
 
 type ChatBotParams = {
@@ -24,19 +25,11 @@ type ChatBotParams = {
     email?: string;
 };
 
-type ICatLevel = {
-    level: number;
-    catId: string | null;
-    header: string;
-    subCats: ICategoryRow[];
-    subCatIdSelected: string | null;
-}
 
 interface IProps {
     show: boolean,
     onHide: () => void;
 }
-
 
 const ChatBotDlg = ({ show, onHide }: IProps) => {
     let { tekst } = useParams<ChatBotParams>();
@@ -48,14 +41,16 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     const [chatBotAnswer, setChatBotAnswer] = useState<IChatBotAnswer | null>(null);
     const [hasMoreAnswers, setHasMoreAnswers] = useState<boolean>(false);
 
-    const { loadAllCategoryRowsGlobal, getSubCats, getQuestion, addHistory, addHistoryFilter, searchQuestions } = useGlobalContext();
-    const { authUser, isDarkMode, allCategoryRowsGlobal, allCategoryRowsGlobalLoaded } = useGlobalState();
+    const { loadAllCategoryRowsGlobal, getQuestion, addHistory, addHistoryFilter, searchQuestions } = useGlobalContext();
+    const { authUser, isDarkMode, allCategoryRowsGlobalLoaded, allCategoryRowsGlobal } = useGlobalState();
     //const navigate = useNavigate();
 
     const [catsSelected] = useState(true);
     const [showAutoSuggest, setShowAutoSuggest] = useState(true); //false);
 
-    const [catLevels, setCatLevels] = useState<ICatLevel[]>([]);
+
+    const [topRows, setTopRows] = useState<ICategoryRow[]>([]);
+    const childRef = useRef<IChatBotDlgNavigatorMethods | null>(null);
 
     const [pastEvents, setPastEvents] = useState<IChild[]>([]);
 
@@ -73,30 +68,58 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
         hasMoreAnswers?: boolean
     }
     // const deca: JSX.Element[] = [];
+
+
+
+
     useEffect(() => {
         (async () => {
-            if (!allCategoryRowsGlobalLoaded)
+            if (!allCategoryRowsGlobalLoaded) {
                 await loadAllCategoryRowsGlobal();
+            }
         })()
     }, [allCategoryRowsGlobalLoaded, loadAllCategoryRowsGlobal]);
 
-    const onEntering = async (/*node: HTMLElement, isAppearing: boolean*/): Promise<any> => {
-        setCatLevels([]);
-        const parentId = 'MTS';
-        const res = await getSubCats(parentId);
-        const { subCats, parentHeader } = res;
-        setCatLevels((prevState) => ([
-            ...prevState,
-            {
-                level: 1,
-                catId: parentId,
-                header: parentHeader,
-                subCats,
-                subCatIdSelected: null
+    /*
+    const findCategoryRow = useCallback(
+        (categoryRow: ICategoryRow, id: string): ICategoryRow | undefined => {
+            if (categoryRow.topId === id)
+                return categoryRow;
+            const { categoryRows } = categoryRow;
+            let cat: ICategoryRow | undefined = categoryRows.find(c => c.id === (id ?? 'null'));
+            if (!cat) {
+                try {
+                    categoryRows.forEach(c => {
+                        console.log(id, c.id)
+                        cat = findCategoryRow(c, id);
+                        if (cat) {
+                            throw new Error("Stop the loop");
+                        }
+                    })
+                }
+                catch (e) {
+                    // console.log("Loop stopped");
+                }
             }
-        ]))
-        console.log(catLevels)
+            return cat;
+        }, []);
+    */
 
+    const onEntering = async (/*node: HTMLElement, isAppearing: boolean*/): Promise<any> => {
+        setTopRows([]);
+        const startTime = performance.now();
+        allCategoryRowsGlobal.forEach(async (categoryRow) => {
+            if (categoryRow.parentId === null) {
+                categoryRow.categoryRows = [];
+                await childRef?.current?.loadSubTree(categoryRow);
+                setTopRows(topRows => [...topRows, categoryRow]);
+                console.log('ChatBotDlg onEntering setTopRows', [...topRows, categoryRow]);
+
+            }
+        });
+        const endTime = performance.now();
+        const elapsedTime = endTime - startTime;
+        console.log(`Execution time: ${elapsedTime} milliseconds`);
     }
 
     const scrollableRef = useRef<HTMLDivElement>(null);
@@ -113,6 +136,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     if (!allCategoryRowsGlobalLoaded) // || catsOptions.length === 0)
         return <div>Loading ...</div>
 
+
     /*
     const onOptionChange = async (id: string, level: number, title: string) => {//event: React.ChangeEvent<HTMLInputElement>) => {
         //const target = event.target;
@@ -128,10 +152,10 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
             }
             : catLevel
         )
-
+ 
         const res = await getSubCats(id);
         const { subCats, parentHeader } = res;
-
+ 
         console.log('///////////////////////////////////////////////////// id:', id, subCats)
         setCatLevels((prevState) => ([
             ...prev,
@@ -453,12 +477,12 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                         </div>
                     }
                     {!isDisabled &&
-                            <AutoSuggestQuestions
-                                tekst={txt}
-                                onSelectQuestion={onSelectQuestion}
-                                allCategoryRows={allCategoryRowsGlobal}
-                                searchQuestions={searchQuestions}
-                            />
+                        <AutoSuggestQuestions
+                            tekst={txt}
+                            onSelectQuestion={onSelectQuestion}
+                            allCategoryRows={allCategoryRowsGlobal}
+                            searchQuestions={searchQuestions}
+                        />
                     }
                 </div>
             </div>
@@ -469,8 +493,49 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     //     scrollableRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     // };
     console.log("=====================>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> rendering ChatBotDlg")
+
+
+
     return (
         <div className="pe-6 overflow-auto chat-bot-dlg">
+            <style>{`
+                .card-header {
+                    padding: 0.0rem 0.03rem;
+                    font-size: 0.8rem;
+                }
+                .card-header button  {
+                    border: 0.3px solid silver;
+                    border-radius: 3px;
+                    text-align: left;
+                }
+
+                .card-body {
+                    padding: 0.0rem 0.5rem;
+                    font-size: 0.8rem;
+                }
+
+                .accordion-body {
+                    padding: 0.3rem 0.3rem;
+                    font-size: 0.6rem;
+                }
+
+                .accordion-button  {
+                    padding: 0.1rem 0.3rem;
+                    border: 0.3px solid silver;
+                    border-radius: 3px;
+                    text-align: left;
+                }
+                    
+                ul {
+                    list-style-type: none;
+                }
+
+                .accordion-button.hide-icon::after {
+                    display: none;
+                }
+            }
+
+            `}</style>
             {/* <Button variant="primary" onClick={onHide}>
                 Toggle static offcanvas
             </Button> */}
@@ -486,12 +551,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                     <Container id='container' fluid className='text-primary'> {/* align-items-center" */}
                         <Row className="m-0">
                             <Col>
-                                {/* <p className='p-0 m-0 fw-lighter'>For test, Select:</p>
-                                <ul className="m-0">
-                                    <li className='p-0 fw-lighter'>Sale</li>
-                                    <li className='mx-2 fw-lighter'>Phones, TV, ...</li>
-                                    <li className='mx-4 p-0 mb-4 fw-lighter'>Televisions, remote controllers, ...</li>
-                                </ul> */}
+                                <ChatBotDlgNavigator topRows={topRows} ref={childRef} />
                             </Col>
                         </Row>
                         {/* badge */}

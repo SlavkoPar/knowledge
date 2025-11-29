@@ -1,0 +1,130 @@
+import { useContext, type ReactNode, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { Accordion, AccordionContext, Card, CardHeader, useAccordionButton } from "react-bootstrap";
+
+import { useGlobalState } from '@/global/GlobalProvider';
+
+
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faFolder } from '@fortawesome/free-solid-svg-icons'
+
+import { type ICategoryRow } from '@/categories/types';
+
+
+
+//import Q from '@/assets/Q.png';
+//import A from '@/assets/A.png';
+import type { AccordionEventKey } from 'react-bootstrap/esm/AccordionContext';
+import type { IChatBotDlgNavigatorMethods } from './global/types';
+// import { useCategoryDispatch } from '@/categories/CategoryProvider';
+
+
+const PINK = 'rgba(255, 192, 203, 0.6)';
+const BLUE = 'rgb(224, 207, 252)';
+
+function ContextAwareToggle({ children, eventKey, hasSubCategories, callback }: 
+    { children: ReactNode; eventKey: AccordionEventKey; hasSubCategories: boolean; callback?: (eventKey?: AccordionEventKey) => void }) {
+
+    const { activeEventKey } = useContext(AccordionContext);
+    const decoratedOnClick = useAccordionButton(
+        String(eventKey ?? ''),
+        () => callback && callback(eventKey),
+    );
+    const isCurrentEventKey = activeEventKey === eventKey;
+    return (
+        <button
+            type="button"
+            className={ `accordion-button ${!hasSubCategories ? 'hide-icon' : '' }` }
+            style={{ 
+                backgroundColor: isCurrentEventKey ? PINK : BLUE
+            }}
+            onClick={decoratedOnClick}
+        >
+            {children}
+        </button>
+    );
+}
+
+const CatRow = ({ row }: { row: ICategoryRow }) => {
+    return (
+
+        <Card>
+            <Card.Header>
+                <ContextAwareToggle eventKey={row.id} hasSubCategories={row.hasSubCategories}>
+                    {row.title}
+                </ContextAwareToggle>
+            </Card.Header>
+            <Accordion.Collapse eventKey={row.id}>
+                <Card.Body>
+                    {row.hasSubCategories &&
+                        <CatList rows={row.categoryRows} />
+                    }
+                </Card.Body>
+            </Accordion.Collapse>
+        </Card>
+
+        // <Accordion.Item key={row.id} eventKey={row.id}>
+        //     <Accordion.Header>
+        //         <ContextAwareToggle eventKey={row.id} hasSubCategories={row.hasSubCategories}>
+        //             {row.title}
+        //         </ContextAwareToggle>
+        //     </Accordion.Header>
+        //     {row.hasSubCategories && <Accordion.Collapse eventKey={row.id}>
+        //         {/* <Accordion.Body> */}
+        //         {row.hasSubCategories &&
+        //             <CatList rows={row.categoryRows} />
+        //         }
+        //         {/* </Accordion.Body> */}
+        //     </Accordion.Collapse>
+        //     }
+
+        // </Accordion.Item>
+    )
+}
+
+const CatList = ({ rows }: { rows: ICategoryRow[] }) => {
+    return (
+        <>
+            {rows.map((row) => (
+                <CatRow key={row.id} row={row} />
+            ))}
+        </>
+    )
+}
+
+const onSelectCategory = async (eventKey: AccordionEventKey, e: React.SyntheticEvent<unknown>) => {
+    console.log('onSelectCategory', { eventKey, e });
+    //await getSubCats(eventKey as string);
+}
+
+
+
+const ChatBotNavigator = forwardRef<IChatBotDlgNavigatorMethods, { topRows: ICategoryRow[] }>(({ topRows }, ref) => {
+
+    const { allCategoryRowsGlobal } = useGlobalState();
+
+    const loadSubTree = useCallback(async (categoryRow: ICategoryRow) => {
+        const { id } = categoryRow;
+        //const subCats: ICategoryRow[] = [];
+        //categoryRow.categoryRows = [];
+        allCategoryRowsGlobal.forEach(async (catRow) => {
+            catRow.categoryRows = [];
+            if (catRow.id !== id && catRow.parentId === id) {
+                await loadSubTree(catRow);
+                categoryRow.categoryRows.push(catRow)
+            }
+        });
+        //return subCats;
+    }, [allCategoryRowsGlobal]);
+
+    useImperativeHandle(ref, () => ({
+        loadSubTree: (categoryRow: ICategoryRow) => loadSubTree(categoryRow)
+    }), [loadSubTree]);
+
+    return (
+        <Accordion defaultActiveKey="MTS" alwaysOpen={true} onSelect={onSelectCategory} >
+            <CatList rows={topRows}></CatList>
+        </Accordion>
+    );
+});
+
+export default ChatBotNavigator;

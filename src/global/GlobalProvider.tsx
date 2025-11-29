@@ -66,6 +66,7 @@ const initGlobalState: IGlobalState = {
   bg: 'dark',
   loading: false,
   allCategoryRowsGlobal: new Map<string, ICategoryRow>(),
+  topRows: [],
   allCategoryRowsGlobalLoaded: undefined,
   allGroupRows: new Map<string, IGroupRow>(),
   allGroupRowsLoaded: undefined,
@@ -213,6 +214,33 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       resolve(true);
     });
   }, [KnowledgeAPI.endpointCategoryRow, workspace]);
+
+  const loadTopRows = useCallback(async () => {
+      return new Promise(async (resolve) => {
+        //const { keyExpanded } = state;
+        try {
+          dispatch({ type: GlobalActionTypes.SET_TOP_ROWS_LOADING, payload: { loading: true } });
+          const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}/null/topRows/all`;
+          console.log('CategoryProvider loadTopRows url:', url)
+          console.log('loadTopRows AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+          console.time();
+          await Execute("GET", url)
+            .then((dtos: ICategoryRowDto[]) => {
+              console.timeEnd();
+              console.log('loadTopRows BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
+              const topRows = dtos!.map((dto: ICategoryRowDto) => {
+                return new CategoryRow(dto).categoryRow;
+              })
+              dispatch({ type: GlobalActionTypes.SET_TOP_ROWS, payload: { topRows } });
+              resolve(true);
+            });
+        }
+        catch (error: any) {
+          console.log(error)
+          dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+        }
+      })
+    }, [Execute, KnowledgeAPI.endpointCategoryRow, workspace]); // state, 
 
 
   // ---------------------------
@@ -524,7 +552,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     return [];
   } */
 
-  const getSubCatsGlobal = useCallback(async (categoryId: string | null) => {
+  const getSubCats = useCallback(async (categoryId: string | null) => {
     try {
       let parentHeader = "";
       const subCats: ICategoryRow[] = [];
@@ -806,7 +834,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     <GlobalContext.Provider value={{
       globalState, setLastRouteVisited,
       health,
-      loadAllCategoryRowsGlobal, getCat, getSubCats: getSubCatsGlobal, getCatsByKind,
+      loadAllCategoryRowsGlobal, 	loadTopRows, getCat, getSubCats, getCatsByKind, 
       searchQuestions, getQuestion,
       loadAndCacheAllGroupRows, globalGetGroupRow, getGroupRows, getGroupRowsByKind, searchAnswers, getAnswer,
       setNodesReloaded,
