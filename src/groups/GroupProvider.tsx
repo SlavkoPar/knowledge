@@ -1,4 +1,4 @@
-import { useGlobalState } from '@/global/GlobalProvider'
+import { useGlobalState, useGlobalContext } from '@/global/GlobalProvider'
 import React, { createContext, useContext, useReducer, useCallback, type Dispatch, useEffect } from 'react';
 
 import type {
@@ -71,6 +71,7 @@ export const initialState: IGroupsState = {
 
 export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
+  const { loadAndCacheAllGroupRows } = useGlobalContext();
   const globalState = useGlobalState();
   const { KnowledgeAPI, isAuthenticated, workspace, authUser, canEdit } = globalState;
   const { nickName } = authUser;
@@ -168,6 +169,17 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
   // load all groupRows
   // ---------------------------
   const loadAllGroupRows = useCallback(async (): Promise<any> => {
+    return new Promise(async (resolve) => {
+      const allGroupRows = await loadAndCacheAllGroupRows();
+      if (allGroupRows) {
+        dispatch({ type: ActionTypes.SET_ALL_GROUP_ROWS, payload: { allGroupRows } });
+      }
+      else {
+        //dispatch({ type: ActionTypes.S.SET_ERROR, payload: { error: new Error('Zajeb allCategoryRows') } });
+      }
+      resolve(allGroupRows)
+    })
+
     return new Promise(async (resolve) => {
       try {
         console.time();

@@ -1,9 +1,9 @@
-import { useGlobalState } from '@/global/GlobalProvider'
+import { useGlobalState, useGlobalContext } from '@/global/GlobalProvider'
 import React, { createContext, useContext, useReducer, useCallback, type Dispatch, useEffect } from 'react';
 
 import type {
   ICategory, IQuestion, ICategoriesContext,
-  ICategoryDtoEx, ICategoryKey, 
+  ICategoryDtoEx, ICategoryKey,
   IQuestionDtoEx, IQuestionEx, IQuestionKey, IQuestionRow,
   ICategoryRow,
   ICategoryRowDtoEx,
@@ -18,7 +18,7 @@ import type {
 
 
 import {
-  ActionTypes, 
+  ActionTypes,
   CategoryKey, Category, CategoryDto,
   Question,
   QuestionDto,
@@ -74,6 +74,7 @@ export const initialState: ICategoriesState = {
 
 export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
+  const { loadAllCategoryRowsGlobal } = useGlobalContext();
   const globalState = useGlobalState();
   const { KnowledgeAPI, isAuthenticated, workspace, authUser, canEdit } = globalState;
   const { nickName } = authUser;
@@ -103,7 +104,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     dispatch({ type: ActionTypes.SET_FROM_LOCAL_STORAGE, payload: { keyExpanded } });
   }, [workspace]);
 
-  
+
   const Execute = useCallback(
     async (
       method: string,
@@ -169,39 +170,18 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   // ---------------------------
   // load all categoryRows
   // ---------------------------
-  const loadAllCategoryRows = useCallback(async (): Promise<any> => {
+  const loadAllCategoryRows = useCallback(async (): Promise<Map<string, ICategoryRow>|null> => {
     return new Promise(async (resolve) => {
-      try {
-        console.time();
-        const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}`;
-        await Execute("GET", url, null)
-          .then((catRowDtos: ICategoryRowDto[]) => {   //  | Response
-            const allCategoryRows = new Map<string, ICategoryRow>();
-            console.timeEnd();
-            catRowDtos.forEach((rowDto: ICategoryRowDto) => allCategoryRows.set(rowDto.Id, new CategoryRow(rowDto).categoryRow));
-            allCategoryRows.forEach(cat => {
-              let { id, parentId } = cat; // , title, variations, hasSubCategories, level, kind
-              let titlesUpTheTree = id;
-              let parentCat = parentId;
-              while (parentCat) {
-                const cat2 = allCategoryRows.get(parentCat)!;
-                titlesUpTheTree = cat2!.id + ' / ' + titlesUpTheTree;
-                parentCat = cat2.parentId;
-              }
-              cat.titlesUpTheTree = titlesUpTheTree;
-              allCategoryRows.set(id, cat);
-            })
-            dispatch({ type: ActionTypes.SET_ALL_CATEGORY_ROWS, payload: { allCategoryRows } });
-            //resolve(true)
-          });
+      const allCategoryRows = await loadAllCategoryRowsGlobal();
+      if (allCategoryRows) {
+        dispatch({ type: ActionTypes.SET_ALL_CATEGORY_ROWS, payload: { allCategoryRows } });
       }
-      catch (error: any) {
-        console.log(error)
-        dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
-      }
-      resolve(true);
-    });
-  }, [Execute, KnowledgeAPI.endpointCategoryRow, workspace]);
+      else {
+        dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error('Zajeb allCategoryRows') } });
+      } 
+      resolve(allCategoryRows);
+    })
+  }, [loadAllCategoryRowsGlobal]);
 
   const getCat = useCallback(async (id: string): Promise<ICategoryRow | undefined> => {
     try {
@@ -216,33 +196,33 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   }, [allCategoryRows]);
 
   useEffect(() => {
-      (async () => {
-        if (allCategoryRowsLoaded === undefined) {
-          await loadAllCategoryRows();
-        }
-      })()
-    }, [allCategoryRowsLoaded, loadAllCategoryRows]);
+    (async () => {
+      if (allCategoryRowsLoaded === undefined) {
+        await loadAllCategoryRows();
+      }
+    })()
+  }, [allCategoryRowsLoaded, loadAllCategoryRows]);
 
   const getSubCats = useCallback(async (categoryId: string | null) => {
-      try {
-        let parentHeader = "";
-        const subCats: ICategoryRow[] = [];
-        allCategoryRows.forEach((cat, id) => {  // globalState.cats is Map<string, ICat>
-          if (id === categoryId) {
-            parentHeader = ""; //cat.header!;
-          }
-          else if (cat.parentId === categoryId) {
-            subCats.push(cat);
-          }
-        })
-        return { subCats, parentHeader };
-      }
-      catch (error: any) {
-        console.log(error)
-        dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
-        return { subCats: [], parentHeader: 'Kiks subCats' }
-      }
-    }, [allCategoryRows]);
+    try {
+      let parentHeader = "";
+      const subCats: ICategoryRow[] = [];
+      allCategoryRows.forEach((cat, id) => {  // globalState.cats is Map<string, ICat>
+        if (id === categoryId) {
+          parentHeader = ""; //cat.header!;
+        }
+        else if (cat.parentId === categoryId) {
+          subCats.push(cat);
+        }
+      })
+      return { subCats, parentHeader };
+    }
+    catch (error: any) {
+      console.log(error)
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+      return { subCats: [], parentHeader: 'Kiks subCats' }
+    }
+  }, [allCategoryRows]);
 
   const loadTopRows = useCallback(async () => {
     return new Promise(async (resolve) => {
@@ -380,7 +360,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
                   const row = findCategoryRow(categoryRow, id!)!;
                   category = { ...row, doc1: '' };
                   if (questionId) {
-                    const questionRow = row.questionRows.find(q => q.id === questionId && q.included)!;
+                    const questionRow = row.questionRows!.find(q => q.id === questionId && q.included)!;
                     if (questionRow) {
                       category = null;
                       question = {
@@ -470,14 +450,14 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
         }
         else {
           let selectedQuestionId: string | undefined = undefined;
-          if (includeQuestionId && categoryRow.questionRows.filter((row: IQuestionRow) => row.included).length > 0) {
+          if (includeQuestionId && categoryRow.questionRows!.filter((row: IQuestionRow) => row.included).length > 0) {
             selectedQuestionId = includeQuestionId;
           }
           // if (newCategoryRow) {
           //   categoryRow.categoryRows = [newCategoryRow, ...categoryRow.categoryRows];
           // }
           if (newQuestionRow) {
-            categoryRow.questionRows = [newQuestionRow, ...categoryRow.questionRows];
+            categoryRow.questionRows = [newQuestionRow, ...categoryRow.questionRows!];
           }
           categoryRow.isExpanded = true;
           console.log('@@@@@@@@@@@@@@@@@ expandCategory:', formMode, includeQuestionId)
@@ -940,7 +920,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
         if (isExpanded) {
           const topRow: ICategoryRow = state.topRows.find(c => c.id === topId)!;
           const catRow: ICategoryRow = findCategoryRow(topRow, id)!;
-          catRow.questionRows = [newQuestionRow, ...catRow.questionRows];
+          catRow.questionRows = [newQuestionRow, ...catRow.questionRows!];
           dispatch({ type: ActionTypes.ADD_NEW_QUESTION_TO_ROW, payload: { categoryRow: catRow, newQuestionRow } });
           dispatch({ type: ActionTypes.SET_QUESTION, payload: { question, formMode: FormMode.AddingQuestion } });
         }
@@ -1104,7 +1084,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       }
     }, [Execute, KnowledgeAPI.endpointQuestion, expandCategory, workspace]);
 
-  
+
   const getQuestion = useCallback(
     async (questionKey: IQuestionKey): Promise<any> => {
       return new Promise(async (resolve) => {
@@ -1312,7 +1292,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       //const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
       const categoryRow: ICategoryRow = findCategoryRow(topRow, parentId)!;
       if (categoryRow) {
-        const questionRow = categoryRow.questionRows.find(q => q.id === id)!;
+        const questionRow = categoryRow.questionRows!.find(q => q.id === id)!;
         questionRow.title = title;
         // rerender
         console.log('onQuestionTitleChanged+++>>>', id, categoryRow)

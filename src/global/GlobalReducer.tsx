@@ -134,22 +134,22 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
         }
 
         case GlobalActionTypes.SET_TOP_ROWS_LOADING:
-              return {
+            return {
                 ...state,
                 topRowsLoading: true,
                 topRowsLoaded: false
-              }
-        
-            case GlobalActionTypes.SET_TOP_ROWS: {
-              const { topRows } = action.payload;
-              //console.log('=> CategoriesReducer ActionTypes.SET_TOP_ROWS', state.topRows, topRows)
-              return {
+            }
+
+        case GlobalActionTypes.SET_TOP_ROWS: {
+            const { topRows } = action.payload;
+            //console.log('=> CategoriesReducer ActionTypes.SET_TOP_ROWS', state.topRows, topRows)
+            return {
                 ...state,
                 topRows,
                 topRowsLoading: false,
                 topRowsLoaded: true
-              };
-            }
+            };
+        }
 
         case GlobalActionTypes.SET_NODES_RELOADED: {
             return {
@@ -158,6 +158,12 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
             };
         }
 
+        case GlobalActionTypes.SET_ENABLE_CHATBOT_DLG: {
+            return {
+                ...state,
+                chatBotDlgEnabled: true
+            };
+        }
 
         default: {
             throw Error('Unknown action: ' + str);

@@ -7,7 +7,6 @@ import { useGlobalDispatch, useGlobalState } from '@/global/GlobalProvider'
 import './App.css';
 import './AutoSuggest.css';
 
-
 // Dynamic imports
 const Categories = lazy(() =>
   // named export
@@ -34,7 +33,7 @@ import AboutShort from './AboutShort';
 function App() {
 
   //const { getUser, OpenDB, setLastRouteVisited } = useGlobalContext();
-  const { authUser, isAuthenticated, everLoggedIn, lastRouteVisited } = useGlobalState();
+  const { authUser, isAuthenticated, everLoggedIn, lastRouteVisited, chatBotDlgEnabled } = useGlobalState();
   const { nickName } = authUser;
 
 
@@ -44,7 +43,7 @@ function App() {
 
   const { instance } = useMsal();
 
-  const [modalChatBotShow, setModalChatBotShow] = useState(false);
+  const [showModalChatBot, setModalChatBotShow] = useState(false);
 
   useEffect(() => {
     //(async () => {
@@ -136,7 +135,7 @@ function App() {
                 {/* <Route path="/supporter/:source/:tekst" element={<SupportPage />} />
                 <Route path="/supporter/:source/:tekst/:email" element={<SupportPage />} /> */}
                 {/* <Route path="/ChatBotPage/:source/:tekst/:email" element={<ChatBotPage />} /> */}
-                <Route path="/categories/:categoryId_questionId/:fromChatBotDlg" element={<Categories />} />
+                <Route path="/knowledge/categories/:categoryId_questionId/:fromChatBotDlg" element={<Categories />} />
                 <Route path="/knowledge/categories" element={<Categories />} />
                 <Route path="/categories" element={<Categories />} />
                 <Route path="/groups/:groupId_AnswerId" element={<Groups />} />
@@ -151,15 +150,15 @@ function App() {
         </Col>
       </Row>
       {/* {<ModalChatBot show={modalChatBotShow} onHide={() => { setModalChatBotShow(false) }} />} */}
-      {true && //allCategoryRowsLoaded && //nodesReLoaded &&
+      {chatBotDlgEnabled &&
         <>
-          {modalChatBotShow &&
+          {showModalChatBot &&
             <Suspense fallback={<div>Loading...</div>}>
-              <ChatBotDlg show={modalChatBotShow} onHide={() => { setModalChatBotShow(false) }} />
+              <ChatBotDlg show={showModalChatBot} onHide={() => { setModalChatBotShow(false) }} />
             </Suspense>
           }
           <Button onClick={(e) => {
-            setModalChatBotShow(!modalChatBotShow);
+            setModalChatBotShow(!showModalChatBot);
             e.stopPropagation();
           }}
             className="border rounded-5 me-1 mb-1 buddy-fixed"

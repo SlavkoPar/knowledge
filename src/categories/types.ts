@@ -33,7 +33,7 @@ export interface ICategoryRowDto extends IDtoKey {
 	Level: number;
 	HasSubCategories: boolean;
 	SubCategoryRowDtos: ICategoryRowDto[];
-	NumOfQuestions: number;
+	NumOfQuestions?: number;
 	QuestionRowDtos?: IQuestionRowDto[];
 	HasMoreQuestions?: boolean;
 	IsExpanded?: boolean;
@@ -66,7 +66,7 @@ export interface ICategoryRow extends ICategoryKey, IRecord {
 	categoryRows: ICategoryRow[];
 	variations: string[];
 	numOfQuestions: number;
-	questionRows: IQuestionRow[];
+	questionRows?: IQuestionRow[];
 	hasMoreQuestions?: boolean;
 	isExpanded?: boolean;
 	titlesUpTheTree?: string;
@@ -101,7 +101,6 @@ export class CategoryRowDto {
 }
 
 export class CategoryRow {
-
 	constructor(categoryRowDto: ICategoryRowDto) {
 		const { TopId, Id, ParentId, Kind, Title, Link, Header, Variations, Level,
 			HasSubCategories, SubCategoryRowDtos,
@@ -115,16 +114,18 @@ export class CategoryRow {
 			link: Link,
 			header: Header,
 			titlesUpTheTree: '', // traverse up the tree, until root
-			variations: Variations,
+			variations: Variations??[],
 			hasSubCategories: HasSubCategories, //!, Odakle ovo
-			categoryRows: SubCategoryRowDtos.map(dto => new CategoryRow({ ...dto, TopId }).categoryRow),
-			numOfQuestions: NumOfQuestions,
+			categoryRows: SubCategoryRowDtos
+				? SubCategoryRowDtos.map(dto => new CategoryRow({ ...dto, TopId }).categoryRow)
+				: [],
+			numOfQuestions: NumOfQuestions??0,
 			questionRows: QuestionRowDtos
 				? QuestionRowDtos.map(dto => new QuestionRow({ ...dto, TopId: TopId ?? undefined }).questionRow)
 				: [],
 			level: Level,
 			kind: Kind,
-			isExpanded: IsExpanded
+			isExpanded: IsExpanded?? false
 		}
 	}
 	categoryRow: ICategoryRow;
@@ -573,7 +574,7 @@ export interface ILoadCategoryQuestions {
 
 export interface ICategoriesContext {
 	state: ICategoriesState,
-	loadAllCategoryRows: () => Promise<boolean>;
+	loadAllCategoryRows: () => Promise<Map<string, ICategoryRow>|null>;
 	getCat: (id: string) => Promise<ICategoryRow | undefined>;
 	expandNodesUpToTheTree: (catKey: ICategoryKey, questionId: string | null, fromChatBotDlg?: string) => Promise<any>;
 	loadTopRows: () => Promise<any>,

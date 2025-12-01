@@ -16,7 +16,7 @@ import { GlobalReducer, initialAuthUser } from "@/global/GlobalReducer";
 import type {
   IQuestionRow, IQuestionRowDto, IQuestionRowDtosEx,
   IQuestionDtoEx, IQuestionEx, IQuestionKey,
-  ICategoryRowDto, ICategoryRow,
+  ICategoryRowDto, ICategoryRow
 } from "@/categories/types";
 
 import { CategoryRow, QuestionKey, Question } from "@/categories/types";
@@ -72,6 +72,7 @@ const initGlobalState: IGlobalState = {
   allGroupRowsLoaded: undefined,
   nodesReLoaded: false,
   lastRouteVisited: '/categories',
+  chatBotDlgEnabled: false
 }
 
 export const GlobalProvider: React.FC<Props> = ({ children }) => {
@@ -181,7 +182,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   // ---------------------------
   // load all categoryRows
   // ---------------------------
-  const loadAllCategoryRowsGlobal = useCallback(async (): Promise<any> => {
+  const loadAllCategoryRowsGlobal = useCallback(async (): Promise<Map<string, ICategoryRow> | null> => {
     return new Promise(async (resolve) => {
       try {
         console.time();
@@ -204,49 +205,49 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
               allCategoryRows.set(id, cat);
             })
             dispatch({ type: GlobalActionTypes.SET_ALL_CATEGORY_ROWS_GLOBAL, payload: { allCategoryRows } });
-            resolve(true)
+            resolve(allCategoryRows)
           });
       }
       catch (error: any) {
         console.log(error)
         dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
       }
-      resolve(true);
+      resolve(null);
     });
   }, [KnowledgeAPI.endpointCategoryRow, workspace]);
 
   const loadTopRows = useCallback(async () => {
-      return new Promise(async (resolve) => {
-        //const { keyExpanded } = state;
-        try {
-          dispatch({ type: GlobalActionTypes.SET_TOP_ROWS_LOADING, payload: { loading: true } });
-          const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}/null/topRows/all`;
-          console.log('CategoryProvider loadTopRows url:', url)
-          console.log('loadTopRows AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-          console.time();
-          await Execute("GET", url)
-            .then((dtos: ICategoryRowDto[]) => {
-              console.timeEnd();
-              console.log('loadTopRows BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
-              const topRows = dtos!.map((dto: ICategoryRowDto) => {
-                return new CategoryRow(dto).categoryRow;
-              })
-              dispatch({ type: GlobalActionTypes.SET_TOP_ROWS, payload: { topRows } });
-              resolve(true);
-            });
-        }
-        catch (error: any) {
-          console.log(error)
-          dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
-        }
-      })
-    }, [Execute, KnowledgeAPI.endpointCategoryRow, workspace]); // state, 
+    return new Promise(async (resolve) => {
+      //const { keyExpanded } = state;
+      try {
+        dispatch({ type: GlobalActionTypes.SET_TOP_ROWS_LOADING, payload: { loading: true } });
+        const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}/null/topRows/all`;
+        console.log('CategoryProvider loadTopRows url:', url)
+        console.log('loadTopRows AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        console.time();
+        await Execute("GET", url)
+          .then((dtos: ICategoryRowDto[]) => {
+            console.timeEnd();
+            console.log('loadTopRows BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
+            const topRows = dtos!.map((dto: ICategoryRowDto) => {
+              return new CategoryRow(dto).categoryRow;
+            })
+            dispatch({ type: GlobalActionTypes.SET_TOP_ROWS, payload: { topRows } });
+            resolve(true);
+          });
+      }
+      catch (error: any) {
+        console.log(error)
+        dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+      }
+    })
+  }, [Execute, KnowledgeAPI.endpointCategoryRow, workspace]); // state, 
 
 
   // ---------------------------
   // load all groupRows
   // ---------------------------
-  const loadAndCacheAllGroupRows = useCallback(async (): Promise<any> => {
+  const loadAndCacheAllGroupRows = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
     return new Promise(async (resolve) => {
       try {
         console.time();
@@ -275,14 +276,14 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
               allGroupRows.set(id, groupRow);
             })
             dispatch({ type: GlobalActionTypes.SET_ALL_GROUP_ROWS_GLOBAL, payload: { allGroupRows } });
-            resolve(true)
+            resolve(allGroupRows)
           });
       }
       catch (error: any) {
         console.log(error)
         dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
       }
-      resolve(true);
+      resolve(null);
     });
   }, [KnowledgeAPI.endpointGroupRow, workspace]);
 
@@ -824,21 +825,21 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     dispatch({ type: GlobalActionTypes.SET_LAST_ROUTE_VISITED, payload: { lastRouteVisited } });
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      //await OpenDB();
-    })()
-  }, [])
+  const setChatBotDlgEnabled = () => {
+    dispatch({ type: GlobalActionTypes.SET_ENABLE_CHATBOT_DLG });
+
+  }
 
   return (
     <GlobalContext.Provider value={{
       globalState, setLastRouteVisited,
       health,
-      loadAllCategoryRowsGlobal, 	loadTopRows, getCat, getSubCats, getCatsByKind, 
+      loadAllCategoryRowsGlobal, loadTopRows, getCat, getSubCats, getCatsByKind,
       searchQuestions, getQuestion,
       loadAndCacheAllGroupRows, globalGetGroupRow, getGroupRows, getGroupRowsByKind, searchAnswers, getAnswer,
       setNodesReloaded,
-      addHistory, getAnswersRated, addHistoryFilter
+      addHistory, getAnswersRated, addHistoryFilter,
+      setChatBotDlgEnabled
     }}>
       <GlobalDispatchContext.Provider value={dispatch}>
         {children}

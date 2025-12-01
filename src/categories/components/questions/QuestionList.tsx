@@ -27,7 +27,7 @@ const QuestionList = ({ categoryRow }: { categoryRow: ICategoryRow }) => {
 
       const x: ILoadCategoryQuestions = {
         categoryKey: new CategoryKey(categoryRow).categoryKey!,
-        startCursor: questionRows.length,
+        startCursor: questionRows!.length,
         includeQuestionId: questionId ?? null
       }
       console.log('^^^^^^^^^^^^^ loadMore')
@@ -69,10 +69,10 @@ const QuestionList = ({ categoryRow }: { categoryRow: ICategoryRow }) => {
       style={{ maxHeight: '400px', overflowY: 'auto' }}
     >
       <List>
-        {questionRows.length === 0 &&
+        {questionRows!.length === 0 &&
           <label>No questions</label>
         }
-        {questionRows.map((questionRow: IQuestionRow) => {
+        {questionRows!.map((questionRow: IQuestionRow) => {
           return <QuestionRow key={questionRow.id} questionRow={questionRow} isSelected={questionRow.id === selectedQuestionId} />
         })}
         {hasMoreQuestions && (

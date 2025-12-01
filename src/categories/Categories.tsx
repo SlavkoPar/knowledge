@@ -46,8 +46,8 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
         loadingQuestions, loadingQuestion
     } = state;
 
-    const { searchQuestions, setLastRouteVisited } = useGlobalContext();
-    const { isDarkMode } = useGlobalState();
+    const { searchQuestions, setLastRouteVisited, setChatBotDlgEnabled } = useGlobalContext();
+    const { isDarkMode, chatBotDlgEnabled } = useGlobalState();
 
     const [modalShow, setModalShow] = useState(false);
     // const handleClose = () => {
@@ -71,7 +71,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
             // SET_TOP_ROWS  Level:1
             if (!topRowsLoading && !topRowsLoaded) {
                 console.log('ZOVEM 111 loadTopRows()')
-                await loadTopRows()
+                await loadTopRows();
             }
         })()
     }, [topRowsLoading, topRowsLoaded, loadTopRows]);
@@ -110,9 +110,12 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                             .then(() => { return null; });
                     }
                 }
+                
+                if (!chatBotDlgEnabled) // show ChatBotDlg button
+                    setChatBotDlgEnabled();
             }
         })()
-    }, [keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, categoryId_questionId, categoryId_questionId_done, topRows, fromChatBotDlg])
+    }, [keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, categoryId_questionId, categoryId_questionId_done, topRows, fromChatBotDlg, chatBotDlgEnabled])
 
     useEffect(() => {
         setLastRouteVisited(`/categories`);
@@ -124,7 +127,6 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
             return <div>loading...</div>
         }
     }
-
 
     //if (!nodeOpened)
     //if (!allCategoryRowsLoaded || !topRowsLoaded || topRows.length === 0) {
@@ -144,12 +146,12 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                     <Col>
                         <div className="d-flex justify-content-start align-items-center">
                             <div className="w-75 my-1 questions">
-                                    <AutoSuggestQuestions
-                                        tekst={tekst}
-                                        onSelectQuestion={onSelectQuestion}
-                                        allCategoryRows={allCategoryRows}
-                                        searchQuestions={searchQuestions}
-                                    />
+                                <AutoSuggestQuestions
+                                    tekst={tekst}
+                                    onSelectQuestion={onSelectQuestion}
+                                    allCategoryRows={allCategoryRows}
+                                    searchQuestions={searchQuestions}
+                                />
                             </div>
                         </div>
                     </Col>

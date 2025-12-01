@@ -104,7 +104,8 @@ export class HistoryFilterDto {
 // }
 
 export interface IChatBotDlgNavigatorMethods {
-  loadSubTree: (categoryRow: ICategoryRow) => void;
+	resetNavigator: () => void;
+	//loadSubTree: (categoryRow: ICategoryRow | null) => void;
 }
 
 export interface IAuthUser {
@@ -176,6 +177,7 @@ export interface IGlobalState {
 	allGroupRowsLoaded?: number;
 	nodesReLoaded: boolean; // categoryNodeLoaded || groupNodeLoaded  ( to prevent showing of ChatBotDlg)
 	lastRouteVisited: string;
+	chatBotDlgEnabled: boolean;
 }
 
 
@@ -201,14 +203,14 @@ export interface IGlobalContext {
 	//OpenDB: () => Promise<any>;
 	setLastRouteVisited: (lastRouteVisited: string) => void;
 	health: () => void;
-	loadAllCategoryRowsGlobal: () => Promise<boolean>;
+	loadAllCategoryRowsGlobal: () => Promise<Map<string, ICategoryRow> | null>;
 	loadTopRows: () => Promise<any>,
 	getCat: (categoryId: string) => Promise<ICategoryRow | undefined>;
 	getSubCats: (categoryId: string | null) => Promise<any>;
 	getCatsByKind: (kind: number) => Promise<ICategoryRow[]>;
 	searchQuestions: (filter: string, count: number) => Promise<IQuestionRow[]>;
 	getQuestion: (questionKey: IQuestionKey) => Promise<IQuestionEx>;
-	loadAndCacheAllGroupRows: () => Promise<boolean>;
+	loadAndCacheAllGroupRows: () => Promise<Map<string, IGroupRow> | null>;
 	getGroupRows: (categoryId: string | null) => Promise<any>;
 	globalGetGroupRow: (groupRowId: string) => Promise<IGroupRow | undefined>;
 	getGroupRowsByKind: (kind: number) => Promise<IGroupRow[]>;
@@ -218,6 +220,7 @@ export interface IGlobalContext {
 	getAnswersRated: (questionKey: IQuestionKey) => Promise<any>;
 	addHistoryFilter: (historyFilter: IHistoryFilter) => Promise<void>;
 	setNodesReloaded: () => void;
+	setChatBotDlgEnabled: () => void;
 }
 
 export enum GlobalActionTypes {
@@ -235,6 +238,7 @@ export enum GlobalActionTypes {
 	SET_LAST_ROUTE_VISITED = 'SET_LAST_ROUTE_VISITED',
 	SET_TOP_ROWS = 'SET_TOP_ROWS',
 	SET_TOP_ROWS_LOADING = 'SET_TOP_ROWS_LOADING',
+	SET_ENABLE_CHATBOT_DLG = 'SET_ENABLE_CHATBOT_DLG'
 }
 
 export interface ILoginUser {
@@ -313,10 +317,12 @@ export type GlobalPayload = {
 	[GlobalActionTypes.SET_LAST_ROUTE_VISITED]: {
 		lastRouteVisited: string
 	};
-	
-	[GlobalActionTypes.SET_TOP_ROWS_LOADING]: {	loading: boolean };
 
-	[GlobalActionTypes.SET_TOP_ROWS]: {	topRows: ICategoryRow[] };
+	[GlobalActionTypes.SET_TOP_ROWS_LOADING]: { loading: boolean };
+
+	[GlobalActionTypes.SET_TOP_ROWS]: { topRows: ICategoryRow[] };
+
+	[GlobalActionTypes.SET_ENABLE_CHATBOT_DLG]: undefined;
 };
 
 

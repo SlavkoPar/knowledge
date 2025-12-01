@@ -49,7 +49,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     const [showAutoSuggest, setShowAutoSuggest] = useState(true); //false);
 
 
-    const [topRows, setTopRows] = useState<ICategoryRow[]>([]);
+    const [allCategoryRows, setAllCategoryRows] = useState<Map<string, ICategoryRow>>(new Map<string, ICategoryRow>());
     const childRef = useRef<IChatBotDlgNavigatorMethods | null>(null);
 
     const [pastEvents, setPastEvents] = useState<IChild[]>([]);
@@ -69,16 +69,24 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     }
     // const deca: JSX.Element[] = [];
 
-
-
-
     useEffect(() => {
         (async () => {
             if (!allCategoryRowsGlobalLoaded) {
                 await loadAllCategoryRowsGlobal();
             }
+            else {
+                setAllCategoryRows(allCategoryRowsGlobal);
+            }
         })()
     }, [allCategoryRowsGlobalLoaded, loadAllCategoryRowsGlobal]);
+
+
+    // useEffect(() => {
+    //     (async () => {
+    //         const rows = await childRef?.current?.getTopRows();
+    //         setTopRows(rows || []);
+    //     })()
+    // }, [childRef]);
 
     /*
     const findCategoryRow = useCallback(
@@ -106,17 +114,10 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     */
 
     const onEntering = async (/*node: HTMLElement, isAppearing: boolean*/): Promise<any> => {
-        setTopRows([]);
         const startTime = performance.now();
-        allCategoryRowsGlobal.forEach(async (categoryRow) => {
-            if (categoryRow.parentId === null) {
-                categoryRow.categoryRows = [];
-                await childRef?.current?.loadSubTree(categoryRow);
-                setTopRows(topRows => [...topRows, categoryRow]);
-                console.log('ChatBotDlg onEntering setTopRows', [...topRows, categoryRow]);
-
-            }
-        });
+        await childRef?.current?.resetNavigator();
+        // const rows = await childRef?.current?.getTopRows();
+        // setTopRows(rows || []);
         const endTime = performance.now();
         const elapsedTime = endTime - startTime;
         console.log(`Execution time: ${elapsedTime} milliseconds`);
@@ -132,51 +133,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     //     // named export
     //     import("@/categories/AutoSuggestQuestions").then((module) => ({ default: module.AutoSuggestQuestions }))
     // );
-
-    if (!allCategoryRowsGlobalLoaded) // || catsOptions.length === 0)
-        return <div>Loading ...</div>
-
-
-    /*
-    const onOptionChange = async (id: string, level: number, title: string) => {//event: React.ChangeEvent<HTMLInputElement>) => {
-        //const target = event.target;
-        //const { id, name } = target;
-        //const value = type === 'checkbox' ? target.checked : target.value;
-        //const level = parseInt(name as any);
-        // update the last level
-        const prev = catLevels.map(catLevel => catLevel.level === level
-            ? {
-                ...catLevel,
-                subCatIdSelected: id,
-                header: title
-            }
-            : catLevel
-        )
- 
-        const res = await getSubCats(id);
-        const { subCats, parentHeader } = res;
- 
-        console.log('///////////////////////////////////////////////////// id:', id, subCats)
-        setCatLevels((prevState) => ([
-            ...prev,
-            {
-                level: level + 1,
-                catId: id,
-                header: parentHeader,
-                subCats,
-                subCatIdSelected: null
-            }
-        ]))
-        //setShowUsage(true);
-        // setCatOptions((prevState) => ({ 
-        // 	stateName: prevState.stateName + 1 
-        // }))
-        // this.setState({
-        // 	 [name]: value
-        // });
-    }
-    */
-
+  
     const onSelectQuestion = async (questionKey: IQuestionKey, underFilter: string) => {
         const questionCurr = await getCurrQuestion();
         if (questionCurr) {
@@ -495,6 +452,8 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     console.log("=====================>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> rendering ChatBotDlg")
 
 
+    if (allCategoryRows.size === 0) // || catsOptions.length === 0)
+        return <div>Loading ...</div>
 
     return (
         <div className="pe-6 overflow-auto chat-bot-dlg">
@@ -503,15 +462,15 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                     padding: 0.0rem 0.03rem;
                     font-size: 0.8rem;
                 }
-                .card-header button  {
-                    border: 0.3px solid silver;
-                    border-radius: 3px;
-                    text-align: left;
-                }
+                // .card-header button  {
+                //     border: 0.3px solid silver;
+                //     border-radius: 3px;
+                //     text-align: left;
+                // }
 
                 .card-body {
                     padding: 0.0rem 0.5rem;
-                    font-size: 0.8rem;
+                    font-size: 0.6rem;
                 }
 
                 .accordion-body {
@@ -520,14 +479,25 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                 }
 
                 .accordion-button  {
-                    padding: 0.1rem 0.3rem;
-                    border: 0.3px solid silver;
-                    border-radius: 3px;
-                    text-align: left;
+                    padding: 0 0.2rem !important;
+                    border: 0; //px solid inset;
+                    //border-radius: 3px;
+                    //text-align: left;
+                    font-size: 1rem;
                 }
                     
                 ul {
                     list-style-type: none;
+                }
+
+                .cat-link {
+                    // text-decoration:  none;
+                    color: inherit;
+                }
+
+                .cat-title {
+                    // text-decoration:  none;
+                    color: inherit;
                 }
 
                 .accordion-button.hide-icon::after {
@@ -551,7 +521,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                     <Container id='container' fluid className='text-primary'> {/* align-items-center" */}
                         <Row className="m-0">
                             <Col>
-                                <ChatBotDlgNavigator topRows={topRows} ref={childRef} />
+                                <ChatBotDlgNavigator allCategoryRows={allCategoryRows} ref={childRef} />
                             </Col>
                         </Row>
                         {/* badge */}
