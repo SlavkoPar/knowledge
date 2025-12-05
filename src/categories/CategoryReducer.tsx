@@ -159,7 +159,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         ...state,
         loadingCategories: true,
         topRowsLoading: true,
-        //topRowsLoaded: false
+        topRowsLoaded: false
       }
 
     case ActionTypes.SET_TOP_ROWS: {
@@ -185,32 +185,31 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
 
 
     case ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE: {
-      const { fromChatBotDlg } = action.payload;
-      const { keyExpanded, activeCategory, activeQuestion } = state;
+      const { fromChatBotDlg, categoryId_questionId_done } = action.payload;
+      const { keyExpanded /*, activeCategory, activeQuestion */ } = state;
       return {
         ...state,
+        categoryId_questionId_done,
         nodeOpening: true,
         loadingCategories: true,
         nodeOpened: false,
-        keyExpanded: fromChatBotDlg ? null : { ...keyExpanded! },
-        activeCategory: fromChatBotDlg ? null : activeCategory,
-        activeQuestion: fromChatBotDlg ? null : activeQuestion
+        //keyExpanded: fromChatBotDlg ? null : { ...keyExpanded! },
+        activeCategory: null, //fromChatBotDlg ? null : activeCategory,
+        activeQuestion: null //fromChatBotDlg ? null : activeQuestion
       }
     }
 
     case ActionTypes.SET_NODE_EXPANDED_UP_THE_TREE: {
-      const { category, formMode, catKey, questionId, question } = action.payload;
-      const { id } = catKey; //;
+      const { category, formMode, questionId, question } = action.payload;
       return {
         ...state,
         activeCategory: category,
         activeQuestion: question,
         selectedQuestionId: questionId,
         formMode,
-        categoryId_questionId_done: `${id}_${questionId}`,
         nodeOpening: false,
         nodeOpened: true,
-        loadingCategories: false,
+        loadingCategories: false
       };
     }
 

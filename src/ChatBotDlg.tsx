@@ -429,6 +429,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
             <style>{`
                 .card-header {
                     padding: 0.0rem 0.03rem;
+                    padding-right: 0;
                     font-size: 0.8rem;
                 }
                 // .card-header button  {
@@ -439,6 +440,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
 
                 .card-body {
                     padding: 0.0rem 0.5rem;
+                    padding-right: 0;
                     font-size: 0.6rem;
                 }
 
@@ -448,7 +450,8 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                 }
 
                 .accordion-button  {
-                    padding: 0 0.2rem !important;
+                    padding: 0rem 0.2rem !important;
+                    padding-right: 0 !important;
                     border: 0; //px solid inset;
                     //border-radius: 3px;
                     //text-align: left;
@@ -464,6 +467,10 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                     color: inherit;
                 }
 
+                .cat-link.btn {
+                    padding: 0;
+                }
+
                 .cat-title {
                     // text-decoration:  none;
                     color: inherit;
@@ -471,6 +478,8 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
 
                 .accordion-button.hide-icon::after {
                     display: none;
+                    padding: 0rem 0.2rem !important;
+                    padding-right: 0 !important;
                 }
             }
 

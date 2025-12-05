@@ -68,18 +68,17 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
 
     useEffect(() => {
         (async () => {
-            // SET_TOP_ROWS  Level:1
             if (!topRowsLoading && !topRowsLoaded) {
                 console.log('ZOVEM 111 loadTopRows()')
                 await loadTopRows();
             }
         })()
-    }, [topRowsLoading, topRowsLoaded, loadTopRows]);
+    }, [topRowsLoading, topRowsLoaded, loadTopRows, fromChatBotDlg]);
 
 
     useEffect(() => {
         (async () => {
-            if (!nodeOpening && topRows.length > 0) {
+            if (!nodeOpening && topRowsLoaded) { //topRows.length > 0
                 if (categoryId_questionId) {
                     if (categoryId_questionId === 'add_question') {
                         const sNewQuestion = localStorage.getItem('New_Question');
@@ -97,8 +96,8 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                         const questionId = arr[1];
                         const catKey: ICategoryKey = { topId: '', id: categoryId, parentId: 'ROOT' };
                         console.log('zovem expandNodesUpToTheTree 1111111111111111111)', { categoryId_questionId }, { categoryId_questionId_done })
-                        await expandNodesUpToTheTree(catKey, questionId, fromChatBotDlg ?? 'false')
-                            .then(() => { return null; });
+                        await expandNodesUpToTheTree(catKey, questionId !== 'null' ? questionId : null, fromChatBotDlg === 'from_chat')
+                        console.log('zavrsio expandNodeUpToTheTree 1111111111111111111 DONE)', { categoryId_questionId })
                     }
                 }
                 else if (keyExpanded && !nodeOpened) {
@@ -106,8 +105,8 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                     if (categoryId !== '') {
                         const catKey: ICategoryKey = { topId, id: categoryId, parentId: 'ROOT' }
                         console.log('zovem expandNodeUpToTheTree 2222222222222)', { keyExpanded, catKey })
-                        await expandNodesUpToTheTree(catKey, questionId)
-                            .then(() => { return null; });
+                        await expandNodesUpToTheTree(catKey, questionId);
+                        console.log('zavrsio expandNodeUpToTheTree 2222222222222 DONE)')
                     }
                 }
                 
@@ -115,10 +114,10 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                     setChatBotDlgEnabled();
             }
         })()
-    }, [keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, categoryId_questionId, categoryId_questionId_done, topRows, fromChatBotDlg, chatBotDlgEnabled])
+    }, [topRowsLoaded, nodeOpening, nodeOpened, categoryId_questionId, categoryId_questionId_done, keyExpanded, expandNodesUpToTheTree, fromChatBotDlg, setChatBotDlgEnabled, chatBotDlgEnabled]);
 
     useEffect(() => {
-        setLastRouteVisited(`/categories`);
+        //setLastRouteVisited(`/categories`);
     }, [setLastRouteVisited])
 
     if (categoryId_questionId !== 'add_question') {

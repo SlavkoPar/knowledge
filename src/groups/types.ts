@@ -658,7 +658,8 @@ export type Payload = {
 
 	[ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE]: {
 		groupRow?: IGroupRow;
-		fromChatBotDlg: boolean;
+		id: string;
+		questionId: string|null
 		//groupKeyExpanded: IAnswerKey
 	};
 

@@ -32,10 +32,8 @@ import AboutShort from './AboutShort';
 
 function App() {
 
-  //const { getUser, OpenDB, setLastRouteVisited } = useGlobalContext();
   const { authUser, isAuthenticated, everLoggedIn, lastRouteVisited, chatBotDlgEnabled } = useGlobalState();
   const { nickName } = authUser;
-
 
   let location = useLocation();
   const navigate = useNavigate();
@@ -105,9 +103,10 @@ function App() {
 
   // useEffect(() => {
   //   console.log('----------->>>>>>>>>> App lastRouteVisited', lastRouteVisited);
-  if (locationPathname === '/knowledge') {
-    if (locationPathname !== lastRouteVisited)
+  if (locationPathname !== '/knowledge') {
+    if (locationPathname !== lastRouteVisited && !locationPathname.includes('/from_chat')) {
       navigate(lastRouteVisited);
+    }
   }
   //}, [lastRouteVisited, navigate])
 
@@ -127,8 +126,8 @@ function App() {
           <div className="wrapper">
             <Suspense fallback={<div>Loading...</div>}>
               <Routes>
-                <Route path="/" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Groups />} />
-                <Route path="/knowledge" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Groups />} />
+                <Route path="/" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
+                <Route path="/knowledge" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
                 {/* <Route path="" element={(!isAuthenticated && !everLoggedIn) ? <About /> : <Categories />} /> */}
                 {/* <Route path="/register/:returnUrl" element={<RegisterForm />} />
                     <Route path="/sign-in" element={<LoginForm initialValues={formInitialValues} invitationId='' />} /> */}

@@ -36,9 +36,9 @@ export const GlobalReducer: Reducer<IGlobalState, GlobalActions> = (state, actio
         localStorage.setItem('GLOBAL_STATE', JSON.stringify(obj));
     }
 
-    console.log('==============================================================================')
-    console.log('=========================' + action.type + '=======================================')
-    console.log('==============================================================================')
+    console.log('===============================')
+    console.log('=== ' + action.type + ' ===')
+    console.log('===============================')
     return newState;
 }
 

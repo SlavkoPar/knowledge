@@ -44,16 +44,18 @@ export interface ICategoryDto extends ICategoryRowDto {
 }
 
 
-export interface ICategoryKey {
-	topId: string,
-	id: string;
-	parentId: string | null;
-}
+
 
 export interface IKeyExpanded {
 	topId: string,
 	categoryId: string;
 	questionId: string | null;
+}
+
+export interface ICategoryKey {
+	topId: string,
+	id: string;
+	parentId: string | null;
 }
 
 export interface ICategoryRow extends ICategoryKey, IRecord {
@@ -576,7 +578,7 @@ export interface ICategoriesContext {
 	state: ICategoriesState,
 	loadAllCategoryRows: () => Promise<Map<string, ICategoryRow>|null>;
 	getCat: (id: string) => Promise<ICategoryRow | undefined>;
-	expandNodesUpToTheTree: (catKey: ICategoryKey, questionId: string | null, fromChatBotDlg?: string) => Promise<any>;
+	expandNodesUpToTheTree: (catKey: ICategoryKey, questionId: string | null, fromChatBotDlg?: boolean) => Promise<boolean>;
 	loadTopRows: () => Promise<any>,
 	addSubCategory: (parentCategoryRow: ICategoryRow | null) => Promise<any>;
 	cancelAddCategory: () => Promise<any>;
@@ -586,13 +588,13 @@ export interface ICategoriesContext {
 	updateCategory: (category: ICategory, closeForm: boolean) => void,
 	deleteCategory: (categoryRow: ICategoryRow) => void,
 	deleteCategoryVariation: (categoryKey: ICategoryKey, name: string) => void,
-	expandCategory: (expandInfo: IExpandInfo) => Promise<any>,
+	expandCategory: (expandInfo: IExpandInfo) => Promise<any>
 	collapseCategory: (categoryRow: ICategoryRow) => void,
 	// findCategory: (categoryRows: ICategoryRow[], id: string) => ICategoryRow | undefined;
-	onCategoryTitleChanged: (category: ICategory, title: string) => void;
+	onCategoryTitleChanged: (topId: string, id: string, title: string) => Promise<void>;
 	//////////////
 	// questions
-	loadCategoryQuestions: (catParams: ILoadCategoryQuestions) => void;  //(parentInfo: IParentInfo) => void,
+	loadCategoryQuestions: (catParams: ILoadCategoryQuestions) => Promise<void>;  //(parentInfo: IParentInfo) => void,
 	getSubCats: (categoryId: string | null) => Promise<any>;
 	addQuestion: (categoryKey: ICategoryKey, isExpanded: boolean) => Promise<any>;
 	cancelAddQuestion: () => Promise<any>;
@@ -602,7 +604,7 @@ export interface ICategoriesContext {
 	updateQuestion: (oldParentId: string, question: IQuestion, categoryChanged: boolean) => Promise<any>;
 	assignQuestionAnswer: (action: 'Assign' | 'UnAssign', questionKey: IQuestionKey, assignedAnswerKey: IAssignedAnswerKey) => Promise<any>;
 	deleteQuestion: (questionRow: IQuestionRow, isActive: boolean) => void;
-	onQuestionTitleChanged: (topRow: ICategoryRow, question: IQuestion, title: string) => void;
+	onQuestionTitleChanged: (topRow: ICategoryRow, question: IQuestion, title: string) => Promise<void>;
 }
 
 export interface ICategoryFormProps {
@@ -805,6 +807,7 @@ export type Payload = {
 	[ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE]: {
 		categoryRow?: ICategoryRow;
 		fromChatBotDlg: boolean;
+		categoryId_questionId_done?: string;
 		//categoryKeyExpanded: IQuestionKey
 	};
 

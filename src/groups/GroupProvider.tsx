@@ -358,7 +358,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
               //return
             }
           }
-          dispatch({ type: ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE, payload: { fromChatBotDlg: fromChatBotDlg === 'true' } })
+          dispatch({ type: ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE , payload: { id: id!, questionId: answerId } });
           // ---------------------------------------------------------------------------
           console.time();
           const groupKey: IGroupKey = { topId, id, parentId: null }; // proveri ROOT
