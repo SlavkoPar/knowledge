@@ -1,5 +1,5 @@
-import { useContext, type ReactNode, forwardRef, useImperativeHandle, useState } from 'react';
-import { Accordion, AccordionContext, Button, Card, useAccordionButton } from "react-bootstrap";
+import { forwardRef, useImperativeHandle, useState } from 'react';
+import { Accordion } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 
@@ -15,8 +15,8 @@ import type { IChatBotDlgNavigatorMethods } from './global/types';
 // import { useCategoryDispatch } from '@/categories/CategoryProvider';
 
 
-const PINK = 'rgba(255, 192, 203, 0.6)';
-const BLUE = 'rgb(224, 207, 252)';
+//const PINK = 'rgba(255, 192, 203, 0.6)';
+//const BLUE = 'rgb(224, 207, 252)';
 
 const ChatBotDlgNavigator = forwardRef<IChatBotDlgNavigatorMethods, { allCategoryRows: ICategoryRow[] }>(
     ({ allCategoryRows }, ref) => {
@@ -28,6 +28,7 @@ const ChatBotDlgNavigator = forwardRef<IChatBotDlgNavigatorMethods, { allCategor
 
         const [topRows, setTopRows] = useState<ICategoryRow[]>([]);
 
+        /*
         function ContextAwareToggle({ children, eventKey, hasSubCategories, isExpanded, callback }:
             { children: ReactNode; eventKey: AccordionEventKey; hasSubCategories: boolean; isExpanded: boolean, callback?: (eventKey?: AccordionEventKey) => void }) {
 
@@ -51,6 +52,7 @@ const ChatBotDlgNavigator = forwardRef<IChatBotDlgNavigatorMethods, { allCategor
                 </Button>
             );
         }
+        */
 
         const CatRow = ({ row }: { row: ICategoryRow }) => {
             const { id, hasSubCategories, title, link } = row;
@@ -96,11 +98,11 @@ const ChatBotDlgNavigator = forwardRef<IChatBotDlgNavigatorMethods, { allCategor
             const id = eventKey![0];
             const cat = allCategoryRows.find(x => id === x.id);
             if (cat) {
-                cat.isExpanded = !cat.isExpanded;
+                //cat.isExpanded = !cat.isExpanded;
                 //e.stopPropagation();
                 //e.preventDefault();
             }
-            // console.log('onSelectCategory', { parentCat, eventKey, e });
+            console.log('onSelectCategory', { cat, eventKey, e });
         }
 
         //////////////////
