@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRemove, faCaretRight, faCaretDown, faPlus, faFolder } from '@fortawesome/free-solid-svg-icons'
 import QPlus from '@/assets/QPlus.png';
 
-import { ListGroup, Button, Badge } from "react-bootstrap";
+import { ListGroup, Button, Badge, Collapse } from "react-bootstrap";
 
 import { useGlobalState } from '@/global/GlobalProvider'
 import { type ICategoryKey, type ICategoryRow, FormMode, type IExpandInfo, CategoryKey } from "@/categories/types";
@@ -19,7 +19,7 @@ import AddCategory from './AddCategory';
 
 const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, questionId: string | null }) => {
 
-    const { id, title, hasSubCategories, numOfQuestions, isExpanded } = categoryRow;
+    const { id, title, hasSubCategories, numOfQuestions, isExpanded, categoryRows } = categoryRow;
     categoryRow.level += 1;
 
     const categoryKey: ICategoryKey = new CategoryKey(categoryRow).categoryKey!;
@@ -66,6 +66,11 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
     //     await editCategory(categoryRow, questionId ?? 'null');
     // }
 
+    const [open, setOpen] = useState<boolean>(false);
+    useEffect(() => {
+        if (categoryRows.length > 0) // no need for this
+            setOpen(true);
+    }, [categoryRows]);
 
     const onSelectCategory = async (): Promise<any> => {
         if (canEdit)
@@ -117,11 +122,13 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
 
     const Row1 =
         <div>
-            <div id={`Row${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 category-row${isSelected ? '-selected' : ''}`}  style={{ marginTop: '1px' }} >
+            <div id={`Row${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 category-row${isSelected ? '-selected' : ''}`} style={{ marginTop: '1px' }} >
                 <Button
                     variant='link'
                     size="sm"
                     className="py-0 px-1" //  bg-light"
+                    aria-controls={id+'-2'}
+                    aria-expanded={open}
                     onClick={(e) => { handleExpandClick(); e.stopPropagation() }}
                     title="Expand"
                     disabled={inAdding || (!hasSubCategories && numOfQuestions === 0)}
@@ -196,7 +203,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                                 >
                                     <img width="22" height="18" src={QPlus} alt="Add Question" />
                                 </Button>
-                                <Button variant='link' size="sm" 
+                                <Button variant='link' size="sm"
                                     className="d-flex align-items-center border border-0 border-warning p-0"
                                     disabled={hasSubCategories || numOfQuestions > 0}
                                     onClick={deleteCategoryRow}
@@ -249,7 +256,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                         {/* <div class="d-none d-md-block">
                             This content will be hidden on small screens and below, 
                             but visible on medium screens and above.</div> */}
-                        <div ref={hoverRef} className="">
+                        <div ref={hoverRef}>
                             {Row1}
                         </div>
                         {/* <div id='divInLine' className="ms-0 d-md-none w-100"> */}
@@ -262,7 +269,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                 {isSelected && formMode === FormMode.ViewingCategory &&
                     <>
                         {/* <div class="d-lg-none">hide on lg and wider screens</div> */}
-                        <div ref={hoverRef} className="">
+                        <div ref={hoverRef}>
                             {Row1}
                         </div>
                         {/* <div id='divInLine' className="ms-0 d-md-none w-100"> */}
@@ -273,7 +280,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                 }
 
                 {!isSelected &&
-                    <div ref={hoverRef} className="">
+                    <div ref={hoverRef}>
                         {Row1}
                     </div>
                 }
@@ -292,21 +299,25 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
             {/* !inAdding && */}
             {(isExpanded) && // Row2   //  || inAdding
                 <ListGroup.Item
-                    className="py-0 px-0 border-0 border-warning border-bottom-0 category-bg" // border border-3 "
+                    className="py-0 px-0 border-0 border-warning border-bottom-0 category-bg p-0 m-0" // border border-3 "
                     variant={"primary"}
                     as="li"
                 >
-                    {isExpanded &&
-                        <>
-                            {hasSubCategories &&
-                                <CategoryList categoryRow={categoryRow} title={title} isExpanded={isExpanded} />
-                            }
-                            {/* {showQuestions &&
+                    <div className="rambo">
+                        {hasSubCategories &&
+                            <Collapse in={open}>
+                                <div id={id+'-2'} style={{ marginTop: '1px' }}>
+                                    {/* Wrap content in a div to prevent choppy animations caused by margins/padding */}
+                                    <div style={{ border: '1px solid #ddd', borderRadius: '4px' }}>
+                                        <CategoryList categoryRow={categoryRow} isExpanded={isExpanded} />
+                                    </div>
+                                </div>
+                            </Collapse>
+                        }
+                        {/* {showQuestions &&
                                 <QuestionList categoryRow={categoryRow} />
                             } */}
-                        </>
-                    }
-
+                    </div>
                 </ListGroup.Item>
             }
         </>

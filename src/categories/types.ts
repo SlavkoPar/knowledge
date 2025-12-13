@@ -530,11 +530,11 @@ export interface IParentInfo {
 	// topId: string | null,
 	// parentId: string | null,
 	//categoryKey: ICategoryKey,
-	categoryRow: ICategoryRow | null,
+	categoryRow: ICategoryRow,
 	startCursor?: number,
 	includeQuestionId?: string | null
 	level?: number,
-	title: string, // to easier follow getting the list of sub-categories
+	title?: string, // to easier follow getting the list of sub-categories
 	inAdding?: boolean,
 	isExpanded?: boolean
 	//subCategories?: ICategory[]

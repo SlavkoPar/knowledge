@@ -3,21 +3,13 @@ import CategoryRow from "@/categories/components/CategoryRow";
 import type { ICategoryRow, IParentInfo } from "@/categories/types";
 import { useCategoryContext } from "@/categories/CategoryProvider";
 
-const CategoryList = ({ categoryRow, title }: IParentInfo) => {
+const CategoryList = ({ categoryRow }: IParentInfo) => {
+
+    const { level, categoryRows} = categoryRow;
 
     const { state } = useCategoryContext();
     let { keyExpanded } = state;
     const { questionId } = keyExpanded ?? { topId: '', categoryId: '', questionId: null };
-
-    let level = 1;
-    let categoryRows: ICategoryRow[] = [];
-    if (title === 'ROOT') {
-        categoryRows = state.topRows;
-    }
-    else {
-        categoryRows = categoryRow!.categoryRows;
-        level = categoryRow!.level;
-    }
 
     return (
         <div className={level! > 1 ? 'ms-2' : ''} >

@@ -15,7 +15,7 @@ import EditCategory from "@/categories/components/EditCategory";
 import ViewQuestion from "@/categories/components/questions/ViewQuestion";
 import EditQuestion from "@/categories/components/questions/EditQuestion";
 
-import { initialQuestion } from "@/categories/CategoryReducer";
+import { initialCategory, initialQuestion } from "@/categories/CategoryReducer";
 import ModalAddQuestion from './ModalAddQuestion';
 import AddCategory from './components/AddCategory';
 import { AutoSuggestQuestions } from './AutoSuggestQuestions';
@@ -109,7 +109,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                         console.log('zavrsio expandNodeUpToTheTree 2222222222222 DONE)')
                     }
                 }
-                
+
                 if (!chatBotDlgEnabled) // show ChatBotDlg button
                     setChatBotDlgEnabled();
             }
@@ -126,6 +126,8 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
             return <div>loading...</div>
         }
     }
+
+
 
     //if (!nodeOpened)
     //if (!allCategoryRowsLoaded || !topRowsLoaded || topRows.length === 0) {
@@ -167,7 +169,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                 <Row className="my-1 h-auto">
                     <Col xs={12} md={5}>
                         <div className="categories-border" style={{ position: 'relative' }}>
-                            <CategoryList categoryRow={null} title="ROOT" isExpanded={true} />
+                            <CategoryList categoryRow={{...initialCategory, categoryRows: topRows }}  isExpanded={true} />
                         </div>
                     </Col>
                     <Col xs={0} md={7}>
