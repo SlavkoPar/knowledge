@@ -5,6 +5,9 @@ import type {
   IHistory,
   IGlobalState,
   IHistoryFilter,
+  IWorkspaceDto,
+  IWorkspaceDtoEx,
+  IUser,
 } from '@/global/types'
 
 import { GlobalActionTypes } from '@/global/types'
@@ -54,6 +57,8 @@ const initGlobalState: IGlobalState = {
 
     endpointHistory: endPoints.History.endpointHistory,
     endpointHistoryFilter: endPoints.History.endpointHistoryFilter,
+
+    endpointWorkspace: endPoints.Workspace.endpointWorkspace
   },
   workspace: 'unknown',
   authUser: initialAuthUser,
@@ -705,6 +710,39 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     return [];
   }
 
+  const createWorkspace = useCallback(
+    async (wsDto: IWorkspaceDto) => {
+      //dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });
+      try {
+        console.log("workspaceDto", wsDto)
+        const url = `${KnowledgeAPI.endpointWorkspace}`;
+        console.time()
+        await Execute("POST", url, wsDto)
+          .then(async (workspaceDtoEx: IWorkspaceDtoEx) => {
+            const { workspaceDto } = workspaceDtoEx;
+            console.timeEnd();
+            if (workspaceDto) {
+              console.log('Workspace successfully created', { workspaceDto });
+              //const { ObjectId, DisplayName } = workspaceDto;
+              const { ObjectId, DisplayName, Email, Environment } = wsDto;
+              const user: IUser = {
+                nickName: DisplayName,
+                name: DisplayName,
+                workspace: ObjectId,
+                email: Email,
+                environment: Environment
+              }
+              dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user } });
+            }
+          });
+      }
+      catch (error: any) {
+        console.log(error)
+        //dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error('Server Error') } });
+      }
+    }, [KnowledgeAPI.endpointWorkspace]);
+
+
   const addHistory = useCallback(
     async (history: IHistory) => {
       //const { topId, id, variations, title, kind, modified } = history;
@@ -838,6 +876,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       searchQuestions, getQuestion,
       loadAndCacheAllGroupRows, globalGetGroupRow, getGroupRows, getGroupRowsByKind, searchAnswers, getAnswer,
       setNodesReloaded,
+      createWorkspace,
       addHistory, getAnswersRated, addHistoryFilter,
       setChatBotDlgEnabled
     }}>

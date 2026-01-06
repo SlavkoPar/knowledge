@@ -80,6 +80,9 @@ export const protectedResources = (() => {
                 History: {
                     endpointHistory: `${URL}/History`,
                     endpointHistoryFilter: `${URL}/HistoryFilter`
+                },
+                Workspace: {
+                    endpointWorkspace: `${URL}/Workspace`
                 }
             }
         },

@@ -20,21 +20,6 @@ await msalInstance.initialize();   //  "target": "es2017", instead of "target": 
 
 // Default to using the first account if no account is active on page load
 console.log('msalInstance.getAllAccounts().length: ', msalInstance.getAllAccounts().length)
-/*
-if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
-    // Account selection logic is app dependent. Adjust as needed for different use cases.
-    const accountInfo: AccountInfo | null = msalInstance.getActiveAccount(); //.getActiveAccount()[0];
-    msalInstance.setActiveAccount(accountInfo);
-}
-
-// Listen for sign-in event and set active account
-msalInstance.addEventCallback((event: EventMessage) => {
-    if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
-        const accountInfo = event.payload as AccountInfo;
-        msalInstance.setActiveAccount(accountInfo);
-    }
-});
-*/
 
 //--------------
 // Default to using the first account if no account is active on page load
@@ -47,14 +32,16 @@ if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0
 msalInstance.enableAccountStorageEvents();
 
 // Listen for sign-in event and set active account
-msalInstance.addEventCallback((event: EventMessage) => {
-  //if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account) {
-  if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
-    const accountInfo = event.payload as AccountInfo;
-    console.log('--->>>>>>>> LOGIN_SUCCESS', { accountInfo })
-    msalInstance.setActiveAccount(accountInfo);
-  }
-});
+  msalInstance.addEventCallback((event: EventMessage) => {
+    // This will be run every time an event is emitted after registering this callback
+    if (event.eventType === EventType.LOGIN_SUCCESS) {
+      const accountInfo = event.payload as AccountInfo;
+      console.log("LOGIN_SUCCESS event callback:", accountInfo);
+      // Do something with the result
+      msalInstance.setActiveAccount(accountInfo);
+    }
+  });
+
 //-----------
 
 const root = createRoot(

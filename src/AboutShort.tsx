@@ -1,4 +1,6 @@
+import { useMsal } from "@azure/msal-react";
 import * as React from "react";
+import { loginRequest } from '@/authConfig';
 
 import { Accordion, Container } from "react-bootstrap";
 
@@ -7,7 +9,57 @@ interface IAboutShort {
 
 const AboutShort: React.FC<IAboutShort> = () => {
 
-  // const { setLastRouteVisited } = useGlobalContext();
+  const { instance } = useMsal();
+
+
+  const handleSignUp = async () => {
+    await instance.loginPopup({
+      ...loginRequest,
+      prompt: 'create',
+      redirectUri: '/',
+    })
+      .then(response => {
+        // Handle the successful login response here
+        console.log("Login success:", response.account);
+        const { environment, tenantId, name, username } = response.account;
+        const wsDto = {
+          Workspace: '',
+          TopId: '',
+          Environment: environment,
+          ObjectId: tenantId,
+          DisplayName: name!,
+          Email: username
+        };
+        // Optional: set the active account
+        localStorage.setItem('createWS', JSON.stringify(wsDto));
+      })
+      .catch((error) => console.log(error));
+
+    // if (result && result.account) {
+    //   //instance.setActiveAccount(result.account);
+    //   const { environment, tenantId, name, username } = result.account;
+    //   const wsDto = {
+    //     Workspace: '',
+    //     TopId: '',
+    //     Environment: environment,
+    //     ObjectId: tenantId,
+    //     DisplayName: name!,
+    //     Email: username
+    //   };
+    //   createWorkspace(wsDto);
+    // }
+    // After redirect and login, create workspace
+    // instance.handleRedirectPromise()
+    //   .then(async (response: AuthenticationResult | null) => {
+    //     if (response !== null) {
+    //       const account: AccountInfo = response.account;
+    //       instance.setActiveAccount(account);
+    //       console.log("createWorkspace2:", createWorkspace)
+    //     }
+    //   }).catch((error) => {
+    //     console.log(error);
+    //   });
+  }
 
   return (
     <Container className="fs-6">
@@ -33,10 +85,16 @@ const AboutShort: React.FC<IAboutShort> = () => {
             <h6 className="card-subtitle my-2 text-muted">Three steps:</h6>
 
             <ol className="my-3">
-              <li className="my-1">Create your Workspace at our platform</li>
+              <li className="my-1">
+                <a href="#" onClick={async (e) => {
+                  e.preventDefault();
+                  await handleSignUp();
+                }}>
+                  Create your Workspace</a><br />at our platform, no credit card required.
+              </li>
               <li className="my-1">Use this Web App, as the Admin modeul for maintenace of your Q/A</li>
               <li className="my-1">
-                Integrate our 
+                Integrate our
                 <i>Javascript Knowledge-Lib</i> at your Web site &nbsp;&nbsp;
                 <br />
                 <a href="https://knowledge-share-demo.com" target="_blank" rel="noopener noreferrer">Example at WordPress site</a>
@@ -125,7 +183,7 @@ const AboutShort: React.FC<IAboutShort> = () => {
             <Accordion.Item eventKey="0">
               <Accordion.Header>How to integrate Knowledge-Lib at WordPress site</Accordion.Header>
               <Accordion.Body>
-                <pre> 
+                <pre>
                   <div className="bg-warning w-auto"><b>Plugin</b></div>
                   <div className="bg-warning w-auto"><b>WPCode Code / Global scripts</b></div>
                 </pre>

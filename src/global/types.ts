@@ -156,6 +156,7 @@ export interface IGlobalState {
 		endpointGroupRow: string;
 		endpointGroup: string;
 		endpointAnswer: string;
+		endpointWorkspace: string;
 		endpointHistory: string;
 		endpointHistoryFilter: string;
 	},
@@ -216,6 +217,7 @@ export interface IGlobalContext {
 	getGroupRowsByKind: (kind: number) => Promise<IGroupRow[]>;
 	searchAnswers: (filter: string, count: number, questionKey?: IQuestionKey) => Promise<IAnswerRow[]>;
 	getAnswer: (answerKey: IAnswerKey) => Promise<IAnswer | null>;
+	createWorkspace: (wsDto: IWorkspaceDto) => Promise<void>;
 	addHistory: (history: IHistory) => Promise<void>;
 	getAnswersRated: (questionKey: IQuestionKey) => Promise<any>;
 	addHistoryFilter: (historyFilter: IHistoryFilter) => Promise<void>;
@@ -434,6 +436,20 @@ export interface IRoleData {
 export type USER_ANSWER_ACTION = 'NotFixed' | 'Fixed' | 'NotClicked';
 
 
+export interface IWorkspaceDto {
+	Workspace: string;
+	TopId: string;
+	ObjectId: string;
+	Environment: string;
+	DisplayName: string;
+	Email: string;
+}
+
+export interface IWorkspaceDtoEx {
+	workspaceDto: IWorkspaceDto | null;
+	msg: string;
+}
+
 export interface IHistory {
 	id?: number;
 	questionKey: IQuestionKey;
@@ -497,6 +513,8 @@ export interface IUser {
 	workspace: string;
 	nickName: string;
 	name: string;
+	environment: string;
+	email: string;
 	color?: string;
 	level?: number;
 	isDarkMode?: boolean;

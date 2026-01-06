@@ -87,9 +87,10 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
   useEffect(() => {
 
-    let keyExpanded: IKeyExpanded = workspace === 'SLINDZA'
-      ? { topId: "QUESTIONS", categoryId: "QUESTIONS", questionId: "qqqqqq111" }
-      : { topId: "MTS", categoryId: "REMOTECTRLS", questionId: "qqqqqq111" }
+    let keyExpanded: IKeyExpanded = workspace === 'DEMO'
+      //? { topId: "QUESTIONS", categoryId: "QUESTIONS", questionId: "qqqqqq111" }
+      ? { topId: "MTS", categoryId: "REMOTECTRLS", questionId: "qqqqqq111" }
+      : { topId: "", categoryId: "", questionId: "" };
 
     if ('localStorage' in window) {
       let s = localStorage.getItem('CATEGORIES_STATE');

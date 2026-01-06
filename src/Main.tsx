@@ -12,7 +12,6 @@ import { GlobalProvider } from '@/global/GlobalProvider';
 
 import App from './App';
 import AboutShort from './AboutShort';
-
 /**
 * Most applications will need to conditionally render certain components based on whether a user is signed in or not. 
 * msal-react provides 2 easy ways to do this. AuthenticatedTemplate and UnauthenticatedTemplate components will 
@@ -31,6 +30,41 @@ const MainContent = () => {
 
     const activeAccount = instance.getActiveAccount();
 
+    // instance.handleRedirectPromise()
+    //     .then(async (response) => {
+    //         // This block is executed when the user is redirected back after a successful login.
+    //         if (response) {
+    //             console.log("Login successful! ID Token acquired:", response.idToken);
+    //             // You can now set the active account and update UI state
+    //             //instance.setActiveAccount(response.account);
+    //             if (response.account) {
+    //                 console.log("accountInfo:", response.account);
+    //                 const { environment, tenantId, name, username } = response.account;
+    //                 const wsDto: IWorkspaceDto = {
+    //                     Workspace: '',
+    //                     TopId: '',
+    //                     Environment: environment,
+    //                     ObjectId: tenantId,
+    //                     DisplayName: name!,
+    //                     Email: username
+    //                 }
+    //                 console.log("createWorkspace2:", createWorkspace)
+    //                 await createWorkspace(wsDto);
+    //             }
+    //             // Redirect the user to their intended post-login page or view
+    //         } else {
+    //             // Check for existing accounts if no response was handled
+    //             const accounts = instance.getAllAccounts();
+    //             if (accounts.length > 0) {
+    //                 instance.setActiveAccount(accounts[0]);
+    //             }
+    //         }
+    //     }).catch(error => {
+    //         // Handle errors that occurred during the redirect process
+    //         console.error(error);
+    //         // You might also want to handle specific errors like InteractionRequiredAuthError
+    //     });
+
     /*
     const handleRedirect = () => {
         instance
@@ -46,6 +80,8 @@ const MainContent = () => {
     //     import("./App").then((module) => ({ default: module.default }))
     // );
 
+    
+
     return (
         <div className="App">
             <AuthenticatedTemplate>
@@ -55,7 +91,7 @@ const MainContent = () => {
                     <IdTokenData idTokenClaims={activeAccount.idTokenClaims} /> */}
                         <GlobalProvider>
                             {/* <Suspense fallback={<div>Loading...</div>}> */}
-                                <App />
+                            <App />
                             {/* </Suspense> */}
                         </GlobalProvider>
                     </Container>

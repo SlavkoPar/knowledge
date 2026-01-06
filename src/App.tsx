@@ -2,7 +2,8 @@ import { useEffect, useState, lazy, Suspense } from 'react';
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
-import { useGlobalDispatch, useGlobalState } from '@/global/GlobalProvider'
+import { useGlobalContext, useGlobalDispatch, useGlobalState } from '@/global/GlobalProvider'
+
 
 import './App.css';
 import './AutoSuggest.css';
@@ -25,7 +26,7 @@ const ChatBotDlg = lazy(() =>
 
 import About from './About';
 import Health from './Health';
-import { GlobalActionTypes, type IUser } from '@/global/types';
+import { GlobalActionTypes, type IUser, type IWorkspaceDto } from '@/global/types';
 import { type AccountInfo } from '@azure/msal-browser';
 import { useMsal } from '@azure/msal-react';
 import AboutShort from './AboutShort';
@@ -38,30 +39,44 @@ function App() {
   let location = useLocation();
   const navigate = useNavigate();
   const dispatch = useGlobalDispatch();
+  const { createWorkspace } = useGlobalContext();
 
   const { instance } = useMsal();
 
   const [showModalChatBot, setModalChatBotShow] = useState(false);
 
+
+
   useEffect(() => {
-    //(async () => {
-    //if (isAuthenticated) {
-    //await OpenDB(execute);
-    //}
-    //})()
-    if (!isAuthenticated) {
-      if (instance) {
-        const activeAccount: AccountInfo | null = instance.getActiveAccount();
-        const name = (activeAccount && activeAccount.name) ? activeAccount.name : 'Unknown';
-        const user: IUser = {
-          nickName: name,
-          name,
-          workspace: name === 'Slindza' ? 'SLINDZA' : 'DEMO'
+    (async () => {
+      //if (isAuthenticated) {
+      //await OpenDB(execute);
+      //}
+
+      if (!isAuthenticated) {
+        if (instance) {
+          const createWS = localStorage.getItem('createWS')
+          if (createWS) {
+            const wsDto: IWorkspaceDto = JSON.parse(createWS);
+            await createWorkspace(wsDto);
+            localStorage.removeItem('createWS');
+            return
+          }
+          const activeAccount: AccountInfo | null = instance.getActiveAccount();
+          const name = (activeAccount && activeAccount.name) ? activeAccount.name : 'Unknown';
+          const user: IUser = {
+            nickName: name,
+            name,
+            workspace: activeAccount?.tenantId!,
+            email: activeAccount?.username!,
+            environment: activeAccount?.environment!
+          }
+          dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user } });
         }
-        dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user } });
       }
-    }
+    })()
   }, [dispatch, instance, isAuthenticated]) // , isAuthenticated
+
 
   const locationPathname = location.pathname;
   console.log('----------- ====== App locationPathname ===>>>', locationPathname);

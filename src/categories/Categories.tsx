@@ -131,7 +131,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
 
     //if (!nodeOpened)
     //if (!allCategoryRowsLoaded || !topRowsLoaded || topRows.length === 0) {
-    if (!topRowsLoaded || topRows.length === 0) {
+    if (!topRowsLoaded) {// || topRows.length === 0) {
         console.log('===>>> Categories  VRATIO')
         return null
     }
