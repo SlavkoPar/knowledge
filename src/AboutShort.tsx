@@ -16,7 +16,7 @@ const AboutShort: React.FC<IAboutShort> = () => {
     await instance.loginPopup({
       ...loginRequest,
       prompt: 'create',
-      redirectUri: '/',
+      redirectUri: '/knowledge',
     })
       .then(response => {
         // Handle the successful login response here

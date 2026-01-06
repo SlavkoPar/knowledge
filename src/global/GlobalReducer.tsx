@@ -72,13 +72,14 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
         case GlobalActionTypes.AUTHENTICATE: {
             console.log('GlobalActionTypes.AUTHENTICATE', action.payload)
             const { user } = action.payload;
-            const { nickName, name, workspace } = user;
+            const { nickName, name, workspace, environment, email } = user;
             return {
                 ...state,
                 authUser: {
                     nickName,
                     name,
-                    email: '',
+                    environment,
+                    email,
                     color: 'blue',
                     everLoggedIn: true,
                 },
