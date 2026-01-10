@@ -26,7 +26,7 @@ const ChatBotDlg = lazy(() =>
 
 import About from './About';
 import Health from './Health';
-import { type IUser, type IWorkspaceDto } from '@/global/types';
+import { type IWorkspaceDto } from '@/global/types';
 import { type AccountInfo } from '@azure/msal-browser';
 import { useMsal } from '@azure/msal-react';
 import AboutShort from './AboutShort';
@@ -71,7 +71,7 @@ function App() {
               DisplayName: activeAccount?.name ? activeAccount.name : 'Unknown',
               Email: username
             };
-            const name = (activeAccount && activeAccount.name) ? activeAccount.name : 'Unknown';
+            //const name = (activeAccount && activeAccount.name) ? activeAccount.name : 'Unknown';
             await getWorkspace(wsDto);
             // const user: IUser = {
             //   nickName: name,
