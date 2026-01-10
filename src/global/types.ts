@@ -218,6 +218,7 @@ export interface IGlobalContext {
 	searchAnswers: (filter: string, count: number, questionKey?: IQuestionKey) => Promise<IAnswerRow[]>;
 	getAnswer: (answerKey: IAnswerKey) => Promise<IAnswer | null>;
 	createWorkspace: (wsDto: IWorkspaceDto) => Promise<void>;
+	getWorkspace: (wsDto: IWorkspaceDto) => Promise<void>;
 	addHistory: (history: IHistory) => Promise<void>;
 	getAnswersRated: (questionKey: IQuestionKey) => Promise<any>;
 	addHistoryFilter: (historyFilter: IHistoryFilter) => Promise<void>;
@@ -289,7 +290,8 @@ export type GlobalPayload = {
 
 
 	[GlobalActionTypes.AUTHENTICATE]: {
-		user: IUser
+		user: IUser,
+		newUser?: boolean
 	};
 
 	[GlobalActionTypes.UN_AUTHENTICATE]: undefined;
@@ -438,11 +440,11 @@ export type USER_ANSWER_ACTION = 'NotFixed' | 'Fixed' | 'NotClicked';
 
 export interface IWorkspaceDto {
 	Workspace: string;
-	TopId: string;
-	ObjectId: string;
-	Environment: string;
-	DisplayName: string;
-	Email: string;
+	TopId?: string;
+	TenantId?: string;
+	Environment?: string;
+	DisplayName?: string;
+	Email?: string;
 }
 
 export interface IWorkspaceDtoEx {

@@ -7,7 +7,7 @@ import type {
   IHistoryFilter,
   IWorkspaceDto,
   IWorkspaceDtoEx,
-  IUser,
+  IUser
 } from '@/global/types'
 
 import { GlobalActionTypes } from '@/global/types'
@@ -715,22 +715,21 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       //dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });
       try {
         console.log("workspaceDto", wsDto)
-        const url = `${KnowledgeAPI.endpointWorkspace}`;
+        const url = `${KnowledgeAPI.endpointWorkspace}/create`;
         console.time()
+        const { DisplayName, Email, Environment } = wsDto;
         await Execute("POST", url, wsDto)
           .then(async (workspaceDtoEx: IWorkspaceDtoEx) => {
             const { workspaceDto } = workspaceDtoEx;
             console.timeEnd();
             if (workspaceDto) {
               console.log('Workspace successfully created', { workspaceDto });
-              //const { ObjectId, DisplayName } = workspaceDto;
-              const { ObjectId, DisplayName, Email, Environment } = wsDto;
               const user: IUser = {
-                nickName: DisplayName,
-                name: DisplayName,
-                workspace: ObjectId,
-                email: Email,
-                environment: Environment
+                workspace: Email!,
+                nickName: DisplayName!,
+                name: DisplayName!,
+                email: Email!,
+                environment: Environment!
               }
               dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user } });
             }
@@ -742,6 +741,39 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       }
     }, [KnowledgeAPI.endpointWorkspace]);
 
+
+  const getWorkspace = useCallback(
+    async (wsDto: IWorkspaceDto) => {
+      //dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });
+      try {
+        console.log("workspaceDto", wsDto)
+        const url = `${KnowledgeAPI.endpointWorkspace}/get`;
+        const { DisplayName, Email, Environment } = wsDto;
+        console.time()
+        await Execute("POST", url, { Email })
+          .then(async (workspaceDtoEx: IWorkspaceDtoEx) => {
+            const { workspaceDto } = workspaceDtoEx;
+            console.timeEnd();
+            if (workspaceDto) {
+              console.log('Workspace successfully created', { workspaceDto });
+              //const { ObjectId, DisplayName } = workspaceDto;
+              const { Workspace } = workspaceDto;
+              const user: IUser = {
+                workspace: Workspace,
+                nickName: DisplayName!,
+                name: DisplayName!,
+                email: Email!,
+                environment: Environment!
+              }
+              dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user } });
+            }
+          });
+      }
+      catch (error: any) {
+        console.log(error)
+        //dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error('Server Error') } });
+      }
+    }, [KnowledgeAPI.endpointWorkspace]);
 
   const addHistory = useCallback(
     async (history: IHistory) => {
@@ -876,7 +908,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       searchQuestions, getQuestion,
       loadAndCacheAllGroupRows, globalGetGroupRow, getGroupRows, getGroupRowsByKind, searchAnswers, getAnswer,
       setNodesReloaded,
-      createWorkspace,
+      createWorkspace, getWorkspace,
       addHistory, getAnswersRated, addHistoryFilter,
       setChatBotDlgEnabled
     }}>

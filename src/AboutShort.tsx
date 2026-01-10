@@ -3,6 +3,7 @@ import * as React from "react";
 import { loginRequest } from '@/authConfig';
 
 import { Accordion, Container } from "react-bootstrap";
+import type { IWorkspaceDto } from "./global/types";
 
 interface IAboutShort {
 }
@@ -22,11 +23,11 @@ const AboutShort: React.FC<IAboutShort> = () => {
         // Handle the successful login response here
         console.log("Login success:", response.account);
         const { environment, tenantId, name, username } = response.account;
-        const wsDto = {
+        const wsDto: IWorkspaceDto = {
           Workspace: '',
           TopId: '',
+          TenantId: tenantId!,
           Environment: environment,
-          ObjectId: tenantId,
           DisplayName: name!,
           Email: username
         };
@@ -34,31 +35,6 @@ const AboutShort: React.FC<IAboutShort> = () => {
         localStorage.setItem('createWS', JSON.stringify(wsDto));
       })
       .catch((error) => console.log(error));
-
-    // if (result && result.account) {
-    //   //instance.setActiveAccount(result.account);
-    //   const { environment, tenantId, name, username } = result.account;
-    //   const wsDto = {
-    //     Workspace: '',
-    //     TopId: '',
-    //     Environment: environment,
-    //     ObjectId: tenantId,
-    //     DisplayName: name!,
-    //     Email: username
-    //   };
-    //   createWorkspace(wsDto);
-    // }
-    // After redirect and login, create workspace
-    // instance.handleRedirectPromise()
-    //   .then(async (response: AuthenticationResult | null) => {
-    //     if (response !== null) {
-    //       const account: AccountInfo = response.account;
-    //       instance.setActiveAccount(account);
-    //       console.log("createWorkspace2:", createWorkspace)
-    //     }
-    //   }).catch((error) => {
-    //     console.log(error);
-    //   });
   }
 
   return (

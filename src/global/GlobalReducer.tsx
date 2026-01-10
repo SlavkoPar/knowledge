@@ -71,8 +71,13 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
 
         case GlobalActionTypes.AUTHENTICATE: {
             console.log('GlobalActionTypes.AUTHENTICATE', action.payload)
-            const { user } = action.payload;
+            const { user, newUser } = action.payload;
             const { nickName, name, workspace, environment, email } = user;
+
+            if (newUser) {
+                localStorage.setItem('CATEGORIES_STATE', JSON.stringify({ keyExpanded: null })); // reset categories state on new login
+            }
+
             return {
                 ...state,
                 authUser: {
@@ -88,7 +93,8 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
                 isOwner: true, //user.parentRole === ROLES.OWNER,
                 isAuthenticated: true,
                 everLoggedIn: true,
-                error: undefined
+                error: undefined,
+                lastRouteVisited: newUser ? '/categories' : state.lastRouteVisited
             };
         }
 

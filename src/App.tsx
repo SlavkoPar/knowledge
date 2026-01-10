@@ -26,7 +26,7 @@ const ChatBotDlg = lazy(() =>
 
 import About from './About';
 import Health from './Health';
-import { GlobalActionTypes, type IUser, type IWorkspaceDto } from '@/global/types';
+import { type IUser, type IWorkspaceDto } from '@/global/types';
 import { type AccountInfo } from '@azure/msal-browser';
 import { useMsal } from '@azure/msal-react';
 import AboutShort from './AboutShort';
@@ -39,7 +39,7 @@ function App() {
   let location = useLocation();
   const navigate = useNavigate();
   const dispatch = useGlobalDispatch();
-  const { createWorkspace } = useGlobalContext();
+  const { createWorkspace, getWorkspace } = useGlobalContext();
 
   const { instance } = useMsal();
 
@@ -49,29 +49,39 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      //if (isAuthenticated) {
-      //await OpenDB(execute);
-      //}
-
+     
       if (!isAuthenticated) {
         if (instance) {
-          const createWS = localStorage.getItem('createWS')
+          const createWS = localStorage.getItem('createWS');
           if (createWS) {
+            console.log('creating WS');
             const wsDto: IWorkspaceDto = JSON.parse(createWS);
-            await createWorkspace(wsDto);
             localStorage.removeItem('createWS');
-            return
+            await createWorkspace(wsDto);
+            return;
           }
-          const activeAccount: AccountInfo | null = instance.getActiveAccount();
-          const name = (activeAccount && activeAccount.name) ? activeAccount.name : 'Unknown';
-          const user: IUser = {
-            nickName: name,
-            name,
-            workspace: activeAccount?.tenantId!,
-            email: activeAccount?.username!,
-            environment: activeAccount?.environment!
+          else {
+            const activeAccount: AccountInfo | null = instance.getActiveAccount();
+            const { environment, tenantId, username } = activeAccount!;
+            const wsDto: IWorkspaceDto = {
+              Workspace: '',
+              TopId: '',
+              TenantId: tenantId!,
+              Environment: environment,
+              DisplayName: activeAccount?.name ? activeAccount.name : 'Unknown',
+              Email: username
+            };
+            const name = (activeAccount && activeAccount.name) ? activeAccount.name : 'Unknown';
+            await getWorkspace(wsDto);
+            // const user: IUser = {
+            //   nickName: name,
+            //   name,
+            //   workspace: activeAccount?.tenantId!,
+            //   email: activeAccount?.username!,
+            //   environment: activeAccount?.environment!
+            // }
+            //dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user, newUser: true } });
           }
-          dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user } });
         }
       }
     })()

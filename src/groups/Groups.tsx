@@ -127,7 +127,7 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
 
     //if (!nodeOpened)
     //if (!allGroupRowsLoaded || !topRowsLoaded || topRows.length === 0) {
-    if (!topRowsLoaded || topRows.length === 0) {
+    if (!topRowsLoaded) { //} || topRows.length === 0) {
         console.log('===>>> Groups  VRATIO')
         return null
     }

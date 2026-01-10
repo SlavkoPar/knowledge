@@ -29,42 +29,7 @@ const MainContent = () => {
     const { instance } = useMsal();
 
     const activeAccount = instance.getActiveAccount();
-
-    // instance.handleRedirectPromise()
-    //     .then(async (response) => {
-    //         // This block is executed when the user is redirected back after a successful login.
-    //         if (response) {
-    //             console.log("Login successful! ID Token acquired:", response.idToken);
-    //             // You can now set the active account and update UI state
-    //             //instance.setActiveAccount(response.account);
-    //             if (response.account) {
-    //                 console.log("accountInfo:", response.account);
-    //                 const { environment, tenantId, name, username } = response.account;
-    //                 const wsDto: IWorkspaceDto = {
-    //                     Workspace: '',
-    //                     TopId: '',
-    //                     Environment: environment,
-    //                     ObjectId: tenantId,
-    //                     DisplayName: name!,
-    //                     Email: username
-    //                 }
-    //                 console.log("createWorkspace2:", createWorkspace)
-    //                 await createWorkspace(wsDto);
-    //             }
-    //             // Redirect the user to their intended post-login page or view
-    //         } else {
-    //             // Check for existing accounts if no response was handled
-    //             const accounts = instance.getAllAccounts();
-    //             if (accounts.length > 0) {
-    //                 instance.setActiveAccount(accounts[0]);
-    //             }
-    //         }
-    //     }).catch(error => {
-    //         // Handle errors that occurred during the redirect process
-    //         console.error(error);
-    //         // You might also want to handle specific errors like InteractionRequiredAuthError
-    //     });
-
+    
     /*
     const handleRedirect = () => {
         instance
