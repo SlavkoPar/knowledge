@@ -26,7 +26,7 @@ const GroupList = ({ groupRow, title }: IParentInfo) => {
                     <GroupRow
                         //groupRow={{ ...c, isSelected: c.id === id }}
                         groupRow={c}
-                        answerId={answerId}
+                        answerId={answerId === '' ? null : answerId}
                         // {c.topId === topId && c.id === id ? answerId : null}
                         key={c.id}
                     />

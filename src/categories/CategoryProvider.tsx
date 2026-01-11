@@ -888,7 +888,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
 
   const addQuestion = useCallback(
-    async (categoryKey: ICategoryKey, isExpanded: boolean) => {
+    async (categoryKey: ICategoryKey/*, isExpanded: boolean*/) => {
       try {
         const { topId, id } = categoryKey;
         let categoryRow = await getCat(id!);
@@ -910,14 +910,18 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
           ...newQuestionRow,
           title: ''
         }
-        console.assert(isExpanded);
-        if (isExpanded) {
-          const topRow: ICategoryRow = state.topRows.find(c => c.id === topId)!;
-          const catRow: ICategoryRow | undefined = await findCategoryRow(topRow, id)!;
-          catRow!.questionRows = [newQuestionRow, ...catRow!.questionRows!];
-          dispatch({ type: ActionTypes.ADD_NEW_QUESTION_TO_ROW, payload: { categoryRow: catRow, newQuestionRow } });
-          dispatch({ type: ActionTypes.SET_QUESTION, payload: { question, formMode: FormMode.AddingQuestion } });
-        }
+        // console.assert(isExpanded);
+        // if (isExpanded) {
+        const topRow: ICategoryRow = state.topRows.find(c => c.id === topId)!;
+        const catRow: ICategoryRow | undefined = await findCategoryRow(topRow, id)!;
+        dispatch({
+          type: ActionTypes.ADD_NEW_QUESTION_TO_ROW, payload: {
+            categoryRow: { ...catRow!, questionRows: [newQuestionRow, ...catRow!.questionRows!] },
+            newQuestionRow
+          }
+        });
+        dispatch({ type: ActionTypes.SET_QUESTION, payload: { question, formMode: FormMode.AddingQuestion } });
+        //}
         // else {
         //   const expandInfo: IExpandInfo = {
         //     categoryKey,

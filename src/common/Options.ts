@@ -14,12 +14,12 @@ export const roleOptions = [
     { label: "VIEWER", value: 'VIEWER' }
 ]
 
-export const sourceOptions = [
-    { label: "Unknown", value: '' },
-    { label: "OWNER", value: 'OWNER' },
-    { label: "ADMIN", value: 'ADMIN' },
-    { label: "EDITOR", value: 'EDITOR' },
-    { label: "VIEWER", value: 'VIEWER' }
+export const sourceOptions = [ // TODO make string 
+    { label: "Unknown", value: 0 },
+    { label: "OWNER", value: 1 },
+    { label: "ADMIN", value: 2 },
+    { label: "EDITOR", value: 3 },
+    { label: "VIEWER", value: 4 }
 ]
 
 export const statusOptions = [

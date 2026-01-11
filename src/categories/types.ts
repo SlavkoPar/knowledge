@@ -769,7 +769,7 @@ export const doNotModifyTree = [
 	ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE,
 	//ActionTypes.SET_NODE_OPENED,
 	//ActionTypes.SET_CATEGORY_TO_ADD,
-	ActionTypes.SET_CATEGORY_UPDATED,
+	// zasto je bilo ActionTypes.SET_CATEGORY_UPDATED,
 	ActionTypes.ADD_NEW_QUESTION_TO_ROW,
 	ActionTypes.CANCEL_CATEGORY_FORM,
 	ActionTypes.CLOSE_CATEGORY_FORM

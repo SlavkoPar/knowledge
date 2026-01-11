@@ -18,7 +18,7 @@ const CategoryList = ({ categoryRow }: IParentInfo) => {
                     <CategoryRow
                         //categoryRow={{ ...c, isSelected: c.id === id }}
                         categoryRow={c}
-                        questionId={questionId}
+                        questionId={questionId === '' ? null : questionId}
                         // {c.topId === topId && c.id === id ? questionId : null}
                         key={c.id}
                     />

@@ -114,7 +114,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                     setChatBotDlgEnabled();
             }
         })()
-    }, [topRowsLoaded, nodeOpening, nodeOpened, categoryId_questionId, categoryId_questionId_done, keyExpanded, expandNodesUpToTheTree, fromChatBotDlg, setChatBotDlgEnabled, chatBotDlgEnabled]);
+    }, [categoryId_questionId, categoryId_questionId_done, topRowsLoaded, keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, fromChatBotDlg, chatBotDlgEnabled, setChatBotDlgEnabled]);
 
     useEffect(() => {
         //setLastRouteVisited(`/categories`);
