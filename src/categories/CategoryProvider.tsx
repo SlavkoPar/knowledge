@@ -888,7 +888,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
 
   const addQuestion = useCallback(
-    async (categoryKey: ICategoryKey/*, isExpanded: boolean*/) => {
+    async (categoryKey: ICategoryKey) => {
       try {
         const { topId, id } = categoryKey;
         let categoryRow = await getCat(id!);

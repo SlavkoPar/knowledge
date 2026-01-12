@@ -358,7 +358,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
               //return
             }
           }
-          dispatch({ type: ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE , payload: { id: id!, questionId: answerId } });
+          dispatch({ type: ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE, payload: { id: id!, questionId: answerId } });
           // ---------------------------------------------------------------------------
           console.time();
           const groupKey: IGroupKey = { topId, id, parentId: null }; // proveri ROOT
@@ -921,7 +921,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
 
   const addAnswer = useCallback(
-    async (groupKey: IGroupKey, isExpanded: boolean) => {
+    async (groupKey: IGroupKey) => {
       try {
         const { topId, id } = groupKey;
         let groupRow = await getGrp(id!);
@@ -942,14 +942,12 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
           ...newAnswerRow,
           title: ''
         }
-        console.assert(isExpanded);
-        if (isExpanded) {
-          const topRow: IGroupRow = state.topRows.find(c => c.id === topId)!;
-          const catRow: IGroupRow = findGroupRow(topRow, id)!;
-          catRow.answerRows = [newAnswerRow, ...catRow.answerRows];
-          dispatch({ type: ActionTypes.ADD_NEW_ANSWER_TO_ROW, payload: { groupRow: catRow, newAnswerRow } });
-          dispatch({ type: ActionTypes.SET_ANSWER, payload: { answer, formMode: FormMode.AddingAnswer } });
-        }
+
+        const topRow: IGroupRow = state.topRows.find(c => c.id === topId)!;
+        const catRow: IGroupRow = findGroupRow(topRow, id)!;
+        catRow.answerRows = [newAnswerRow, ...catRow.answerRows];
+        dispatch({ type: ActionTypes.ADD_NEW_ANSWER_TO_ROW, payload: { groupRow: catRow, newAnswerRow } });
+        dispatch({ type: ActionTypes.SET_ANSWER, payload: { answer, formMode: FormMode.AddingAnswer } });
         // else {
         //   const expandInfo: IExpandInfo = {
         //     groupKey,
