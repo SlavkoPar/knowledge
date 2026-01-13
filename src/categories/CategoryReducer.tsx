@@ -478,7 +478,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         activeQuestion: null,
         selectedQuestionId: null,
         keyExpanded: { topId, categoryId: id, questionId: null }, // set id to call openNode from categories
-        nodeOpened: false
+        /////nodeOpened: false
       };
     }
 
@@ -601,7 +601,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
           categoryId: categoryId,
           questionId
         },
-        nodeOpened: false, // keep topRows, and openNode
+        /////nodeOpened: false, // keep topRows, and openNode
         activeCategory: null,
         activeQuestion: null,
         selectedQuestionId: null

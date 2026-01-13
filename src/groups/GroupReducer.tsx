@@ -475,7 +475,7 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
         activeAnswer: null,
         selectedAnswerId: null,
         keyExpanded: { topId, groupId: id, answerId: null }, // set id to call openNode from groups
-        nodeOpened: false
+        /////nodeOpened: false
       };
     }
 
@@ -598,7 +598,7 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
           groupId: groupId,
           answerId
         },
-        nodeOpened: false, // keep topRows, and openNode
+        /////nodeOpened: false, // keep topRows, and openNode
         activeGroup: null,
         activeAnswer: null,
         selectedAnswerId: null
