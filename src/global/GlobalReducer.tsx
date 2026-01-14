@@ -74,8 +74,10 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
             const { user, newUser } = action.payload;
             const { nickName, name, workspace, environment, email } = user;
 
-            if (newUser) {
-                localStorage.setItem('CATEGORIES_STATE', JSON.stringify({ keyExpanded: null })); // reset categories state on new login
+            if (newUser) { // reset categories state on new user
+                localStorage.setItem('CATEGORIES_STATE', JSON.stringify({ 
+                    keyExpanded: { topId: "", categoryId: "", questionId: "" } 
+                })); 
             }
 
             return {

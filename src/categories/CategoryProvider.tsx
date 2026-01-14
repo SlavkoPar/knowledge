@@ -677,7 +677,6 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     else if (formMode === FormMode.AddingCategory) {
       await cancelAddCategory();
     }
-
     dispatch({ type: ActionTypes.SET_LOADING_CATEGORY, payload: { categoryRow } });
     const categoryKey = new CategoryKey(categoryRow).categoryKey!;
     const category: ICategory = await getCategory(categoryKey, includeQuestionId);

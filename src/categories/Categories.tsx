@@ -78,7 +78,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
 
     useEffect(() => {
         (async () => {
-            if (!nodeOpening && topRowsLoaded) { //topRows.length > 0
+            if (!nodeOpening && topRowsLoaded && topRows.length > 0) {
                 if (categoryId_questionId) {
                     if (categoryId_questionId === 'add_question') {
                         const sNewQuestion = localStorage.getItem('New_Question');
