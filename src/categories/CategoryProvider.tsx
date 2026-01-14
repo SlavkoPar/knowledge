@@ -485,7 +485,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     }, [findCategoryRow, topRows]);
 
 
-  const addCategory = useCallback(
+  const addSubCategory = useCallback(
     async (parentCategoryRow: ICategoryRow | null) => {
       try {
         //if (formMode !== FormMode.None) {
@@ -1247,6 +1247,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
   const onCategoryTitleChanged = useCallback(
     async (topId: string, id: string, title: string): Promise<void> => {
+      return;
       //const { topRows } = state;
       //const topRow: ICategoryRow = topRows.find(c => c.id === category.topId)!;
       const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
@@ -1323,7 +1324,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     state, loadAllCategoryRows, getSubCats, getCat,
     expandNodesUpToTheTree,
     loadTopRows,
-    addSubCategory: addCategory, cancelAddCategory, createCategory,
+    addSubCategory: addSubCategory, cancelAddCategory, createCategory,
     viewCategory, editCategory, updateCategory, deleteCategory, deleteCategoryVariation,
     expandCategory, collapseCategory, onCategoryTitleChanged,
     loadCategoryQuestions,
