@@ -40,16 +40,19 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     const [showAnswer, setShowAnswer] = useState(false);
     const [chatBotAnswer, setChatBotAnswer] = useState<IChatBotAnswer | null>(null);
     const [hasMoreAnswers, setHasMoreAnswers] = useState<boolean>(false);
+    const [allCategoryRowsLoaded, setAllCategoryRowsLoaded] = useState<boolean>(false);
+
 
     const { loadAllCategoryRowsGlobal, getQuestion, addHistory, addHistoryFilter, searchQuestions } = useGlobalContext();
-    const { authUser, isDarkMode, allCategoryRowsGlobalLoaded, allCategoryRowsGlobal } = useGlobalState();
+    const { authUser, isDarkMode } = useGlobalState();
     //const navigate = useNavigate();
 
     const [catsSelected] = useState(true);
     const [showAutoSuggest, setShowAutoSuggest] = useState(true); //false);
 
 
-    const [allCategoryRows, setAllCategoryRows] = useState<ICategoryRow[]>([]);
+    const [allCategoryRows, setAllCategoryRows] = useState<Map<string, ICategoryRow>>(new Map<string, ICategoryRow>());
+    const [allCategoryRows2, setAllCategoryRows2] = useState<ICategoryRow[]>([]);
     const childRef = useRef<IChatBotDlgNavigatorMethods | null>(null);
 
     const [pastEvents, setPastEvents] = useState<IChild[]>([]);
@@ -71,17 +74,19 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
 
     useEffect(() => {
         (async () => {
-            if (!allCategoryRowsGlobalLoaded) {
-                await loadAllCategoryRowsGlobal();
-            }
-            else {
-                setAllCategoryRows(Array.from(allCategoryRowsGlobal.values()));
+            if (!allCategoryRowsLoaded) {
+                const allCategoryRows = await loadAllCategoryRowsGlobal();
+                if (allCategoryRows) {
+                    setAllCategoryRowsLoaded(true);
+                    setAllCategoryRows(allCategoryRows);
+                    setAllCategoryRows2(Array.from(allCategoryRows.values()));
+                }
             }
         })()
-    }, [allCategoryRowsGlobalLoaded, loadAllCategoryRowsGlobal]);
+    }, [allCategoryRowsLoaded, loadAllCategoryRowsGlobal]);
 
 
-    
+
     const onEntering = async (/*node: HTMLElement, isAppearing: boolean*/): Promise<any> => {
         const startTime = performance.now();
         await childRef?.current?.resetNavigator();
@@ -102,7 +107,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     //     // named export
     //     import("@/categories/AutoSuggestQuestions").then((module) => ({ default: module.AutoSuggestQuestions }))
     // );
-  
+
     const onSelectQuestion = async (questionKey: IQuestionKey, underFilter: string) => {
         const questionCurr = await getCurrQuestion();
         if (questionCurr) {
@@ -406,7 +411,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                         <AutoSuggestQuestions
                             tekst={txt}
                             onSelectQuestion={onSelectQuestion}
-                            allCategoryRows={allCategoryRowsGlobal}
+                            allCategoryRows={allCategoryRows}
                             searchQuestions={searchQuestions}
                         />
                     }
@@ -421,7 +426,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     console.log("=====================>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> rendering ChatBotDlg")
 
 
-    if (allCategoryRows.length === 0) // || catsOptions.length === 0)
+    if (allCategoryRows2.length === 0) // || catsOptions.length === 0)
         return <div>Loading ...</div>
 
     return (
@@ -504,7 +509,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                     <Container id='container' fluid className='text-primary'> {/* align-items-center" */}
                         <Row className="m-0">
                             <Col className='border border-0 border-primary mx-1 text-white p-0'>
-                                <ChatBotDlgNavigator allCategoryRows={allCategoryRows} ref={childRef} />
+                                <ChatBotDlgNavigator allCategoryRows={allCategoryRows2} ref={childRef} />
                             </Col>
                         </Row>
                         {/* badge */}

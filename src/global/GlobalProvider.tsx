@@ -72,7 +72,6 @@ const initGlobalState: IGlobalState = {
   loading: false,
   allCategoryRowsGlobal: new Map<string, ICategoryRow>(),
   topRows: [],
-  allCategoryRowsGlobalLoaded: undefined,
   allGroupRows: new Map<string, IGroupRow>(),
   allGroupRowsLoaded: undefined,
   nodesReLoaded: false,
@@ -209,8 +208,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
               cat.titlesUpTheTree = titlesUpTheTree;
               allCategoryRows.set(id, cat);
             })
-            dispatch({ type: GlobalActionTypes.SET_ALL_CATEGORY_ROWS_GLOBAL, payload: { allCategoryRows } });
             resolve(allCategoryRows)
+            // with no dispatch
           });
       }
       catch (error: any) {

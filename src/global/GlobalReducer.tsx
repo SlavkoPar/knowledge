@@ -75,9 +75,9 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
             const { nickName, name, workspace, environment, email } = user;
 
             if (newUser) { // reset categories state on new user
-                localStorage.setItem('CATEGORIES_STATE', JSON.stringify({ 
-                    keyExpanded: { topId: "", categoryId: "", questionId: "" } 
-                })); 
+                localStorage.setItem('CATEGORIES_STATE', JSON.stringify({
+                    keyExpanded: { topId: "", categoryId: "", questionId: "" }
+                }));
             }
 
             return {
@@ -124,14 +124,6 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
             };
         }
 
-        case GlobalActionTypes.SET_ALL_CATEGORY_ROWS_GLOBAL: {
-            const { allCategoryRows } = action.payload;
-            return {
-                ...state,
-                allCategoryRowsGlobal: allCategoryRows,
-                allCategoryRowsGlobalLoaded: Date.now()
-            };
-        }
 
         case GlobalActionTypes.SET_ALL_GROUP_ROWS_GLOBAL: {
             const { allGroupRows } = action.payload;

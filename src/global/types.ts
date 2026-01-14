@@ -173,7 +173,7 @@ export interface IGlobalState {
 	error?: Error;
 	allCategoryRowsGlobal: Map<string, ICategoryRow>;
 	topRows: ICategoryRow[];
-	allCategoryRowsGlobalLoaded?: number;
+	allCategoryRowsLoaded?: number;
 	allGroupRows: Map<string, IGroupRow>;
 	allGroupRowsLoaded?: number;
 	nodesReLoaded: boolean; // categoryNodeLoaded || groupNodeLoaded  ( to prevent showing of ChatBotDlg)
@@ -234,7 +234,6 @@ export enum GlobalActionTypes {
 	SET_ERROR = 'SET_ERROR',
 	DARK_MODE = "DARK_MODE",
 	LIGHT_MODE = "LIGHT_MODE",
-	SET_ALL_CATEGORY_ROWS_GLOBAL = 'SET_ALL_CATEGORY_ROWS_GLOBAL',
 	SET_ALL_GROUP_ROWS_GLOBAL = 'SET_ALL_GROUP_ROWS_GLOBAL',
 	SET_NODES_RELOADED = 'SET_NODES_RELOADED',
 	SET_QUESTION_AFTER_ASSIGN_ANSWER = 'SET_QUESTION_AFTER_ASSIGN_ANSWER',
@@ -304,10 +303,7 @@ export type GlobalPayload = {
 
 	[GlobalActionTypes.DARK_MODE]: undefined;
 
-	[GlobalActionTypes.SET_ALL_CATEGORY_ROWS_GLOBAL]: {
-		allCategoryRows: Map<string, ICategoryRow>
-	};
-
+	
 	[GlobalActionTypes.SET_ALL_GROUP_ROWS_GLOBAL]: {
 		allGroupRows: Map<string, IGroupRow>
 	};

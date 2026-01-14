@@ -78,7 +78,7 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
 
     useEffect(() => {
         (async () => {
-            if (!nodeOpening && topRows.length > 0) {
+            if (!nodeOpening && topRowsLoaded && topRows.length > 0) {
                 if (groupId_answerId) {
                     if (groupId_answerId === 'add_answer') {
                         const sNewAnswer = localStorage.getItem('New_Answer');
