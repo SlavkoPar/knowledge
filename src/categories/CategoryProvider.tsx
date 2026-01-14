@@ -230,7 +230,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       //const { keyExpanded } = state;
       try {
         dispatch({ type: ActionTypes.SET_TOP_ROWS_LOADING, payload: {} });
-        const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}/null/toprows/all`;
+        const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}/toprows`;
         console.log('CategoryProvider loadTopRows url:', url)
         console.log('loadTopRows AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         console.time();
@@ -238,12 +238,13 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
           .then((dtos: ICategoryRowDto[]) => {
             console.timeEnd();
             console.log('loadTopRows BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
-            const topRows = dtos!.map((dto: ICategoryRowDto) => {
+            const topRows: ICategoryRow[] = dtos!.map((dto: ICategoryRowDto) => {
               dto.IsExpanded = keyExpanded
                 ? dto.Id === keyExpanded.categoryId
                 : false;
               //dto.TopId = dto.QuestionId;
-              return new CategoryRow(dto).categoryRow;
+              const categoryRow = new CategoryRow(dto).categoryRow;
+              return categoryRow;
             })
             dispatch({ type: ActionTypes.SET_TOP_ROWS, payload: { topRows } });
             resolve(true);
