@@ -243,8 +243,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
                 ? dto.Id === keyExpanded.categoryId
                 : false;
               //dto.TopId = dto.QuestionId;
-              const categoryRow = new CategoryRow(dto).categoryRow;
-              return categoryRow;
+              return new CategoryRow(dto).categoryRow;
             })
             dispatch({ type: ActionTypes.SET_TOP_ROWS, payload: { topRows } });
             resolve(true);
@@ -493,11 +492,11 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
         dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM, payload: {} })
         //}
         //const id = 'generateId';
-        const { topId, id, parentId, level } = parentCategoryRow ?? { topId: 'generateId', id: 'generateId', parentId: null, level: 0 };
+        const { topId, id, level } = parentCategoryRow ?? { topId: 'generateId', id: 'generateId', level: 0 };
         const newCategoryRow: ICategoryRow = {
           ...initialCategory,
           topId,
-          parentId: parentCategoryRow ? id : parentId,
+          parentId: parentCategoryRow ? id : null,
           id: 'generateId',
           level: level + 1,
           title: '',
