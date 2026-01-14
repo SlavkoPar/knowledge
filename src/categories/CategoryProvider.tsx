@@ -230,7 +230,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       //const { keyExpanded } = state;
       try {
         dispatch({ type: ActionTypes.SET_TOP_ROWS_LOADING, payload: {} });
-        const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}/null/topRows/all`;
+        const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}/null/toprows/all`;
         console.log('CategoryProvider loadTopRows url:', url)
         console.log('loadTopRows AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         console.time();
@@ -1247,7 +1247,6 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
   const onCategoryTitleChanged = useCallback(
     async (topId: string, id: string, title: string): Promise<void> => {
-      return;
       //const { topRows } = state;
       //const topRow: ICategoryRow = topRows.find(c => c.id === category.topId)!;
       const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
