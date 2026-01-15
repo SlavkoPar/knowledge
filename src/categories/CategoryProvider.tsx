@@ -524,7 +524,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
           dispatch({
             type: ActionTypes.SET_CATEGORY_TO_ADD, payload: {
               categoryRow,
-              newCategoryRow
+              newCategoryRow: { ...newCategoryRow, title: '' }
             }
           })
           // dispatch({
