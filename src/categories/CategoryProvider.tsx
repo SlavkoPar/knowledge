@@ -1259,12 +1259,12 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       //   : findCategoryRow(topRow.categoryRows, id)!;
       let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, id);
       // console.log('Provider onCategoryTitleChanged >>>>>>:', category)
-      console.log('Provider onCategoryTitleChanged:', title)
+      //console.log('Provider onCategoryTitleChanged:', title)
       //category.title = title;
       // rerender
-      //console.log(ActionTypes.CATEGORY_TITLE_CHANGED, 'Sent>>>>>>>>>>:', categoryRow.title)
+      console.log('PROVIDER onCategoryTitleChanged::', categoryRow!.title, title)
       if (categoryRow!.title !== title) {
-        categoryRow!.title = title;
+        categoryRow!.title = title === '' ? 'New Category ' : title; // to avoid empty title
         dispatch({
           type: ActionTypes.CATEGORY_TITLE_CHANGED, payload: { categoryRow: categoryRow! }
         });

@@ -79,8 +79,8 @@ const CategoryForm = ({ formMode, category, submitForm, children }: ICategoryFor
   useEffect(() => {
     const goBre = async () => {
       console.log('CategoryForm.useEffect - onCategoryTitleChanged', { debouncedSearchTerm, title: formik.values.title });
-      if (debouncedSearchTerm && formik.values.title !== debouncedSearchTerm) {
-        await onCategoryTitleChanged(topId, id, formik.values.title);
+      if (/*debouncedSearchTerm &&*/ formik.values.title !== debouncedSearchTerm) {
+        /*await*/ onCategoryTitleChanged(topId, id, formik.values.title);
       }
     };
     goBre();
