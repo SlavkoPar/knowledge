@@ -26,7 +26,7 @@ const CategoryForm = ({ formMode, category, submitForm, children }: ICategoryFor
   const adding = formMode === FormMode.AddingCategory;
 
   const { topId, id, variations, questionRows, title: catTitle } = category;
-  console.log('CategoryForm render: ', { topId, id, catTitle, formMode })
+  console.log('CategoryForm render: ', { topId, id, catTitle, formMode, variations })
   const categoryKey: ICategoryKey = new CategoryKey(category).categoryKey!;
   //const categoryKeyExpanded: IQuestionKey = { topId, id, questionId };
 

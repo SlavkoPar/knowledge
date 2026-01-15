@@ -100,13 +100,13 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                         console.log('zavrsio expandNodeUpToTheTree 1111111111111111111 DONE)', { categoryId_questionId })
                     }
                 }
-                else if (keyExpanded && !nodeOpened) {
+                else if (keyExpanded && !nodeOpened && formMode === FormMode.None) {
                     const { topId, categoryId, questionId } = keyExpanded;
                     if (categoryId !== '') {
                         const catKey: ICategoryKey = { topId, id: categoryId, parentId: 'ROOT' }
-                        console.log('zovem expandNodeUpToTheTree 2222222222222)', { keyExpanded, catKey })
+                        console.log('zovem expandNodeUpToTheTree 2222222222222)', { keyExpanded, catKey, formMode })
                         await expandNodesUpToTheTree(catKey, questionId);
-                        console.log('zavrsio expandNodeUpToTheTree 2222222222222 DONE)')
+                        console.log('zavrsio expandNodeUpToTheTree 2222222222222 DONE)', formMode)
                     }
                 }
 

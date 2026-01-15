@@ -421,7 +421,8 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         //keyExpanded: { ...state.keyExpanded, questionId: null },
         activeCategory,
         activeQuestion: null,
-        selectedQuestionId: null
+        selectedQuestionId: null,
+        error: undefined
       };
     }
 
@@ -472,7 +473,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         formMode: FormMode.EditingCategory, // none
         loadingCategory: false,
         categoryLoaded: false,
-        //topRowsLoaded,
+       // topRowsLoaded,
         //categoryKeyExpanded: state.categoryKeyExpanded ? { ...state.categoryKeyExpanded, questionId: null } : null,
         activeCategory,
         activeQuestion: null,
@@ -500,6 +501,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         activeCategory: category,
         activeQuestion: null,
         selectedQuestionId: null,
+        error: undefined
       };
     }
 

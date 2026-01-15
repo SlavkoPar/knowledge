@@ -500,7 +500,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
           id: 'generateId',
           level: level + 1,
           title: '',
-          isExpanded: false
+          isExpanded: true
         }
         if (parentCategoryRow === null) { // add topRow
           dispatch({
@@ -616,10 +616,10 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
               //categoryDto.TopId = topId!;
               const category = new Category(categoryDto).category;
               console.log('Category successfully created', { category })
-
-              await loadAllCategoryRows()
-                .then(async () => { // done: boolean
-                  await loadTopRows();
+              dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM, payload: {} })
+              //await loadAllCategoryRows()
+                //.then(async () => { // done: boolean
+                  //await loadTopRows();
                   if (category.parentId === null) {
                     dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
                   }
@@ -639,7 +639,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
                     // });
                     dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
                   }
-                })
+                //})
             }
           });
       }
@@ -1323,7 +1323,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     state, loadAllCategoryRows, getSubCats, getCat,
     expandNodesUpToTheTree,
     loadTopRows,
-    addSubCategory: addSubCategory, cancelAddCategory, createCategory,
+    addSubCategory, cancelAddCategory, createCategory,
     viewCategory, editCategory, updateCategory, deleteCategory, deleteCategoryVariation,
     expandCategory, collapseCategory, onCategoryTitleChanged,
     loadCategoryQuestions,
