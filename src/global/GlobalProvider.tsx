@@ -75,7 +75,7 @@ const initGlobalState: IGlobalState = {
   allGroupRows: new Map<string, IGroupRow>(),
   allGroupRowsLoaded: undefined,
   nodesReLoaded: false,
-  lastRouteVisited: '/categories',
+  lastRouteVisited: '/knowledge/categories',
   chatBotDlgEnabled: false
 }
 

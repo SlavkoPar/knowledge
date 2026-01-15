@@ -87,10 +87,9 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
   useEffect(() => {
 
-    let keyExpanded: IKeyExpanded = workspace === 'DEMO'
-      //? { topId: "QUESTIONS", categoryId: "QUESTIONS", questionId: "qqqqqq111" }
+    let keyExpanded: IKeyExpanded | null = workspace === 'DEMO'
       ? { topId: "MTS", categoryId: "REMOTECTRLS", questionId: "qqqqqq111" }
-      : { topId: "", categoryId: "", questionId: "" };
+      : null;
 
     if ('localStorage' in window) {
       let s = localStorage.getItem('CATEGORIES_STATE');
@@ -102,7 +101,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       }
     }
     /**/
-    dispatch({ type: ActionTypes.SET_FROM_LOCAL_STORAGE, payload: { keyExpanded } });
+    dispatch({ type: ActionTypes.SET_KEY_EXPANDED, payload: { keyExpanded } });
   }, [workspace]);
 
 
@@ -499,8 +498,8 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
           parentId: parentCategoryRow ? id : null,
           id: 'generateId',
           level: level + 1,
-          title: '',
-          isExpanded: true
+          title: 'New Category',
+          isExpanded: false
         }
         if (parentCategoryRow === null) { // add topRow
           dispatch({
@@ -618,28 +617,28 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
               console.log('Category successfully created', { category })
               dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM, payload: {} })
               //await loadAllCategoryRows()
-                //.then(async () => { // done: boolean
-                  //await loadTopRows();
-                  if (category.parentId === null) {
-                    dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
-                  }
-                  else {
-                    // const parentCategoryKey: ICategoryKey = {
-                    //   topId: category.topId,
-                    //   parentId: "doesn't matter",
-                    //   id: category.parentId!
-                    // };
-                    // const expandInfo: IExpandInfo = {
-                    //   categoryKey: parentCategoryKey,
-                    //   formMode: FormMode.AddingCategory
-                    // }
-                    // alert('zovem expa')
-                    // await expandCategory(expandInfo).then(() => {
-                    //   dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
-                    // });
-                    dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
-                  }
-                //})
+              //.then(async () => { // done: boolean
+              //await loadTopRows();
+              if (category.parentId === null) {
+                dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
+              }
+              else {
+                // const parentCategoryKey: ICategoryKey = {
+                //   topId: category.topId,
+                //   parentId: "doesn't matter",
+                //   id: category.parentId!
+                // };
+                // const expandInfo: IExpandInfo = {
+                //   categoryKey: parentCategoryKey,
+                //   formMode: FormMode.AddingCategory
+                // }
+                // alert('zovem expa')
+                // await expandCategory(expandInfo).then(() => {
+                //   dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
+                // });
+                dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
+              }
+              //})
             }
           });
       }

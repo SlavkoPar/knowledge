@@ -86,11 +86,12 @@ export const CategoryReducer: Reducer<ICategoriesState, Actions> = (state, actio
   const { categoryRow } = action.payload;
   // const isCategory = IsCategory(categoryRow); // ICategory rather than ICategoryRow
 
-  if (action.type === ActionTypes.SET_FROM_LOCAL_STORAGE) {
+  if (action.type === ActionTypes.SET_KEY_EXPANDED) {
     const { keyExpanded } = action.payload;
     return {
       ...state,
-      keyExpanded
+      keyExpanded,
+      nodeOpened: keyExpanded === null ? true : state.nodeOpened
     }
   }
 
@@ -200,13 +201,13 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
     }
 
     case ActionTypes.SET_NODE_EXPANDED_UP_THE_TREE: {
-      const { category, formMode, questionId, question } = action.payload;
+      const { category, questionId, question } = action.payload;
       return {
         ...state,
         activeCategory: category,
         activeQuestion: question,
         selectedQuestionId: questionId,
-        formMode,
+        //formMode,
         nodeOpening: false,
         nodeOpened: true,
         loadingCategories: false
@@ -235,6 +236,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
 
     case ActionTypes.FORCE_OPEN_NODE:
       const { keyExpanded } = action.payload;
+      alert('FORCE_OPEN_NODE is deprecated, use SET_QUESTION_SELECTED instead')
       return {
         ...state,
         topRows: state.topRows.filter(row => row.parentId === null),
@@ -257,7 +259,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
       //const { categoryRows } = action.payload;
       //const { topRows } = state;
       //categoryRows.forEach((categoryRow: ICategoryRow) => {
-        //const { id, hasSubCategories, numOfQuestions } = categoryRow;
+      //const { id, hasSubCategories, numOfQuestions } = categoryRow;
       //})
       return {
         ...state,
@@ -439,7 +441,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         activeQuestion: null,
         selectedQuestionId: null,
         topRows: [newCategoryRow!, ...state.topRows],
-        formMode: FormMode.AddingCategory,
+        formMode: FormMode.AddingCategory
       };
     }
 
@@ -473,7 +475,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         formMode: FormMode.EditingCategory, // none
         loadingCategory: false,
         categoryLoaded: false,
-       // topRowsLoaded,
+        // topRowsLoaded,
         //categoryKeyExpanded: state.categoryKeyExpanded ? { ...state.categoryKeyExpanded, questionId: null } : null,
         activeCategory,
         activeQuestion: null,

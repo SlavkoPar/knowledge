@@ -53,9 +53,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
         }
         else {
             const expandInfo: IExpandInfo = {
-                categoryKey,
-                byClick: true,
-                formMode: canEdit ? FormMode.EditingCategory : FormMode.ViewingCategory
+                categoryKey
             }
             await expandCategory(expandInfo);
         }
@@ -83,6 +81,9 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
 
     useEffect(() => {
         if (queue) {// && categoryRow.id === 'generateId') {
+            if (!isExpanded && (hasSubCategories || numOfQuestions > 0)) {
+                handleExpandClick();
+            }   
             addSubCategory(categoryRow);
             setQueue(false);
         }

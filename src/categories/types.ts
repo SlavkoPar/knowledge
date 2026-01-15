@@ -116,18 +116,18 @@ export class CategoryRow {
 			link: Link,
 			header: Header,
 			titlesUpTheTree: '', // traverse up the tree, until root
-			variations: Variations??[],
+			variations: Variations ?? [],
 			hasSubCategories: HasSubCategories, //!, Odakle ovo
 			categoryRows: RowDtos
 				? RowDtos.map(dto => new CategoryRow({ ...dto, TopId }).categoryRow)
 				: [],
-			numOfQuestions: NumOfQuestions??0,
+			numOfQuestions: NumOfQuestions ?? 0,
 			questionRows: QuestionRowDtos
 				? QuestionRowDtos.map(dto => new QuestionRow({ ...dto, TopId: TopId ?? undefined }).questionRow)
 				: [],
 			level: Level,
 			kind: Kind,
-			isExpanded: IsExpanded?? false
+			isExpanded: IsExpanded ?? false
 		}
 	}
 	categoryRow: ICategoryRow;
@@ -517,11 +517,10 @@ export interface ICategoryInfo {
 
 export interface IExpandInfo {
 	categoryKey: ICategoryKey;
-	formMode: FormMode;
+	formMode?: FormMode;
 	includeQuestionId?: string;
 	newCategoryRow?: ICategoryRow;
 	newQuestionRow?: IQuestionRow;
-	byClick?: boolean;
 }
 
 
@@ -576,7 +575,7 @@ export interface ILoadCategoryQuestions {
 
 export interface ICategoriesContext {
 	state: ICategoriesState,
-	loadAllCategoryRows: () => Promise<Map<string, ICategoryRow>|null>;
+	loadAllCategoryRows: () => Promise<Map<string, ICategoryRow> | null>;
 	getCat: (id: string) => Promise<ICategoryRow | undefined>;
 	expandNodesUpToTheTree: (catKey: ICategoryKey, questionId: string | null, fromChatBotDlg?: boolean) => Promise<boolean>;
 	loadTopRows: () => Promise<any>,
@@ -696,7 +695,7 @@ export class AssignedAnswer {
 
 
 export enum ActionTypes {
-	SET_FROM_LOCAL_STORAGE = "SET_FROM_LOCAL_STORAGE",
+	SET_KEY_EXPANDED = "SET_KEY_EXPANDED",
 	SET_TOP_ROWS = 'SET_TOP_ROWS',
 	SET_NODE_EXPANDED_UP_THE_TREE = "SET_NODE_EXPANDED_UP_THE_TREE",
 	SET_LOADING_CATEGORY = 'SET_LOADING_CATEGORY',
@@ -784,9 +783,9 @@ export const doNotCallInnerReducerActions = [
 
 export type Payload = {
 
-	[ActionTypes.SET_FROM_LOCAL_STORAGE]: {
+	[ActionTypes.SET_KEY_EXPANDED]: {
 		categoryRow?: ICategoryRow;
-		keyExpanded: IKeyExpanded
+		keyExpanded: IKeyExpanded | null;
 	}
 
 	[ActionTypes.SET_TOP_ROWS_LOADING]: {

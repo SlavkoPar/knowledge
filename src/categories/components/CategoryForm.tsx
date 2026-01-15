@@ -78,13 +78,14 @@ const CategoryForm = ({ formMode, category, submitForm, children }: ICategoryFor
 
   useEffect(() => {
     const goBre = async () => {
-      console.log('CategoryForm.useEffect - onCategoryTitleChanged', { debouncedSearchTerm, title: formik.values.title });
+      //console.log('CategoryForm.useEffect - onCategoryTitleChanged', { debouncedSearchTerm, title: formik.values.title });
       if (debouncedSearchTerm && formik.values.title !== debouncedSearchTerm) {
-        await onCategoryTitleChanged(topId, id, debouncedSearchTerm);
+        console.log('CategoryForm.useEffect - onCategoryTitleChanged zvao Bi', { debouncedSearchTerm, title: formik.values.title });
+        //await onCategoryTitleChanged(topId, id, debouncedSearchTerm);
       }
     };
     goBre();
-  }, [debouncedSearchTerm, formik.values, onCategoryTitleChanged]);
+  }, [debouncedSearchTerm, formik.values.title, onCategoryTitleChanged]);
 
   const handleChangeTitle = (event: ChangeEvent<HTMLTextAreaElement>) => {
     formik.handleChange(event);

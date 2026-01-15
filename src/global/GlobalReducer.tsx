@@ -96,7 +96,7 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
                 isAuthenticated: true,
                 everLoggedIn: true,
                 error: undefined,
-                lastRouteVisited: newUser ? '/categories' : state.lastRouteVisited
+                lastRouteVisited: newUser ? '/knowledge/categories' : state.lastRouteVisited
             };
         }
 
