@@ -100,8 +100,7 @@ export const CategoryReducer: Reducer<ICategoriesState, Actions> = (state, actio
     : false;
 
   const { topRows } = state;
-
-
+  
   const newState = doNotCallInnerReducerActions.includes(action.type)
     ? { ...state }
     : innerReducer(state, action);
@@ -122,7 +121,7 @@ export const CategoryReducer: Reducer<ICategoriesState, Actions> = (state, actio
     else {
       // actually topRows is from previous state
       const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-      DeepClone.idToSet = id;
+      DeepClone.idToSet = action.type === 'SET_CATEGORY_ADDED' ? 'generateId' : id;
       DeepClone.newCategoryRow = categoryRow!;
       const newTopRow = new DeepClone(topRow).categoryRow;
       newTopRows = topRows.map(c => c.id === topId
@@ -281,35 +280,6 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         loadingQuestion: false, questionLoaded: false
       };
     }
-
-    case ActionTypes.ADD_SUB_CATEGORY: {
-      const { categoryKey, level } = action.payload;
-      const { topId } = categoryKey;
-      const category: ICategory = {
-        ...initialCategory,
-        topId,
-        level,
-        parentId: '' //null
-      }
-      return {
-        ...state,
-        activeCategory: category,
-        formMode: FormMode.AddingCategory
-      };
-    }
-
-    /*
-    case ActionTypes.SET_CATEGORY_ADDED: {
-      const { categoryRow } = action.payload;
-      return {
-        ...state,
-        // TODO Popravi
-        formMode: FormMode.None,
-        activeCategory: categoryRow!,
-        loading: false
-      }
-    }
-      */
 
 
     // case ActionTypes.SET_CATEGORY_ROW: {
@@ -481,7 +451,6 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         activeQuestion: null,
         selectedQuestionId: null,
         keyExpanded: { topId, categoryId: id, questionId: null }, // set id to call openNode from categories
-        /////nodeOpened: false
       };
     }
 

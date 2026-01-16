@@ -704,9 +704,7 @@ export enum ActionTypes {
 	SET_CATEGORY_QUESTIONS_LOADING = 'SET_CATEGORY_QUESTIONS_LOADING',
 	SET_SUB_CATEGORIES = 'SET_SUB_CATEGORIES',
 	SET_ERROR = 'SET_ERROR',
-	ADD_SUB_CATEGORY = 'ADD_SUB_CATEGORY',
-	CATEGORY_TITLE_CHANGED = 'CATEGORY_TITLE_CHANGED',
-	CANCEL_ADD_SUB_CATEGORY = 'CANCEL_ADD_SUB_CATEGORY',
+	RE_RENDER_TREE = 'RE_RENDER_TREE',
 	SET_CATEGORY = 'SET_CATEGORY',
 	//SET_CATEGORY_ROW = 'SET_CATEGORY_ROW',
 	ADD_NEW_QUESTION_TO_ROW = 'ADD_NEW_QUESTION_TO_ROW',
@@ -716,6 +714,7 @@ export enum ActionTypes {
 	SET_ROW_COLLAPSED = 'SET_ROW_COLLAPSED',
 	SET_CATEGORY_TO_ADD_TOP = 'SET_CATEGORY_TO_ADD_TOP',
 	SET_CATEGORY_TO_ADD = 'SET_CATEGORY_TO_ADD',
+	CANCEL_ADD_SUB_CATEGORY = 'CANCEL_ADD_SUB_CATEGORY',
 	SET_CATEGORY_ADDED = 'SET_CATEGORY_ADDED',
 	SET_ALL_CATEGORY_ROWS = 'SET_ALL_CATEGORY_ROWS',
 
@@ -765,10 +764,11 @@ export const actionStoringToLocalStorage = [
 export const doNotModifyTree = [
 	//ActionTypes.SET_TOP_ROWS_LOADING,
 	//ActionTypes.SET_TOP_ROWS,
+	//ActionTypes.SET_LOADING_CATEGORY,
 	ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE,
 	//ActionTypes.SET_NODE_OPENED,
 	//ActionTypes.SET_CATEGORY_TO_ADD,
-	ActionTypes.SET_CATEGORY_ADDED,
+	//ActionTypes.SET_CATEGORY_ADDED,
 	// zasto je bilo ActionTypes.SET_CATEGORY_UPDATED,
 	ActionTypes.ADD_NEW_QUESTION_TO_ROW,
 	ActionTypes.CANCEL_CATEGORY_FORM,
@@ -776,9 +776,8 @@ export const doNotModifyTree = [
 ]
 
 export const doNotCallInnerReducerActions = [
-	ActionTypes.CATEGORY_TITLE_CHANGED,
+	ActionTypes.RE_RENDER_TREE,
 	ActionTypes.QUESTION_TITLE_CHANGED,
-	ActionTypes.ADD_SUB_CATEGORY
 ]
 
 export type Payload = {
@@ -834,20 +833,13 @@ export type Payload = {
 		categoryRows: ICategoryRow[];
 	};
 
-	[ActionTypes.ADD_SUB_CATEGORY]: {
-		categoryRow?: ICategoryRow;
-		topId: string,
-		categoryKey: ICategoryKey,
-		level: number
-	}
-
 	[ActionTypes.SET_ALL_CATEGORY_ROWS]: {
 		categoryRow?: ICategoryRow;
 		allCategoryRows: Map<string, ICategoryRow>
 	};
 
-	[ActionTypes.CATEGORY_TITLE_CHANGED]: {
-		categoryRow?: ICategoryRow;
+	[ActionTypes.RE_RENDER_TREE]: {
+		categoryRow: ICategoryRow;
 	}
 
 	[ActionTypes.QUESTION_TITLE_CHANGED]: {

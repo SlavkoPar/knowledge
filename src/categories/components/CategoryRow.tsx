@@ -81,9 +81,6 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
 
     useEffect(() => {
         if (queue) {// && categoryRow.id === 'generateId') {
-            if (!isExpanded && (hasSubCategories || numOfQuestions > 0)) {
-                handleExpandClick();
-            }   
             addSubCategory(categoryRow);
             setQueue(false);
         }
@@ -123,7 +120,9 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
 
     const Row1 =
         <div>
-            <div id={`Row${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 category-row${isSelected ? '-selected' : ''}`} style={{ marginTop: '1px' }} >
+            <div id={`Row${id}`} 
+                className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 category-row${isSelected ? '-selected' : ''}`} 
+                style={{ marginTop: '1px' }} >
                 <Button
                     variant='link'
                     size="sm"
@@ -179,7 +178,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                                     if (!isExpanded && (hasSubCategories || numOfQuestions > 0)) {
                                         await handleExpandClick();
                                     }
-                                    setTimeout(() => setQueue(true), 500);
+                                    setTimeout(() => setQueue(true), 1000);
                                 }}
                             >
                                 <FontAwesomeIcon icon={faPlus} size='lg' />
