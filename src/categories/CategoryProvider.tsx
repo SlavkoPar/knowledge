@@ -601,7 +601,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
   const createCategory = useCallback(
     async (category: ICategory) => {
-      const { topId, id } = category;
+      const { id } = category;
       dispatch({ type: ActionTypes.SET_LOADING_CATEGORY, payload: {} });
       try {
         const categoryDto = new CategoryDto(category, workspace).categoryDto;
@@ -1250,15 +1250,15 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     }, [Execute, KnowledgeAPI.endpointQuestionAnswer, nickName, workspace]);
 
 
-  const onCategoryIdChanged = useCallback(
-    async (topId: string, id: string): Promise<void> => {
-      const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-      console.log('Provider onCategoryIdChanged >>>>>>:', topRow)
-      const categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, 'generateId');
-      console.log('Provider onCategoryIdChanged >>>>>>:', categoryRow, id)
-      categoryRow!.id = id;
-      dispatch({ type: ActionTypes.RE_RENDER_TREE, payload: { categoryRow: categoryRow! } });
-    }, [findCategoryRow, topRows]);
+  // const onCategoryIdChanged = useCallback(
+  //   async (topId: string, id: string): Promise<void> => {
+  //     const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
+  //     console.log('Provider onCategoryIdChanged >>>>>>:', topRow)
+  //     const categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, 'generateId');
+  //     console.log('Provider onCategoryIdChanged >>>>>>:', categoryRow, id)
+  //     categoryRow!.id = id;
+  //     dispatch({ type: ActionTypes.RE_RENDER_TREE, payload: { categoryRow: categoryRow! } });
+  //   }, [findCategoryRow, topRows]);
 
 const onCategoryTitleChanged = useCallback(
   async (topId: string, id: string, title: string): Promise<void> => {
