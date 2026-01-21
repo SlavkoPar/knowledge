@@ -658,8 +658,9 @@ export type Payload = {
 
 	[ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE]: {
 		groupRow?: IGroupRow;
-		id: string;
-		questionId: string | null
+		groupId_answerId_done: string;
+		// id: string;
+		// answerId: string | null
 		//groupKeyExpanded: IAnswerKey
 	};
 

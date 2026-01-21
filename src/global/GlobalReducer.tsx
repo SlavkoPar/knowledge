@@ -124,13 +124,12 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
             };
         }
 
-
         case GlobalActionTypes.SET_ALL_GROUP_ROWS_GLOBAL: {
             const { allGroupRows } = action.payload;
             return {
                 ...state,
-                allGroupRows,
-                allGroupRowsLoaded: Date.now()
+                allGroupRowsGlobal: allGroupRows,
+                allGroupRowsGlobalLoaded: Date.now()
             };
         }
 

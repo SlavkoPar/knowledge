@@ -71,7 +71,7 @@ export const initialState: IGroupsState = {
 
 export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
-  const { loadAllGroupRowsGlobal } = useGlobalContext();
+  const { loadAndCacheAllGroupRows } = useGlobalContext();
   const globalState = useGlobalState();
   const { KnowledgeAPI, isAuthenticated, workspace, authUser, canEdit } = globalState;
   const { nickName } = authUser;
@@ -169,7 +169,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
   // ---------------------------
   const loadAllGroupRows = useCallback(async (): Promise<any> => {
     return new Promise(async (resolve) => {
-      const allGroupRows = await loadAllGroupRowsGlobal();
+      const allGroupRows = await loadAndCacheAllGroupRows();
       if (allGroupRows) {
         dispatch({ type: ActionTypes.SET_ALL_GROUP_ROWS, payload: { allGroupRows } });
       }
@@ -259,7 +259,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       //const { keyExpanded } = state;
       try {
         dispatch({ type: ActionTypes.SET_TOP_ROWS_LOADING, payload: {} });
-        const url = `${KnowledgeAPI.endpointGroupRow}/${workspace}/null/topRows/all`;
+        const url = `${KnowledgeAPI.endpointGroupRow}/${workspace}/toprows`;
         console.log('GroupProvider loadTopRows url:', url)
         console.log('loadTopRows AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         console.time();
@@ -356,7 +356,8 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
           }
           dispatch({
             type: ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE, payload: {
-              id: id!, questionId: answerId
+              groupId_answerId_done: `${id}_${answerId}`,
+              //id: id!, questionId: answerId
             }
           });
           // ---------------------------------------------------------------------------
@@ -1255,6 +1256,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
   const onGroupTitleChanged = useCallback(
     async (topId: string, id: string, title: string): Promise<void> => {
+      return;
       const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
       let groupRow: IGroupRow | undefined = await findGroupRow(topRow, id);
       console.log('PROVIDER onCategoryTitleChanged::', groupRow!.title, title)
@@ -1268,21 +1270,21 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
     }, [findGroupRow, topRows]);
 
 
-    const onAnswerTitleChanged = useCallback(
-      async (topRow: IGroupRow, question: IAnswer, title: string): Promise<void> => {
-        const { parentId, id } = question;
-        const groupRow: IGroupRow | undefined = await findGroupRow(topRow, parentId);
-        if (groupRow) {
-          const questionRow = groupRow.answerRows!.find(q => q.id === id)!;
-          questionRow.title = title;
-          // rerender
-          console.log('onQuestionTitleChanged+++>>>', id, groupRow)
-          dispatch({ type: ActionTypes.ANSWER_TITLE_CHANGED, payload: { groupRow } })
-        }
-      }, [findGroupRow]);
-    
-    
-  
+  const onAnswerTitleChanged = useCallback(
+    async (topRow: IGroupRow, question: IAnswer, title: string): Promise<void> => {
+      const { parentId, id } = question;
+      const groupRow: IGroupRow | undefined = await findGroupRow(topRow, parentId);
+      if (groupRow) {
+        const questionRow = groupRow.answerRows!.find(q => q.id === id)!;
+        questionRow.title = title;
+        // rerender
+        console.log('onQuestionTitleChanged+++>>>', id, groupRow)
+        dispatch({ type: ActionTypes.ANSWER_TITLE_CHANGED, payload: { groupRow } })
+      }
+    }, [findGroupRow]);
+
+
+
   const contextValue: IGroupsContext = {
     state, loadAllGroupRows, getSubGrps, getGrp,
     expandNodesUpToTheTree,

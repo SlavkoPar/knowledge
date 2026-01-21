@@ -171,11 +171,10 @@ export interface IGlobalState {
 	bg: string,
 	loading: boolean;
 	error?: Error;
-	//allCategoryRowsGlobal: Map<string, ICategoryRow>;
 	topRows: ICategoryRow[];
 	allCategoryRowsLoaded?: number;
-	//allGroupRows: Map<string, IGroupRow>;
-	allGroupRowsLoaded?: number;
+	allGroupRowsGlobal: Map<string, IGroupRow>;
+	allGroupRowsGlobalLoaded?: number;
 	nodesReLoaded: boolean; // categoryNodeLoaded || groupNodeLoaded  ( to prevent showing of ChatBotDlg)
 	lastRouteVisited: string;
 	chatBotDlgEnabled: boolean;
@@ -211,7 +210,7 @@ export interface IGlobalContext {
 	// getCatsByKind: (kind: number) => Promise<ICategoryRow[]>;
 	searchQuestions: (filter: string, count: number) => Promise<IQuestionRow[]>;
 	getQuestion: (questionKey: IQuestionKey) => Promise<IQuestionEx>;
-	loadAllGroupRowsGlobal: () => Promise<Map<string, IGroupRow> | null>;
+	loadAndCacheAllGroupRows: () => Promise<Map<string, IGroupRow> | null>;
 	getGroupRows: (categoryId: string | null) => Promise<any>;
 	globalGetGroupRow: (groupRowId: string) => Promise<IGroupRow | undefined>;
 	getGroupRowsByKind: (kind: number) => Promise<IGroupRow[]>;
@@ -303,7 +302,7 @@ export type GlobalPayload = {
 
 	[GlobalActionTypes.DARK_MODE]: undefined;
 
-	
+
 	[GlobalActionTypes.SET_ALL_GROUP_ROWS_GLOBAL]: {
 		allGroupRows: Map<string, IGroupRow>
 	};
