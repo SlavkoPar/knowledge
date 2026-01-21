@@ -182,6 +182,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       resolve(allCategoryRows);
     })
   }, [loadAllCategoryRowsGlobal]);
+  
 
   const getCat = useCallback(async (id: string): Promise<ICategoryRow | undefined> => {
     try {

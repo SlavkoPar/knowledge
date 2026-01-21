@@ -498,7 +498,7 @@ export interface ILoadGroupAnswers {
 
 export interface IGroupsContext {
 	state: IGroupsState,
-	loadAllGroupRows: () => Promise<boolean>;
+	loadAllGroupRows: () => Promise<Map<string, IGroupRow> | null>
 	getGrp: (id: string) => Promise<IGroupRow | undefined>;
 	expandNodesUpToTheTree: (grpKey: IGroupKey, answerId: string | null, fromChatBotDlg?: string) => Promise<any>;
 	loadTopRows: () => Promise<any>,

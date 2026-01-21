@@ -167,50 +167,18 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
   // ---------------------------
   // load all groupRows
   // ---------------------------
-  const loadAllGroupRows = useCallback(async (): Promise<any> => {
+  const loadAllGroupRows = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
     return new Promise(async (resolve) => {
       const allGroupRows = await loadAndCacheAllGroupRows();
       if (allGroupRows) {
         dispatch({ type: ActionTypes.SET_ALL_GROUP_ROWS, payload: { allGroupRows } });
       }
       else {
-        //dispatch({ type: ActionTypes.S.SET_ERROR, payload: { error: new Error('Zajeb allCategoryRows') } });
+        dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error('Zajeb allGroupRows') } });
       }
-      resolve(allGroupRows)
+      resolve(allGroupRows);
     })
-
-    return new Promise(async (resolve) => {
-      try {
-        console.time();
-        const url = `${KnowledgeAPI.endpointGroupRow}/${workspace}`;
-        await Execute("GET", url, null)
-          .then((catRowDtos: IGroupRowDto[]) => {   //  | Response
-            const allGroupRows = new Map<string, IGroupRow>();
-            console.timeEnd();
-            catRowDtos.forEach((rowDto: IGroupRowDto) => allGroupRows.set(rowDto.Id, new GroupRow(rowDto).groupRow));
-            allGroupRows.forEach(cat => {
-              let { id, parentId } = cat; // , title, variations, hasSubGroups, level, kind
-              let titlesUpTheTree = id;
-              let parentCat = parentId;
-              while (parentCat) {
-                const cat2 = allGroupRows.get(parentCat)!;
-                titlesUpTheTree = cat2!.id + ' / ' + titlesUpTheTree;
-                parentCat = cat2.parentId;
-              }
-              cat.titlesUpTheTree = titlesUpTheTree;
-              allGroupRows.set(id, cat);
-            })
-            dispatch({ type: ActionTypes.SET_ALL_GROUP_ROWS, payload: { allGroupRows } });
-            resolve(true)
-          });
-      }
-      catch (error: any) {
-        console.log(error)
-        dispatch({ type: ActionTypes.SET_GROUP_ERROR, payload: { error } });
-      }
-      resolve(true);
-    });
-  }, [Execute, KnowledgeAPI.endpointGroupRow, workspace]);
+  }, [loadAndCacheAllGroupRows]);
 
   const getGrp = useCallback(async (id: string): Promise<IGroupRow | undefined> => {
     try {
