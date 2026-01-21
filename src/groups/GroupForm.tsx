@@ -76,15 +76,28 @@ const GroupForm = ({ formMode, group, submitForm, children }: IGroupFormProps) =
     }
   });
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   const goBre = async () => {
+  //     console.log('.useEffect - onGroupTitleChanged', { debouncedSearchTerm, title: formik.values.title });
+  //     //if (debouncedSearchTerm && formik.values.title !== debouncedSearchTerm) {
+  //     /*await*/ onGroupTitleChanged(formik.values, formik.values.title);
+  //     //}
+  //   };
+  //   goBre();
+  // }, [debouncedSearchTerm, formik.values, onGroupTitleChanged]);
+
+
+ useEffect(() => {
     const goBre = async () => {
       console.log('GroupForm.useEffect - onGroupTitleChanged', { debouncedSearchTerm, title: formik.values.title });
-      //if (debouncedSearchTerm && formik.values.title !== debouncedSearchTerm) {
-      await onGroupTitleChanged(formik.values, debouncedSearchTerm);
-      //}
+      if (/*debouncedSearchTerm &&*/ formik.values.title !== debouncedSearchTerm) {
+        /*await*/ onGroupTitleChanged(topId, id, formik.values.title);
+      }
     };
     goBre();
-  }, [debouncedSearchTerm, formik.values, onGroupTitleChanged]);
+  }, [debouncedSearchTerm, formik.values.title, onGroupTitleChanged]);
+
+
 
   const handleChangeTitle = (event: ChangeEvent<HTMLTextAreaElement>) => {
     formik.handleChange(event);
@@ -102,7 +115,7 @@ const GroupForm = ({ formMode, group, submitForm, children }: IGroupFormProps) =
   useEffect(() => {
     //setTitle(group.title);
     nameRef.current!.focus()
-  }, [group.title, nameRef])
+  }, [nameRef])
 
   const isDisabled = false;
 
@@ -161,9 +174,10 @@ const GroupForm = ({ formMode, group, submitForm, children }: IGroupFormProps) =
           <Form.Control
             as="textarea"
             name="title"
-            placeholder={formik.values.title === "new Group" ? "new Group" : "group text"}
+            placeholder={formik.values.title === "New Group" ? "New Group" : "group text"}
             value={searchTerm}
             onChange={handleChangeTitle}
+            onFocus={(e) => { if (formMode === FormMode.AddingGroup) e.target.select()}}
             ref={nameRef}
             //onChange={handleChangeTitle}
             // onChange={(e: any, value: any): {e: ChangeEvent<HTMLTextAreaElement>, value: string} => {

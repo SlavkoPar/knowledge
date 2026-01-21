@@ -71,7 +71,7 @@ export const initialState: IGroupsState = {
 
 export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
-  const { loadAndCacheAllGroupRows } = useGlobalContext();
+  const { loadAllGroupRowsGlobal } = useGlobalContext();
   const globalState = useGlobalState();
   const { KnowledgeAPI, isAuthenticated, workspace, authUser, canEdit } = globalState;
   const { nickName } = authUser;
@@ -84,11 +84,10 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
   useEffect(() => {
 
-    let keyExpanded: IKeyExpanded = workspace === 'SLINDZA'
+    let keyExpanded: IKeyExpanded | null = workspace === 'DEMO'
       ? { topId: "MTS", groupId: "MTS", answerId: "aaaaaa111" }
-      : { topId: "MTS", groupId: "REMOTECTRLS", answerId: "aaaaaa111" }
+      : null
 
-    /* DOK TESTIRAM ANSWERS*/
     if ('localStorage' in window) {
       let s = localStorage.getItem('GROUPS_STATE');
       console.log('GROUPS_STATE loaded before signIn', s)
@@ -99,7 +98,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       }
     }
     /**/
-    dispatch({ type: ActionTypes.SET_FROM_LOCAL_STORAGE, payload: { keyExpanded } });
+    dispatch({ type: ActionTypes.SET_KEY_EXPANDED, payload: { keyExpanded } });
   }, [workspace]);
 
 
@@ -170,7 +169,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
   // ---------------------------
   const loadAllGroupRows = useCallback(async (): Promise<any> => {
     return new Promise(async (resolve) => {
-      const allGroupRows = await loadAndCacheAllGroupRows();
+      const allGroupRows = await loadAllGroupRowsGlobal();
       if (allGroupRows) {
         dispatch({ type: ActionTypes.SET_ALL_GROUP_ROWS, payload: { allGroupRows } });
       }
@@ -317,27 +316,24 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
     }, [Execute, KnowledgeAPI.endpointGroup, workspace]);
 
 
+
   const findGroupRow = useCallback(
-    (groupRow: IGroupRow, id: string): IGroupRow | undefined => {
+    async (groupRow: IGroupRow, id: string): Promise<IGroupRow | undefined> => {
       if (groupRow.topId === id)
         return groupRow;
       const { groupRows } = groupRow;
-      let cat: IGroupRow | undefined = groupRows.find(c => c.id === (id ?? 'null'));
-      if (!cat) {
-        try {
-          groupRows.forEach(c => {
-            console.log(id, c.id)
-            cat = findGroupRow(c, id);
-            if (cat) {
-              throw new Error("Stop the loop");
-            }
-          })
-        }
-        catch (e) {
-          // console.log("Loop stopped");
+      let grp: IGroupRow | undefined = groupRows.find(c => c.id === id);
+      if (!grp) {
+        for (const c of groupRows) {
+          const grpRow = await findGroupRow(c, id);
+          if (grpRow) {
+            grp = grpRow;
+            console.log("finGroup Stop the loop for: " + id);
+            break;
+          }
         }
       }
-      return cat;
+      return grp;
     }, []);
 
 
@@ -358,24 +354,14 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
               //return
             }
           }
-          dispatch({ type: ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE, payload: { id: id!, questionId: answerId } });
+          dispatch({
+            type: ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE, payload: {
+              id: id!, questionId: answerId
+            }
+          });
           // ---------------------------------------------------------------------------
           console.time();
           const groupKey: IGroupKey = { topId, id, parentId: null }; // proveri ROOT
-          /*
-          const group: IGroup = await getGroup(grpKey, answerId);
-          //const { hasSubGroups, numOfAnswers } = group;
-          dispatch({
-            type: ActionTypes.SET_NODE_OPENED, payload: {
-              grpKey,
-              //groupRow,
-              canEdit,
-              group,
-              answerId: answerId ?? null,
-              fromChatBotDlg: fromChatBotDlg === 'true'
-            }
-          })
-            */
           const query = new GroupKey(groupKey).toQuery(workspace);
           const url = `${KnowledgeAPI.endpointGroupRow}?${query}&pageSize=${PAGE_SIZE}&includeAnswerId=${answerId ?? null}`;
           await Execute("GET", url)
@@ -388,10 +374,10 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
                 let answer: IAnswer | null = null;
                 let groupRow: IGroupRow | null = new GroupRow(groupRowDto).groupRow;
                 if (parentId !== null) {
-                  const row = findGroupRow(groupRow, id!)!;
-                  group = { ...row, doc1: '' };
+                  const row = await findGroupRow(groupRow, id!);
+                  group = { ...row!, doc1: '' };
                   if (answerId) {
-                    const answerRow = row.answerRows.find(q => q.id === answerId && q.included)!;
+                    const answerRow = row!.answerRows.find(q => q.id === answerId && q.included)!;
                     if (answerRow) {
                       group = null;
                       answer = {
@@ -508,13 +494,19 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       const { topId, id } = groupRow;
       //const { topRows } = state;
       const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
-      //const groupRow: IGroupRow = findGroupRow(topRow.groupRows, id)!;
-      const catRow: IGroupRow = (topRow.id === id)
-        ? topRow
-        : findGroupRow(topRow, id)!;
-      groupRow = { ...catRow, isExpanded: false, groupRows: [], answerRows: [] }
-      // rerender
-      dispatch({ type: ActionTypes.SET_ROW_COLLAPSED, payload: { groupRow } })
+      const grpRow: IGroupRow | undefined = await findGroupRow(topRow, id)!;
+      // const grpRow: IGroupRow|undefined = (topRow.id === id)
+      //   ? topRow
+      //   : await findGroupRow(topRow, id)!;
+      if (grpRow) {
+        groupRow = { ...grpRow, isExpanded: false, groupRows: [], answerRows: [] }
+        // rerender
+        dispatch({ type: ActionTypes.SET_ROW_COLLAPSED, payload: { groupRow } })
+      }
+      else {
+        dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error('findCategory sranje'), whichRowId: id } });
+
+      }
     }, [findGroupRow, topRows]);
 
 
@@ -532,7 +524,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
           parentId: parentGroupRow ? id : parentId,
           id: 'generateId',
           level: level + 1,
-          title: '',
+          title: 'New Group',
           isExpanded: false
         }
         if (parentGroupRow === null) { // add topRow
@@ -558,7 +550,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
           dispatch({
             type: ActionTypes.SET_GROUP_TO_ADD, payload: {
               groupRow,
-              newGroupRow
+              newGroupRow: { ...newGroupRow } // , title: 'New Group'
             }
           })
           // dispatch({
@@ -650,29 +642,35 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
               const group = new Group(groupDto).group;
               console.log('Group successfully created', { group })
 
-              await loadAllGroupRows()
-                .then(async () => { // done: boolean
-                  await loadTopRows();
-                  if (group.parentId === null) {
-                    dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group } }); // IGroup extends IGroup Row
-                  }
-                  else {
-                    // const parentGroupKey: IGroupKey = {
-                    //   topId: group.topId,
-                    //   parentId: "doesn't matter",
-                    //   id: group.parentId!
-                    // };
-                    // const expandInfo: IExpandInfo = {
-                    //   groupKey: parentGroupKey,
-                    //   formMode: FormMode.AddingGroup
-                    // }
-                    // alert('zovem expa')
-                    // await expandGroup(expandInfo).then(() => {
-                    //   dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group } }); // IGroup extends IGroup Row
-                    // });
-                    dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group } }); // IGroup extends IGroup Row
-                  }
-                })
+              //await loadAllGroupRows()
+              //.then(async () => { // done: boolean
+
+              allGroupRows.set(group.id, { // TODO check it
+                ...group,
+                isExpanded: false
+              });
+
+              //await loadTopRows();
+              if (group.parentId === null) {
+                dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group } }); // IGroup extends IGroup Row
+              }
+              else {
+                // const parentGroupKey: IGroupKey = {
+                //   topId: group.topId,
+                //   parentId: "doesn't matter",
+                //   id: group.parentId!
+                // };
+                // const expandInfo: IExpandInfo = {
+                //   groupKey: parentGroupKey,
+                //   formMode: FormMode.AddingGroup
+                // }
+                // alert('zovem expa')
+                // await expandGroup(expandInfo).then(() => {
+                //   dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group } }); // IGroup extends IGroup Row
+                // });
+                dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group } }); // IGroup extends IGroup Row
+                //})
+              }
             }
           });
       }
@@ -944,9 +942,15 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
         }
 
         const topRow: IGroupRow = state.topRows.find(c => c.id === topId)!;
-        const catRow: IGroupRow = findGroupRow(topRow, id)!;
-        catRow.answerRows = [newAnswerRow, ...catRow.answerRows];
-        dispatch({ type: ActionTypes.ADD_NEW_ANSWER_TO_ROW, payload: { groupRow: catRow, newAnswerRow } });
+        const grpRow: IGroupRow | undefined = await findGroupRow(topRow, id)!;
+        //grpRow.answerRows = [newAnswerRow, ...grpRow.answerRows];
+        dispatch({
+          type: ActionTypes.ADD_NEW_ANSWER_TO_ROW, payload: {
+            groupRow: { ...grpRow!, answerRows: [newAnswerRow, ...grpRow!.answerRows] },
+            newAnswerRow
+          }
+          // groupRow: grpRow, newAnswerRow
+        });
         dispatch({ type: ActionTypes.SET_ANSWER, payload: { answer, formMode: FormMode.AddingAnswer } });
         // else {
         //   const expandInfo: IExpandInfo = {
@@ -1217,7 +1221,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
 
 
-  const onGroupTitleChanged = useCallback(
+  /*const onGroupTitleChanged = useCallback(
     // (topRow: IGroupRow, id: string, title: string): void => {
     (group: IGroup, title: string): void => {
       //const { topRows } = state;
@@ -1238,7 +1242,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       // rerender
       //console.log(ActionTypes.GROUP_TITLE_CHANGED, 'Sent>>>>>>>>>>:', groupRow.title)
       dispatch({
-        type: ActionTypes.GROUP_TITLE_CHANGED, payload: {
+        type: ActionTypes.RE_RENDER_TREE, payload: {
           groupRow: {
             ...group, title //: group.title
           }
@@ -1246,53 +1250,39 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       })
       //}
     }, []);
+    */
 
-  const onAnswerTitleChanged = useCallback(
-    (topRow: IGroupRow, answer: IAnswer, title: string): void => {
-      //(answer: IAnswerRow, title: string): void => {
-      const { parentId, id } = answer;
-      //const { topRows } = state;
-      //const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
-      //const groupRow: IGroupRow = findGroupRow(topRow.groupRows, id)!;
-      // if (!activeGroup || loadingGroup) { // just in case
-      //   console.log('Provider>>>>>>00000')
-      //   return;
-      // }
-      //const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
-      const groupRow: IGroupRow = findGroupRow(topRow, parentId)!;
-      if (groupRow) {
-        const answerRow = groupRow.answerRows.find(q => q.id === id)!;
-        answerRow.title = title;
-        // rerender
-        console.log('onAnswerTitleChanged+++>>>', id, groupRow)
-        dispatch({ type: ActionTypes.ANSWER_TITLE_CHANGED, payload: { groupRow } })
+
+  const onGroupTitleChanged = useCallback(
+    async (topId: string, id: string, title: string): Promise<void> => {
+      const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
+      let groupRow: IGroupRow | undefined = await findGroupRow(topRow, id);
+      console.log('PROVIDER onCategoryTitleChanged::', groupRow!.title, title)
+      if (groupRow!.title !== title) {
+        groupRow!.title = title === '' ? 'New Category' : title; // to avoid empty title
+        dispatch({
+          type: ActionTypes.RE_RENDER_TREE, payload: { groupRow: groupRow! }
+        });
       }
-      // console.log('Provider onGroupTitleChanged >>>>>>:', group)
-      //if (group && group.title !== title) {
-      //console.log('Provider onGroupTitleChanged:', title)
-      //group.title = title;
-      //console.log(ActionTypes.GROUP_TITLE_CHANGED, 'Sent>>>>>>>>>>:', groupRow.title)
-      // rerender
-      // dispatch({ type: ActionTypes.ANSWER_TITLE_CHANGED, payload: { groupRow } })
-      //}
-    }, [findGroupRow]);
+      return;
+    }, [findGroupRow, topRows]);
 
-  // const onAnswerTitleChanged = useCallback(
-  //   (topRow: IGroupRow, groupId: string, id: string, title: string): void => {
-  //     //const { groupRows } = topRow;
-  //     //const groupRow: IGroupRow = findGroupRow(groupRows, groupId)!;
-  //     const groupRow: IGroupRow = (topRow.id === groupId)
-  //       ? topRow
-  //       : findGroupRow(topRow, groupId)!;
-  //     if (groupRow) {
-  //       const answerRow = groupRow.answerRows.find(q => q.id === id)!;
-  //       console.log(groupRow.answerRows, id)
-  //       answerRow.title = title;
-  //     }
-  //     // rerender
-  //     dispatch({ type: ActionTypes.ANSWER_TITLE_CHANGED, payload: { groupRow } })
-  //   }, [findGroupRow])
 
+    const onAnswerTitleChanged = useCallback(
+      async (topRow: IGroupRow, question: IAnswer, title: string): Promise<void> => {
+        const { parentId, id } = question;
+        const groupRow: IGroupRow | undefined = await findGroupRow(topRow, parentId);
+        if (groupRow) {
+          const questionRow = groupRow.answerRows!.find(q => q.id === id)!;
+          questionRow.title = title;
+          // rerender
+          console.log('onQuestionTitleChanged+++>>>', id, groupRow)
+          dispatch({ type: ActionTypes.ANSWER_TITLE_CHANGED, payload: { groupRow } })
+        }
+      }, [findGroupRow]);
+    
+    
+  
   const contextValue: IGroupsContext = {
     state, loadAllGroupRows, getSubGrps, getGrp,
     expandNodesUpToTheTree,

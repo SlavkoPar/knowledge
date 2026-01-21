@@ -80,11 +80,11 @@ const GroupForm = ({ formMode, group, submitForm, children }: IGroupFormProps) =
     const goBre = async () => {
       console.log('GroupForm.useEffect - onGroupTitleChanged', { debouncedSearchTerm, title: formik.values.title });
       //if (debouncedSearchTerm && formik.values.title !== debouncedSearchTerm) {
-      await onGroupTitleChanged(formik.values, debouncedSearchTerm);
+      /*await*/ onGroupTitleChanged(topId, id, formik.values.title);
       //}
     };
     goBre();
-  }, [debouncedSearchTerm, formik.values, onGroupTitleChanged]);
+  }, [debouncedSearchTerm, formik.values.title, onGroupTitleChanged]);
 
   const handleChangeTitle = (event: ChangeEvent<HTMLTextAreaElement>) => {
     formik.handleChange(event);
@@ -101,8 +101,9 @@ const GroupForm = ({ formMode, group, submitForm, children }: IGroupFormProps) =
 
   useEffect(() => {
     //setTitle(group.title);
-    nameRef.current!.focus()
-  }, [group.title, nameRef])
+    nameRef.current?.focus()
+    //nameRef.current?.select()
+  }, [nameRef])
 
   const isDisabled = false;
 
@@ -161,8 +162,13 @@ const GroupForm = ({ formMode, group, submitForm, children }: IGroupFormProps) =
           <Form.Control
             as="textarea"
             name="title"
-            placeholder={formik.values.title === "new Group" ? "new Group" : "group text"}
+            placeholder={"new Group"}
             value={searchTerm}
+            onFocus={(e) => {
+              if (formMode === FormMode.AddingGroup) {
+                e.target.select();
+              }
+            }}
             onChange={handleChangeTitle}
             ref={nameRef}
             //onChange={handleChangeTitle}

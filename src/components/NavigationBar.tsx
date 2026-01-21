@@ -104,11 +104,11 @@ export const NavigationBar = () => {
                     <a className="navbar-brand mx-3" href="/">
                         <i>Knowledge</i>
                     </a>
-                    <NavLink to="/categories" className="nav-link text-warning">
+                    <NavLink to="/knowledge/categories" className="nav-link text-warning">
                         <img width="22" height="20" src={Q} alt="Questions" />{' '}Questions
                     </NavLink>
 
-                    <NavLink to="/groups" className="nav-link text-info">
+                    <NavLink to="/knowledge/groups" className="nav-link text-info">
                         <img width="22" height="20" src={A} alt="Answers" />{' '}Answers
                     </NavLink>
 

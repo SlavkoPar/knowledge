@@ -267,6 +267,20 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                     </>
                 }
 
+                {isSelected && formMode === FormMode.None &&
+                    <>
+                        {/* <div class="d-lg-none">hide on lg and wider screens</div> */}
+                        <div ref={hoverRef} className="">
+                            {Row1}
+                        </div>
+                        {/* <div id='divInLine' className="ms-0 d-md-none w-100"> */}
+                        <div id='divInLine' className="ms-0 d-md-none w-100">
+                            <ViewGroup inLine={false} />
+                        </div>
+                    </>
+                }
+
+
                 {!isSelected &&
                     <div ref={hoverRef} className="">
                         {Row1}

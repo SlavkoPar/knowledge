@@ -524,7 +524,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
           dispatch({
             type: ActionTypes.SET_CATEGORY_TO_ADD, payload: {
               categoryRow,
-              newCategoryRow: { ...newCategoryRow, title: '' }
+              newCategoryRow: { ...newCategoryRow } // , title: ''
             }
           })
           // dispatch({
@@ -1289,16 +1289,7 @@ const onCategoryTitleChanged = useCallback(
 
 const onQuestionTitleChanged = useCallback(
   async (topRow: ICategoryRow, question: IQuestion, title: string): Promise<void> => {
-    //(question: IQuestionRow, title: string): void => {
     const { parentId, id } = question;
-    //const { topRows } = state;
-    //const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-    //const categoryRow: ICategoryRow = findCategoryRow(topRow.categoryRows, id)!;
-    // if (!activeCategory || loadingCategory) { // just in case
-    //   console.log('Provider>>>>>>00000')
-    //   return;
-    // }
-    //const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
     const categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, parentId);
     if (categoryRow) {
       const questionRow = categoryRow.questionRows!.find(q => q.id === id)!;
@@ -1307,31 +1298,8 @@ const onQuestionTitleChanged = useCallback(
       console.log('onQuestionTitleChanged+++>>>', id, categoryRow)
       dispatch({ type: ActionTypes.QUESTION_TITLE_CHANGED, payload: { categoryRow } })
     }
-    // console.log('Provider onCategoryTitleChanged >>>>>>:', category)
-    //if (category && category.title !== title) {
-    //console.log('Provider onCategoryTitleChanged:', title)
-    //category.title = title;
-    //console.log(ActionTypes.CATEGORY_TITLE_CHANGED, 'Sent>>>>>>>>>>:', categoryRow.title)
-    // rerender
-    // dispatch({ type: ActionTypes.QUESTION_TITLE_CHANGED, payload: { categoryRow } })
-    //}
   }, [findCategoryRow]);
 
-// const onQuestionTitleChanged = useCallback(
-//   (topRow: ICategoryRow, categoryId: string, id: string, title: string): void => {
-//     //const { categoryRows } = topRow;
-//     //const categoryRow: ICategoryRow = findCategoryRow(categoryRows, categoryId)!;
-//     const categoryRow: ICategoryRow = (topRow.id === categoryId)
-//       ? topRow
-//       : findCategoryRow(topRow, categoryId)!;
-//     if (categoryRow) {
-//       const questionRow = categoryRow.questionRows.find(q => q.id === id)!;
-//       console.log(categoryRow.questionRows, id)
-//       questionRow.title = title;
-//     }
-//     // rerender
-//     dispatch({ type: ActionTypes.QUESTION_TITLE_CHANGED, payload: { categoryRow } })
-//   }, [findCategoryRow])
 
 const contextValue: ICategoriesContext = {
   state, loadAllCategoryRows, getSubCats, getCat,

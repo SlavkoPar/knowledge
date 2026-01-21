@@ -73,7 +73,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                 await loadTopRows();
             }
         })()
-    }, [topRowsLoading, topRowsLoaded, loadTopRows, fromChatBotDlg]);
+    }, [topRowsLoading, topRowsLoaded, loadTopRows]);
 
 
     useEffect(() => {
@@ -117,7 +117,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
     }, [categoryId_questionId, categoryId_questionId_done, topRowsLoaded, keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, fromChatBotDlg, chatBotDlgEnabled, setChatBotDlgEnabled]);
 
     useEffect(() => {
-        //setLastRouteVisited(`/categories`);
+        setLastRouteVisited(`/knowledge/categories`);
     }, [setLastRouteVisited])
 
     if (categoryId_questionId !== 'add_question') {

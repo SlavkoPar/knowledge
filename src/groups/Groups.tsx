@@ -114,7 +114,7 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
     }, [keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, groupId_answerId, groupId_answerId_done, topRows, fromChatBotDlg])
 
     useEffect(() => {
-        setLastRouteVisited(`/groups`);
+        setLastRouteVisited(`/knowledge/groups`);
     }, [setLastRouteVisited])
 
     if (groupId_answerId !== 'add_answer') {

@@ -171,10 +171,10 @@ export interface IGlobalState {
 	bg: string,
 	loading: boolean;
 	error?: Error;
-	allCategoryRowsGlobal: Map<string, ICategoryRow>;
+	//allCategoryRowsGlobal: Map<string, ICategoryRow>;
 	topRows: ICategoryRow[];
 	allCategoryRowsLoaded?: number;
-	allGroupRows: Map<string, IGroupRow>;
+	//allGroupRows: Map<string, IGroupRow>;
 	allGroupRowsLoaded?: number;
 	nodesReLoaded: boolean; // categoryNodeLoaded || groupNodeLoaded  ( to prevent showing of ChatBotDlg)
 	lastRouteVisited: string;
@@ -206,12 +206,12 @@ export interface IGlobalContext {
 	health: () => void;
 	loadAllCategoryRowsGlobal: () => Promise<Map<string, ICategoryRow> | null>;
 	loadTopRows: () => Promise<any>,
-	getCat: (categoryId: string) => Promise<ICategoryRow | undefined>;
-	getSubCats: (categoryId: string | null) => Promise<any>;
-	getCatsByKind: (kind: number) => Promise<ICategoryRow[]>;
+	// getCat: (categoryId: string) => Promise<ICategoryRow | undefined>;
+	// getSubCats: (categoryId: string | null) => Promise<any>;
+	// getCatsByKind: (kind: number) => Promise<ICategoryRow[]>;
 	searchQuestions: (filter: string, count: number) => Promise<IQuestionRow[]>;
 	getQuestion: (questionKey: IQuestionKey) => Promise<IQuestionEx>;
-	loadAndCacheAllGroupRows: () => Promise<Map<string, IGroupRow> | null>;
+	loadAllGroupRowsGlobal: () => Promise<Map<string, IGroupRow> | null>;
 	getGroupRows: (categoryId: string | null) => Promise<any>;
 	globalGetGroupRow: (groupRowId: string) => Promise<IGroupRow | undefined>;
 	getGroupRowsByKind: (kind: number) => Promise<IGroupRow[]>;

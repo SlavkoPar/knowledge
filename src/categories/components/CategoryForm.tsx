@@ -101,8 +101,8 @@ const CategoryForm = ({ formMode, category, submitForm, children }: ICategoryFor
 
   useEffect(() => {
     //setTitle(category.title);
-    nameRef.current!.focus()
-  }, [category.title, nameRef])
+    //nameRef.current!.focus()
+  }, [nameRef])
 
   const isDisabled = false;
 
@@ -161,9 +161,10 @@ const CategoryForm = ({ formMode, category, submitForm, children }: ICategoryFor
           <Form.Control
             as="textarea"
             name="title"
-            placeholder={formik.values.title === "new Category" ? "new Category" : "category text"}
+            placeholder={"new Category"}
             value={searchTerm}
             onChange={handleChangeTitle}
+            onFocus={(e) => { if (formMode === FormMode.AddingCategory) e.target.select()}}
             ref={nameRef}
             //onChange={handleChangeTitle}
             // onChange={(e: any, value: any): {e: ChangeEvent<HTMLTextAreaElement>, value: string} => {

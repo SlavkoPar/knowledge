@@ -43,9 +43,6 @@ export interface ICategoryDto extends ICategoryRowDto {
 	Doc1: string;
 }
 
-
-
-
 export interface IKeyExpanded {
 	topId: string,
 	categoryId: string;

@@ -84,7 +84,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   // we reset changes, and again we use initialGlobalState
   // so, don't use globalDispatch inside of inner Provider, like Categories Provider
   const [globalState, dispatch] = useReducer(GlobalReducer, initGlobalState);
-  const { KnowledgeAPI, workspace, allCategoryRowsGlobal: allCategoryRows, allGroupRows, allGroupRowsLoaded } = globalState;
+  const { KnowledgeAPI, workspace, allCategoryRowsGlobal, allGroupRows, allGroupRowsLoaded } = globalState;
 
   console.log('--------> GlobalProvider')
 
@@ -192,10 +192,10 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         console.time();
         const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}`;
         await Execute("GET", url, null)
-          .then((catRowDtos: ICategoryRowDto[]) => {   //  | Response
+          .then((groupRowDtos: ICategoryRowDto[]) => {   //  | Response
             const allCategoryRows = new Map<string, ICategoryRow>();
             console.timeEnd();
-            catRowDtos.forEach((rowDto: ICategoryRowDto) => allCategoryRows.set(rowDto.Id, new CategoryRow(rowDto).categoryRow));
+            groupRowDtos.forEach((rowDto: ICategoryRowDto) => allCategoryRows.set(rowDto.Id, new CategoryRow(rowDto).categoryRow));
             allCategoryRows.forEach(cat => {
               let { id, parentId } = cat; // , title, variations, hasSubCategories, level, kind
               let titlesUpTheTree = id;
@@ -251,36 +251,31 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   // ---------------------------
   // load all groupRows
   // ---------------------------
-  const loadAndCacheAllGroupRows = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
+
+  const loadAllGroupRowsGlobal = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
     return new Promise(async (resolve) => {
       try {
         console.time();
         const url = `${KnowledgeAPI.endpointGroupRow}/${workspace}`;
         await Execute("GET", url, null)
-          .then((rowDtos: IGroupRowDto[]) => {   //  | Response
-            console.log('loadAndCacheAllGroupRows', KnowledgeAPI.endpointGroupRow)
+          .then((groupRowDtos: IGroupRowDto[]) => {   //  | Response
             const allGroupRows = new Map<string, IGroupRow>();
             console.timeEnd();
-            // if (groupDtos instanceof Response) {
-            //   throw (groupDtos);
-            // }
-            //const data: IGroupDto[] = groupDtos;
-            rowDtos.forEach((rowDto: IGroupRowDto) => allGroupRows.set(rowDto.Id, new GroupRow(rowDto).groupRow));
-            //
-            allGroupRows.forEach(groupRow => {
-              let { id, parentId } = groupRow;
+            groupRowDtos.forEach((rowDto: IGroupRowDto) => allGroupRows.set(rowDto.Id, new GroupRow(rowDto).groupRow));
+            allGroupRows.forEach(grp => {
+              let { id, parentId } = grp; // , title, variations, hasSubCategories, level, kind
               let titlesUpTheTree = id;
               let parentGrp = parentId;
               while (parentGrp) {
-                const groupRow2 = allGroupRows.get(parentGrp)!;
-                titlesUpTheTree = groupRow2!.id + ' / ' + titlesUpTheTree;
-                parentGrp = groupRow2.parentId;
+                const grp2 = allGroupRows.get(parentGrp)!;
+                titlesUpTheTree = grp2!.id + ' / ' + titlesUpTheTree;
+                parentGrp = grp2.parentId;
               }
-              groupRow.titlesUpTheTree = titlesUpTheTree;
-              allGroupRows.set(id, groupRow);
+              grp.titlesUpTheTree = titlesUpTheTree;
+              allGroupRows.set(id, grp);
             })
-            dispatch({ type: GlobalActionTypes.SET_ALL_GROUP_ROWS_GLOBAL, payload: { allGroupRows } });
             resolve(allGroupRows)
+            // with no dispatch
           });
       }
       catch (error: any) {
@@ -289,7 +284,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       }
       resolve(null);
     });
-  }, [KnowledgeAPI.endpointGroupRow, workspace]);
+  }, [KnowledgeAPI.endpointCategoryRow, workspace]);
 
   //const searchQuestions = useCallback(async (execute: (method: string, endpoint: string) => Promise<any>, filter: string, count: number): Promise<any> => {
   const searchQuestions = async (filter: string, count: number): Promise<any> => {
@@ -489,6 +484,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       })
     }, [KnowledgeAPI.endpointQuestion, workspace]);
 
+  /*
   const getCatsByKind = async (kind: number): Promise<ICategoryRow[]> => {
     try {
       const { allCategoryRowsGlobal: allCategoryRows } = globalState;
@@ -522,6 +518,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     }
     return [];
   }
+  */
 
   /*
   const getCatsByLevel = async (kind: number): Promise<ICategoryRow[]> => {
@@ -557,11 +554,12 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     return [];
   } */
 
+    /*
   const getSubCats = useCallback(async (categoryId: string | null) => {
     try {
       let parentHeader = "";
       const subCats: ICategoryRow[] = [];
-      allCategoryRows.forEach((cat, id) => {  // globalState.cats is Map<string, ICat>
+      allGroupRows.forEach((cat, id) => {  // globalState.cats is Map<string, ICat>
         if (id === categoryId) {
           parentHeader = ""; //cat.header!;
         }
@@ -576,11 +574,13 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
       return { subCats: [], parentHeader: 'Kiks subCats' }
     }
-  }, [allCategoryRows]);
+  }, [allGroupRows]);
+  */
 
+  /*
   const getCat = useCallback(async (id: string): Promise<ICategoryRow | undefined> => {
     try {
-      const cat: ICategoryRow | undefined = allCategoryRows.get(id);  // globalState.cats is Map<string, ICat>
+      const cat: ICategoryRow | undefined = allGroupRows.get(id);  // globalState.cats is Map<string, ICat>
       return cat;
     }
     catch (error: any) {
@@ -588,7 +588,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
     }
     return undefined;
-  }, [allCategoryRows]);
+  }, [allGroupRows]);
+  */
 
 
   const health = () => {
@@ -903,9 +904,9 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     <GlobalContext.Provider value={{
       globalState, setLastRouteVisited,
       health,
-      loadAllCategoryRowsGlobal, loadTopRows, getCat, getSubCats, getCatsByKind,
+      loadAllCategoryRowsGlobal, loadTopRows, //getCat, getSubCats, getCatsByKind,
       searchQuestions, getQuestion,
-      loadAndCacheAllGroupRows, globalGetGroupRow, getGroupRows, getGroupRowsByKind, searchAnswers, getAnswer,
+      loadAllGroupRowsGlobal, globalGetGroupRow, getGroupRows, getGroupRowsByKind, searchAnswers, getAnswer,
       setNodesReloaded,
       createWorkspace, getWorkspace,
       addHistory, getAnswersRated, addHistoryFilter,

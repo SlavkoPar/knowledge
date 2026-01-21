@@ -513,7 +513,7 @@ export interface IGroupsContext {
 	expandGroup: (expandInfo: IExpandInfo) => Promise<any>,
 	collapseGroup: (groupRow: IGroupRow) => void,
 	// findGroup: (groupRows: IGroupRow[], id: string) => IGroupRow | undefined;
-	onGroupTitleChanged: (group: IGroup, title: string) => void;
+	onGroupTitleChanged: (topId: string, id: string, title: string) => Promise<void>;
 	//////////////
 	// answers
 	loadGroupAnswers: (catParams: ILoadGroupAnswers) => void;  //(parentInfo: IParentInfo) => void,
@@ -525,7 +525,7 @@ export interface IGroupsContext {
 	editAnswer: (answerRow: IAnswerRow) => void;
 	updateAnswer: (oldParentId: string, answer: IAnswer, groupChanged: boolean) => Promise<any>;
 	deleteAnswer: (answerRow: IAnswerRow, isActive: boolean) => void;
-	onAnswerTitleChanged: (topRow: IGroupRow, answer: IAnswer, title: string) => void;
+	onAnswerTitleChanged: (topRow: IGroupRow, answer: IAnswer, title: string) => Promise<void>;
 }
 
 export interface IGroupFormProps {
@@ -549,7 +549,7 @@ export interface IAnswerFormProps {
 
 
 export enum ActionTypes {
-	SET_FROM_LOCAL_STORAGE = "SET_FROM_LOCAL_STORAGE",
+	SET_KEY_EXPANDED = "SET_KEY_EXPANDED",
 	SET_TOP_ROWS = 'SET_TOP_ROWS',
 	SET_NODE_EXPANDED_UP_THE_TREE = "SET_NODE_EXPANDED_UP_THE_TREE",
 	SET_LOADING_GROUP = 'SET_LOADING_GROUP',
@@ -559,7 +559,8 @@ export enum ActionTypes {
 	SET_SUB_GROUPS = 'SET_SUB_GROUPS',
 	SET_GROUP_ERROR = 'SET_GROUP_ERROR',
 	ADD_SUB_GROUP = 'ADD_SUB_GROUP',
-	GROUP_TITLE_CHANGED = 'GROUP_TITLE_CHANGED',
+	SET_ERROR = 'SET_ERROR',
+	RE_RENDER_TREE = 'RE_RENDER_TREE',
 	CANCEL_ADD_SUB_GROUP = 'CANCEL_ADD_SUB_GROUP',
 	SET_GROUP = 'SET_GROUP',
 	//SET_GROUP_ROW = 'SET_GROUP_ROW',
@@ -604,7 +605,7 @@ export enum ActionTypes {
 }
 
 export const actionStoringToLocalStorage = [
-	ActionTypes.SET_FROM_LOCAL_STORAGE,
+	ActionTypes.SET_KEY_EXPANDED,
 	ActionTypes.SET_ROW_EXPANDED,
 	ActionTypes.SET_ROW_COLLAPSED,
 	ActionTypes.SET_GROUP_ADDED,
@@ -621,23 +622,22 @@ export const doNotModifyTree = [
 	ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE,
 	//ActionTypes.SET_NODE_OPENED,
 	//ActionTypes.SET_GROUP_TO_ADD,
-	ActionTypes.SET_GROUP_UPDATED,
+	//ActionTypes.SET_GROUP_UPDATED,
 	ActionTypes.ADD_NEW_ANSWER_TO_ROW,
 	ActionTypes.CANCEL_GROUP_FORM,
 	ActionTypes.CLOSE_GROUP_FORM
 ]
 
 export const doNotCallInnerReducerActions = [
-	ActionTypes.GROUP_TITLE_CHANGED,
-	ActionTypes.ANSWER_TITLE_CHANGED,
-	ActionTypes.ADD_SUB_GROUP
+	ActionTypes.RE_RENDER_TREE,
+	ActionTypes.ANSWER_TITLE_CHANGED
 ]
 
 export type Payload = {
 
-	[ActionTypes.SET_FROM_LOCAL_STORAGE]: {
+	[ActionTypes.SET_KEY_EXPANDED]: {
 		groupRow?: IGroupRow;
-		keyExpanded: IKeyExpanded
+		keyExpanded: IKeyExpanded | null;
 	}
 
 	[ActionTypes.SET_TOP_ROWS_LOADING]: {
@@ -659,7 +659,7 @@ export type Payload = {
 	[ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE]: {
 		groupRow?: IGroupRow;
 		id: string;
-		questionId: string|null
+		questionId: string | null
 		//groupKeyExpanded: IAnswerKey
 	};
 
@@ -698,7 +698,7 @@ export type Payload = {
 		allGroupRows: Map<string, IGroupRow>
 	};
 
-	[ActionTypes.GROUP_TITLE_CHANGED]: {
+	[ActionTypes.RE_RENDER_TREE]: {
 		groupRow?: IGroupRow;
 	}
 
@@ -862,6 +862,12 @@ export type Payload = {
 	[ActionTypes.CANCEL_ANSWER_FORM]: {
 		groupRow?: IGroupRow;
 		answer: IAnswer;
+	};
+
+	[ActionTypes.SET_ERROR]: {
+		groupRow?: IGroupRow;
+		error: Error;
+		whichRowId?: string;
 	};
 };
 

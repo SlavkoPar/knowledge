@@ -5,22 +5,6 @@ import {
   actionStoringToLocalStorage, FormMode, doNotModifyTree, doNotCallInnerReducerActions
 } from "@/groups/types";
 
-export const subGrpRow: IGroupRow = {
-  topId: 'generateId', // for top rows: topId = ToUpperCase(id)
-  id: 'generateId',
-  parentId: null,
-  level: 1,
-  isExpanded: false,
-  groupRows: [],
-  kind: 0,
-  title: '',
-  link: null,
-  header: '',
-  hasSubGroups: false,
-  variations: [],
-  numOfAnswers: 0,
-  answerRows: []
-}
 
 export const initialAnswer: IAnswer = {
   topId: '',
@@ -82,11 +66,12 @@ export const GroupReducer: Reducer<IGroupsState, Actions> = (state, action) => {
   const { groupRow } = action.payload;
   // const isGroup = IsGroup(groupRow); // IGroup rather than IGroupRow
 
-  if (action.type === ActionTypes.SET_FROM_LOCAL_STORAGE) {
+  if (action.type === ActionTypes.SET_KEY_EXPANDED) {
     const { keyExpanded } = action.payload;
     return {
       ...state,
-      keyExpanded
+      keyExpanded,
+      nodeOpened: keyExpanded === null ? true : state.nodeOpened
     }
   }
 
@@ -117,7 +102,7 @@ export const GroupReducer: Reducer<IGroupsState, Actions> = (state, action) => {
     else {
       // actually topRows is from previous state
       const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
-      DeepClone.idToSet = id;
+      DeepClone.idToSet = action.type === 'SET_GROUP_ADDED' ? 'generateId' : id;
       DeepClone.newGroupRow = groupRow!;
       const newTopRow = new DeepClone(topRow).groupRow;
       newTopRows = topRows.map(c => c.id === topId
@@ -206,7 +191,7 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
         groupId_answerId_done: `${id}_${answerId}`,
         nodeOpening: false,
         nodeOpened: true,
-        loadingGroups: false,
+        loadingGroups: false
       };
     }
 
@@ -716,6 +701,19 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
         selectedAnswerId: null
       };
     }
+
+       case ActionTypes.SET_ERROR: {
+          const { error, whichRowId } = action.payload; // category.id or question.id
+          return {
+            ...state,
+            error,
+            whichRowId,
+            loadingGroups: false,
+            loadingAnswers: false,
+            loadingGroup: false, groupLoaded: false,
+            loadingAnswer: false, answerLoaded: false
+          };
+        }
 
     default:
       alert(`Action ${action.type} not allowed`)
