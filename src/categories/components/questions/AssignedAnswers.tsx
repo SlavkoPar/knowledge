@@ -22,7 +22,7 @@ interface IProps {
 const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabled }: IProps) => {
 
     const { globalState, searchAnswers, loadAndCacheAllGroupRows } = useGlobalContext();
-    const { isDarkMode, variant, allGroupRows, allGroupRowsLoaded } = globalState;
+    const { isDarkMode, variant, allGroupRowsGlobal: allGroupRows, allGroupRowsGlobalLoaded: allGroupRowsLoaded } = globalState;
 
     const [showAdd, setShowAdd] = useState(false);
     const handleClose = () => setShowAdd(false);

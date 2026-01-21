@@ -68,16 +68,19 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
     useEffect(() => {
         (async () => {
             // SET_TOP_ROWS  Level:1
+            console.log('Providered useEffect loadTopRows', { topRowsLoading }, { topRowsLoaded })
             if (!topRowsLoading && !topRowsLoaded) {
                 console.log('ZOVEM 111 loadTopRows()')
                 await loadTopRows()
             }
         })()
-    }, [topRowsLoading, topRowsLoaded, loadTopRows]);
+    }, [loadTopRows, topRowsLoading, topRowsLoaded]);
 
 
     useEffect(() => {
         (async () => {
+            console.log('Providered useEffect groupId_answerId_changed', 
+                { nodeOpening}, { topRowsLoaded }, {topRowsLength: topRows.length })
             if (!nodeOpening && topRowsLoaded && topRows.length > 0) {
                 if (groupId_answerId) {
                     if (groupId_answerId === 'add_answer') {
@@ -111,7 +114,8 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                 }
             }
         })()
-    }, [keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, groupId_answerId, groupId_answerId_done, topRows, fromChatBotDlg])
+    }, [groupId_answerId, groupId_answerId_done, topRowsLoaded, keyExpanded, nodeOpening, nodeOpened]);
+
 
     useEffect(() => {
         setLastRouteVisited(`/knowledge/groups`);

@@ -164,20 +164,22 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
       };
     }
 
-
     case ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE: {
-      const fromChatBotDlg = '' //} = action.payload;
-      const { keyExpanded, activeGroup, activeAnswer } = state;
-      return {
-        ...state,
-        nodeOpening: true,
-        loadingGroups: true,
-        nodeOpened: false,
-        keyExpanded: fromChatBotDlg ? null : { ...keyExpanded! },
-        activeGroup: fromChatBotDlg ? null : activeGroup,
-        activeAnswer: fromChatBotDlg ? null : activeAnswer
-      }
-    }
+          const { groupId_answerId_done } = action.payload;
+          //const { keyExpanded /*, activeCategory, activeQuestion */ } = state;
+          return {
+            ...state,
+            groupId_answerId_done,
+            nodeOpening: true,
+            loadingGroups: true,
+            nodeOpened: false,
+            //keyExpanded: fromChatBotDlg ? null : { ...keyExpanded! },
+            activeGroup: null, //fromChatBotDlg ? null : activeCategory,
+            activeAnswer: null //fromChatBotDlg ? null : activeQuestion
+          }
+        }
+
+
 
     case ActionTypes.SET_NODE_EXPANDED_UP_THE_TREE: {
       const { group, formMode, grpKey, answerId, answer } = action.payload;

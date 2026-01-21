@@ -70,10 +70,9 @@ const initGlobalState: IGlobalState = {
   variant: 'dark',
   bg: 'dark',
   loading: false,
-  allCategoryRowsGlobal: new Map<string, ICategoryRow>(),
   topRows: [],
-  allGroupRows: new Map<string, IGroupRow>(),
-  allGroupRowsLoaded: undefined,
+  allGroupRowsGlobal: new Map<string, IGroupRow>(),
+  allGroupRowsGlobalLoaded: undefined,
   nodesReLoaded: false,
   lastRouteVisited: '/knowledge/categories',
   chatBotDlgEnabled: false
@@ -84,7 +83,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   // we reset changes, and again we use initialGlobalState
   // so, don't use globalDispatch inside of inner Provider, like Categories Provider
   const [globalState, dispatch] = useReducer(GlobalReducer, initGlobalState);
-  const { KnowledgeAPI, workspace, allCategoryRowsGlobal, allGroupRows, allGroupRowsLoaded } = globalState;
+  const { KnowledgeAPI, workspace, allGroupRowsGlobal, allGroupRowsGlobalLoaded } = globalState;
 
   console.log('--------> GlobalProvider')
 
@@ -252,7 +251,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   // load all groupRows
   // ---------------------------
 
-  const loadAllGroupRowsGlobal = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
+  const loadAndCacheAllGroupRows = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
     return new Promise(async (resolve) => {
       try {
         console.time();
@@ -274,8 +273,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
               grp.titlesUpTheTree = titlesUpTheTree;
               allGroupRows.set(id, grp);
             })
+            dispatch({ type: GlobalActionTypes.SET_ALL_GROUP_ROWS_GLOBAL, payload: { allGroupRows } });
             resolve(allGroupRows)
-            // with no dispatch
           });
       }
       catch (error: any) {
@@ -338,15 +337,14 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
 
   const getGroupRows = useCallback(async (groupId: string | null) => {
-    //const { allGroupRowsLoaded } = globalState;
-    if (!allGroupRowsLoaded) {
+    if (!allGroupRowsGlobalLoaded) {
       await loadAndCacheAllGroupRows();
     }
     try {
       //const { allGroupRows: groupRows } = globalState;
       let parentHeader = "";
       const subGroupRows: IGroupRow[] = [];
-      allGroupRows.forEach((groupRow) => {  // globalState.shortGroups is Map<string, IShortGroup>
+      allGroupRowsGlobal.forEach((groupRow) => {  // globalState.shortGroups is Map<string, IShortGroup>
         if (groupRow.id === groupId) {
           parentHeader = groupRow.header!;
         }
@@ -379,7 +377,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
       return { groupRows: [], parentHeader: 'Kiks' };
     }
-  }, [allGroupRows, allGroupRowsLoaded, loadAndCacheAllGroupRows]);
+  }, [allGroupRowsGlobal, allGroupRowsGlobalLoaded, loadAndCacheAllGroupRows]);
 
 
   const searchAnswers = async (filter: string, count: number, questionKey?: IQuestionKey): Promise<any> => {
@@ -554,28 +552,28 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     return [];
   } */
 
-    /*
-  const getSubCats = useCallback(async (categoryId: string | null) => {
-    try {
-      let parentHeader = "";
-      const subCats: ICategoryRow[] = [];
-      allGroupRows.forEach((cat, id) => {  // globalState.cats is Map<string, ICat>
-        if (id === categoryId) {
-          parentHeader = ""; //cat.header!;
-        }
-        else if (cat.parentId === categoryId) {
-          subCats.push(cat);
-        }
-      })
-      return { subCats, parentHeader };
-    }
-    catch (error: any) {
-      console.log(error)
-      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
-      return { subCats: [], parentHeader: 'Kiks subCats' }
-    }
-  }, [allGroupRows]);
-  */
+  /*
+const getSubCats = useCallback(async (categoryId: string | null) => {
+  try {
+    let parentHeader = "";
+    const subCats: ICategoryRow[] = [];
+    allGroupRows.forEach((cat, id) => {  // globalState.cats is Map<string, ICat>
+      if (id === categoryId) {
+        parentHeader = ""; //cat.header!;
+      }
+      else if (cat.parentId === categoryId) {
+        subCats.push(cat);
+      }
+    })
+    return { subCats, parentHeader };
+  }
+  catch (error: any) {
+    console.log(error)
+    dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+    return { subCats: [], parentHeader: 'Kiks subCats' }
+  }
+}, [allGroupRows]);
+*/
 
   /*
   const getCat = useCallback(async (id: string): Promise<ICategoryRow | undefined> => {
@@ -661,7 +659,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   const globalGetGroupRow = useCallback(async (id: string): Promise<IGroupRow | undefined> => {
     try {
       //const { allGroupRows: groupRows } = globalState;
-      const groupRow: IGroupRow | undefined = allGroupRows.get(id);  // globalState.cats is Map<string, ICat>
+      const groupRow: IGroupRow | undefined = allGroupRowsGlobal.get(id);  // globalState.cats is Map<string, ICat>
       return groupRow!;
     }
     catch (error: any) {
@@ -669,12 +667,12 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
     }
     return undefined;
-  }, [allGroupRows]);
+  }, [allGroupRowsGlobal]);
 
 
   const getGroupRowsByKind = async (kind: number): Promise<IGroupRow[]> => {
     try {
-      const { allGroupRows: shortGroups } = globalState;
+      const { allGroupRowsGlobal: shortGroups } = globalState;
       const groups: IGroupRow[] = [];
       shortGroups.forEach((c) => {
         if (c.kind === kind) {
@@ -906,7 +904,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       health,
       loadAllCategoryRowsGlobal, loadTopRows, //getCat, getSubCats, getCatsByKind,
       searchQuestions, getQuestion,
-      loadAllGroupRowsGlobal, globalGetGroupRow, getGroupRows, getGroupRowsByKind, searchAnswers, getAnswer,
+      loadAndCacheAllGroupRows, globalGetGroupRow, getGroupRows, getGroupRowsByKind, searchAnswers, getAnswer,
       setNodesReloaded,
       createWorkspace, getWorkspace,
       addHistory, getAnswersRated, addHistoryFilter,
