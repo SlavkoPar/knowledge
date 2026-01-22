@@ -4,7 +4,7 @@ import type { IAssignedAnswer, IAssignedAnswerKey, IQuestionKey } from "@/catego
 import { useCategoryContext } from "@/categories/CategoryProvider";
 import { useGlobalContext } from "@/global/GlobalProvider";
 import AssignedAnswer from "./AssignedAnswer";
-import { AutoSuggestAnswers } from '@/groups/AutoSuggestAnswers'
+import { AutoSuggestAnswers } from '@/groups/AutoSuggestAnswers';
 import { type IAnswer } from "@/groups/types";
 import AddAnswer from "@/categories/components/questions/AddAnswer"
 

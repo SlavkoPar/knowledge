@@ -18,7 +18,7 @@ import EditAnswer from "@/groups/components/answers/EditAnswer";
 import { initialAnswer } from "@/groups/GroupReducer";
 import ModalAddAnswer from './ModalAddAnswer';
 import AddGroup from './components/AddGroup';
-import { AutoSuggestAnswers } from './AutoSuggestAnswers';
+import { AutoSuggestAnswers } from '@/groups/AutoSuggestAnswers';
 import AddAnswer from './components/answers/AddAnswer';
 
 // const AutoSuggestAnswers = lazy(() =>

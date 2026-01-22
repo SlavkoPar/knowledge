@@ -90,7 +90,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
     if ('localStorage' in window) {
       let s = localStorage.getItem('GROUPS_STATE');
-      console.log('GROUPS_STATE loaded before signIn', s)
+      console.log('GROUPS_STATE from localStorage', s)
       if (s !== null) {
         const locStorage: ILocStorage = JSON.parse(s);
         if (locStorage.keyExpanded !== null)

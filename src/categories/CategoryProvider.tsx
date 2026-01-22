@@ -93,7 +93,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
     if ('localStorage' in window) {
       let s = localStorage.getItem('CATEGORIES_STATE');
-      console.log('CATEGORIES_STATE loaded before signIn', s)
+      console.log('CATEGORIES_STATE from localStorage', s)
       if (s !== null) {
         const locStorage: ILocStorage = JSON.parse(s);
         if (locStorage.keyExpanded !== null)
