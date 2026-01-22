@@ -10,7 +10,7 @@ import './AutoSuggestAnswers.css'
 import { type IGroupRow, type IAnswerKey, type IAnswerRow, AnswerKey } from '@/groups/types';
 
 
-interface IGrpMy {
+interface ICatMy {
 	id: string,
 	parentGroupUp: string,
 	groupParentTitle: string,
@@ -18,7 +18,7 @@ interface IGrpMy {
 	answerRows: IAnswerRow[]
 }
 
-interface IGrpSection {
+interface ICatSection {
 	id: string | null,
 	groupTitle: string,
 	parentGroupUp: string,
@@ -34,12 +34,12 @@ interface IGrpSection {
 
 // autoFocus does the job
 //let inputAutosuggest = createRef<HTMLInputElement>();
-// interface IGrpIdTitle {
+// interface ICatIdTitle {
 // 	id: string;
 // 	title: string;
 // }
 
-const AnswerAutosuggestMulti = Autosuggest as { new(): Autosuggest<IAnswerRow, IGrpMy> };
+const AnswerAutosuggestMulti = Autosuggest as { new(): Autosuggest<IAnswerRow, ICatMy> };
 
 export class AutoSuggestAnswers extends React.Component<{
 	tekst: string | undefined,
@@ -140,16 +140,16 @@ export class AutoSuggestAnswers extends React.Component<{
 	}
 
 
-	// private satisfyingGroups = (searchWords: string[]): IGrpIdTitle[] => {
-	// 	const arr: IGrpIdTitle[] = [];
+	// private satisfyingCategories = (searchWords: string[]): ICatIdTitle[] => {
+	// 	const arr: ICatIdTitle[] = [];
 	// 	searchWords.filter(w => w.length >= 3).forEach(w => {
-	// 		this.allGroupRows.forEach(async Grp => {
-	// 			//const parentId = Grp.id;
+	// 		this.allGroupRows.forEach(async cat => {
+	// 			//const parentId = cat.id;
 	// 			//let j = 0;
-	// 			// Grp.words.forEach(Grpw => {
-	// 			// 	if (Grpw.includes(w)) {
+	// 			// cat.words.forEach(catw => {
+	// 			// 	if (catw.includes(w)) {
 	// 			// 		console.log("Add all answers of group")
-	// 			// 		arr.push({ id: Grp.id, title: Grp.title })
+	// 			// 		arr.push({ id: cat.id, title: cat.title })
 	// 			// 	}
 	// 			// })
 	// 		})
@@ -157,19 +157,20 @@ export class AutoSuggestAnswers extends React.Component<{
 	// 	return arr;
 	// }
 
-	protected async getSuggestions(search: string): Promise<IGrpSection[]> {
+	protected async getSuggestions(search: string): Promise<ICatSection[]> {
 		const escapedValue = escapeRegexCharacters(search.trim());
 		if (escapedValue === '') {
 			return [];
 		}
 		if (search.length < 3)
 			return [];
-		const GrpSection = new Map<string | null, IAnswerRow[]>();
+		const catSection = new Map<string | null, IAnswerRow[]>();
 		const answerKeys: IAnswerKey[] = [];
 		try {
 			console.log('--------->>>>> getSuggestions')
 			var answerRows: IAnswerRow[] = await this.searchAnswers(escapedValue, 10);
 			answerRows.forEach((answerRow: IAnswerRow) => {
+				console.log('answerRow', answerRow);
 				const { topId, parentId, id, title, included } = answerRow;
 				const answerKey = new AnswerKey(answerRow).answerKey!;
 				if (!answerKeys.includes(answerKey)) {
@@ -184,11 +185,11 @@ export class AutoSuggestAnswers extends React.Component<{
 						groupTitle: '',
 						included
 					}
-					if (!GrpSection.has(parentId)) {
-						GrpSection.set(parentId, [row]);
+					if (!catSection.has(parentId)) {
+						catSection.set(parentId, [row]);
 					}
 					else {
-						GrpSection.get(parentId)!.push(row);
+						catSection.get(parentId)!.push(row);
 					}
 				}
 			})
@@ -198,17 +199,17 @@ export class AutoSuggestAnswers extends React.Component<{
 		};
 
 		////////////////////////////////////////////////////////////////////////////////
-		// Search for Groups title words, and add all the answers of the Group
+		// Search for Categories title words, and add all the answers of the Group
 		/*
 		if (answerKeys.length === 0) {
 			try {
 				const tx = this.dbp!.transaction('Answers')
 				const index = tx.store.index('parentGroup_idx');
-				const GrpIdTitles = this.satisfyingGroups(searchWords)
+				const catIdTitles = this.satisfyingCategories(searchWords)
 				let i = 0;
-				while (i < GrpIdTitles.length) {
-					const GrpIdTitle = GrpIdTitles[i];
-					const parentId = GrpIdTitle.id;
+				while (i < catIdTitles.length) {
+					const catIdTitle = catIdTitles[i];
+					const parentId = catIdTitle.id;
 					for await (const cursor of index.iterate(parentId)) {
 						const q: IAnswer = cursor.value;
 						const { id, title } = q;
@@ -225,13 +226,13 @@ export class AutoSuggestAnswers extends React.Component<{
 								id,
 								parentId,
 								title,
-								groupTitle: GrpIdTitle.title
+								groupTitle: catIdTitle.title
 							}
-							if (!GrpQuests.has(parentId)) {
-								GrpQuests.set(parentId, [quest]);
+							if (!catQuests.has(parentId)) {
+								catQuests.set(parentId, [quest]);
 							}
 							else {
-								GrpQuests.get(parentId)!.push(quest);
+								catQuests.get(parentId)!.push(quest);
 							}
 						}
 					}
@@ -257,10 +258,10 @@ export class AutoSuggestAnswers extends React.Component<{
 
 			////////////////////////////////////////////////////////////
 			// 
-			let GrpSections: IGrpSection[] = [];
-			GrpSection.forEach((quests, id) => {
+			let catSections: ICatSection[] = [];
+			catSection.forEach((quests, id) => {
 				//let variationsss: string[] = [];
-				const GrpSection: IGrpSection = {
+				const catSection: ICatSection = {
 					id,
 					groupTitle: '',
 					groupParentTitle: 'kuro',
@@ -268,20 +269,20 @@ export class AutoSuggestAnswers extends React.Component<{
 					answerRows: []
 				};
 				if (id !== null) {
-					const Grp = this.allGroupRows.get(id);
-					if (Grp) {
-						const { title, titlesUpTheTree/*, variations*/ } = Grp!;
-						GrpSection.groupTitle = title;
-						GrpSection.parentGroupUp = titlesUpTheTree!;
+					const cat = this.allGroupRows.get(id);
+					if (cat) {
+						const { title, titlesUpTheTree/*, variations*/ } = cat!;
+						catSection.groupTitle = title;
+						catSection.parentGroupUp = titlesUpTheTree!;
 						//variationsss = variations;
 					}
 					else {
-						alert(`${id} Not found in allGrps`)
+						alert(`${id} Not found in allCats`)
 					}
 				}
 				else {
 				}
-				// const GrpSection: IGrpSection = {
+				// const catSection: ICatSection = {
 				// 	id: id,
 				// 	groupTitle: title,
 				// 	groupParentTitle: 'kuro',
@@ -297,26 +298,26 @@ export class AutoSuggestAnswers extends React.Component<{
 						// 	variationsss.forEach(variation => {
 						// 		if (variation === w.toUpperCase()) {
 						// 			wordsIncludesTag = true;
-						// 			GrpSection.quests.push({ ...quest, title: quest.title + ' ' + variation });
+						// 			catSection.quests.push({ ...quest, title: quest.title + ' ' + variation });
 						// 		}
 						// 	})
 						// })
 						if (!wordsIncludesTag) {
 							// variationsss.forEach(variation => {
 							// 	// console.log(quest);
-							// 	GrpSection.answerRows.push({ ...quest, title: quest.title + ' ' + variation });
+							// 	catSection.answerRows.push({ ...quest, title: quest.title + ' ' + variation });
 							// });
 						}
 					}
 					else {
 					*/
-					GrpSection.answerRows.push(quest);
+					catSection.answerRows.push(quest);
 					/*}*/
 				});
-				GrpSections.push(GrpSection);
-				//console.log(GrpSections)
+				catSections.push(catSection);
+				//console.log(catSections)
 			});
-			return GrpSections;
+			return catSections;
 		}
 		catch (error: any) {
 			console.log(error)
@@ -354,7 +355,7 @@ export class AutoSuggestAnswers extends React.Component<{
 		const matches = AutosuggestHighlightMatch(suggestion.title, params.query);
 		const parts = AutosuggestHighlightParse(suggestion.title, matches);
 		return (
-			<span className="d-inline-block text-trunGrpe" style={{ textAlign: 'left' }}>
+			<span className="d-inline-block text-truncate" style={{ textAlign: 'left' }}>
 				{parts.map((part, index) => {
 					const cls = part.highlight ? 'react-autosuggest__suggestion-match' : undefined;
 					return (
@@ -367,7 +368,7 @@ export class AutoSuggestAnswers extends React.Component<{
 		);
 	}
 
-	protected renderSectionTitle(section: IGrpMy): JSX.Element {
+	protected renderSectionTitle(section: ICatMy): JSX.Element {
 		const { parentGroupUp } = section; // , groupParentTitle, groupTitle
 		// let str = (groupParentTitle ? (groupParentTitle + " / ") : "") + groupTitle;
 		// if (parentGroupUp)
@@ -424,7 +425,7 @@ export class AutoSuggestAnswers extends React.Component<{
 	}
 
 	// getParentTitle = async (id: string): Promise<any> => {
-	// 	let group = await this.dbp.get('Groups', id);
+	// 	let group = await this.dbp.get('Categories', id);
 	// 	return { parentGroupTitle: group.title, parentGroupUp: '' };
 	// }
 
@@ -447,7 +448,7 @@ export class AutoSuggestAnswers extends React.Component<{
 		return suggestion.title;
 	}
 
-	protected getSectionSuggestions(section: IGrpMy) {
+	protected getSectionSuggestions(section: ICatMy) {
 		return section.answerRows;
 	}
 

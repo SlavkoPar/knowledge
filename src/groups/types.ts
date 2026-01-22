@@ -144,10 +144,10 @@ export interface IAnswerKey {
 	id: string;
 }
 
+
 export interface IAnswerRow extends IAnswerKey, IRecord {
 	title: string;
 	groupTitle?: string;
-	// isSelected?: boolean;
 	included: boolean;
 }
 

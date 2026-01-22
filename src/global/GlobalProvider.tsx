@@ -28,7 +28,7 @@ import type {
   IAnswer, IAnswerDto, IAnswerKey, IAnswerRow, IAnswerRowDto, IAnswerRowDtosEx, IGroupRow, IGroupRowDto
 } from "@/groups/types";
 
-import { Answer, GroupRow } from "@/groups/types";
+import { Answer, AnswerRow, GroupRow } from "@/groups/types";
 
 // import { escapeRegexCharacters } from 'common/utilities'
 
@@ -291,7 +291,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       try {
         console.time();
         const filterEncoded = encodeURIComponent(filter);
-        const url = `${KnowledgeAPI.endpointQuestion}/${workspace}/${filterEncoded}/${count}/null`;
+        const url = `${KnowledgeAPI.endpointQuestion}/${workspace}/${filterEncoded}/${count}/null/null`;
         await Execute("GET", url).then((dtosEx: IQuestionRowDtosEx) => {
           const { questionRowDtos } = dtosEx;
           console.log('questionRowDtos:', { dtos: dtosEx }, KnowledgeAPI.endpointCategory);
@@ -380,7 +380,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   }, [allGroupRowsGlobal, allGroupRowsGlobalLoaded, loadAndCacheAllGroupRows]);
 
 
-  const searchAnswers = async (filter: string, count: number, questionKey?: IQuestionKey): Promise<any> => {
+  const searchAnswers = async (filter: string, count: number, questionKey?: IQuestionKey): Promise<IAnswerRow[]> => {
     //const { allGroupRows } = globalState;
     return new Promise(async (resolve) => {
       try {
@@ -393,8 +393,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           console.timeEnd();
           if (dtos) {
             const list: IAnswerRow[] = dtos.map((rowDto: IAnswerRowDto) => {
-              const answer = new Answer(rowDto).answer;
-              return answer;
+              const answerRow = new AnswerRow(rowDto).answerRow;
+              return answerRow;
               //const { PartitionKey, Id, ParentId, Title } = rowDto;
               // return {
               //   topId: PartitionKey,
