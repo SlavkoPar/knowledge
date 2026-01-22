@@ -71,7 +71,7 @@ export const GroupReducer: Reducer<IGroupsState, Actions> = (state, action) => {
     return {
       ...state,
       keyExpanded,
-      nodeOpened: keyExpanded === null ? true : state.nodeOpened
+      //nodeOpened: keyExpanded === null ? true : state.nodeOpened
     }
   }
 
