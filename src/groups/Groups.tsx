@@ -128,6 +128,8 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
         }
     }
 
+    console.log('===>>> Groups !!!!!!!!!!!!!!!!!', { activeGroup }, {topRowsLoaded})
+
 
     //if (!nodeOpened)
     //if (!allGroupRowsLoaded || !topRowsLoaded || topRows.length === 0) {
@@ -136,7 +138,6 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
         return null
     }
 
-    console.log('===>>> Groups !!!!!!!!!!!!!!!!!', activeGroup)
 
     return (
         <>
