@@ -217,7 +217,7 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
     //     keyExpanded
     //   }
 
-    case ActionTypes.FORCE_GROUP_OPEN_NODE:
+    case ActionTypes.FORCE_OPEN_NODE:
       const { keyExpanded } = action.payload;
       return {
         ...state,

@@ -498,9 +498,9 @@ export interface ILoadGroupAnswers {
 
 export interface IGroupsContext {
 	state: IGroupsState,
-	loadAllGroupRows: () => Promise<void>, //Promise<Map<string, IGroupRow> | null>
+	loadAllGroupRows: () => Promise<Map<string, IGroupRow> | null>
 	getGrp: (id: string) => Promise<IGroupRow | undefined>;
-	expandNodesUpToTheTree: (grpKey: IGroupKey, answerId: string | null, fromChatBotDlg?: string) => Promise<any>;
+	expandNodesUpToTheTree: (grpKey: IGroupKey, answerId: string | null, fromChatBotDlg?: boolean) => Promise<boolean>;
 	loadTopRows: () => Promise<any>,
 	addSubGroup: (parentGroupRow: IGroupRow | null) => Promise<any>;
 	cancelAddGroup: () => Promise<any>;
@@ -584,7 +584,7 @@ export enum ActionTypes {
 	CANCEL_GROUP_FORM = 'CANCEL_GROUP_FORM',
 
 	SET_NODE_EXPANDING_UP_THE_TREE = "SET_NODE_EXPANDING_UP_THE_TREE",
-	FORCE_GROUP_OPEN_NODE = "FORCE_GROUP_OPEN_NODE",
+	FORCE_OPEN_NODE = "FORCE_OPEN_NODE",
 
 	// answers
 	GROUP_ANSWERS_LOADED = 'GROUP_ANSWERS_LOADED',
@@ -612,8 +612,7 @@ export const actionStoringToLocalStorage = [
 	ActionTypes.SET_GROUP_TO_VIEW,
 	ActionTypes.SET_GROUP_TO_EDIT,
 	ActionTypes.SET_ANSWER_TO_VIEW,
-	ActionTypes.SET_ANSWER_TO_EDIT,
-	ActionTypes.FORCE_GROUP_OPEN_NODE
+	ActionTypes.SET_ANSWER_TO_EDIT
 ];
 
 export const doNotModifyTree = [
@@ -675,6 +674,10 @@ export type Payload = {
 		fromChatBotDlg?: boolean;
 	};
 
+	[ActionTypes.FORCE_OPEN_NODE]: {
+		groupRow?: IGroupRow,
+		keyExpanded: IKeyExpanded
+	};
 
 	[ActionTypes.SET_TOP_ROWS]: {
 		groupRow?: IGroupRow;
@@ -800,7 +803,7 @@ export type Payload = {
 		groupRow?: IGroupRow
 	};
 
-	[ActionTypes.FORCE_GROUP_OPEN_NODE]: {
+	[ActionTypes.FORCE_OPEN_NODE]: {
 		groupRow?: IGroupRow,
 		keyExpanded: IKeyExpanded
 	};
