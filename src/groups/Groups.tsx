@@ -15,20 +15,20 @@ import EditGroup from "@/groups/components/EditGroup";
 import ViewAnswer from "@/groups/components/answers/ViewAnswer";
 import EditAnswer from "@/groups/components/answers/EditAnswer";
 
-import { initialAnswer } from "@/groups/GroupReducer";
+import { initialGroup, initialAnswer } from "@/groups/GroupReducer";
 import ModalAddAnswer from './ModalAddAnswer';
 import AddGroup from './components/AddGroup';
-import { AutoSuggestAnswers } from '@/groups/AutoSuggestAnswers';
+import { AutoSuggestAnswers } from './AutoSuggestAnswers';
 import AddAnswer from './components/answers/AddAnswer';
-
-// const AutoSuggestAnswers = lazy(() =>
-//     import("@/groups/AutoSuggestAnswers").then((module) => ({ default: module.AutoSuggestAnswers }))
-// );
 
 interface IProps {
     groupId_answerId?: string;
     fromChatBotDlg?: string;
 }
+
+// const AutoSuggestAnswers = lazy(() =>
+//     import("@/groups/AutoSuggestAnswers").then((module) => ({ default: module.AutoSuggestAnswers }))
+// );
 
 const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
     const { state, expandNodesUpToTheTree, loadTopRows, addSubGroup } = useGroupContext();
@@ -45,8 +45,8 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
         loadingAnswers, loadingAnswer
     } = state;
 
-    const { searchAnswers, setLastRouteVisited } = useGlobalContext();
-    const { isDarkMode } = useGlobalState();
+    const { searchAnswers, setLastRouteVisited, setChatBotDlgEnabled } = useGlobalContext();
+    const { isDarkMode, chatBotDlgEnabled, lastRouteVisited } = useGlobalState();
 
     const [modalShow, setModalShow] = useState(false);
     // const handleClose = () => {
@@ -67,20 +67,16 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
 
     useEffect(() => {
         (async () => {
-            // SET_TOP_ROWS  Level:1
-            console.log('Providered useEffect loadTopRows', { topRowsLoading }, { topRowsLoaded })
             if (!topRowsLoading && !topRowsLoaded) {
                 console.log('ZOVEM 111 loadTopRows()')
-                await loadTopRows()
+                await loadTopRows();
             }
         })()
-    }, [loadTopRows, topRowsLoading, topRowsLoaded]);
+    }, [topRowsLoading, topRowsLoaded, loadTopRows]);
 
 
     useEffect(() => {
         (async () => {
-            console.log('Providered useEffect groupId_answerId_changed', 
-                { nodeOpening}, { topRowsLoaded }, {topRowsLength: topRows.length })
             if (!nodeOpening && topRowsLoaded && topRows.length > 0) {
                 if (groupId_answerId) {
                     if (groupId_answerId === 'add_answer') {
@@ -97,29 +93,33 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                         const arr = groupId_answerId.split('_');
                         const groupId = arr[0];
                         const answerId = arr[1];
-                        const grpKey: IGroupKey = { topId: '', id: groupId, parentId: 'ROOT' };
+                        const catKey: IGroupKey = { topId: '', id: groupId, parentId: 'ROOT' };
                         console.log('zovem expandNodesUpToTheTree 1111111111111111111)', { groupId_answerId }, { groupId_answerId_done })
-                        await expandNodesUpToTheTree(grpKey, answerId, fromChatBotDlg ?? 'false')
-                            .then(() => { return null; });
+                        await expandNodesUpToTheTree(catKey, answerId !== 'null' ? answerId : null)
+                        console.log('zavrsio expandNodeUpToTheTree 1111111111111111111 DONE)', { groupId_answerId })
                     }
                 }
                 else if (keyExpanded && !nodeOpened) {
                     const { topId, groupId, answerId } = keyExpanded;
                     if (groupId !== '') {
-                        const grpKey: IGroupKey = { topId, id: groupId, parentId: 'ROOT' }
-                        console.log('zovem expandNodeUpToTheTree 2222222222222)', { keyExpanded, grpKey })
-                        await expandNodesUpToTheTree(grpKey, answerId)
-                            .then(() => { return null; });
+                        const catKey: IGroupKey = { topId, id: groupId, parentId: 'ROOT' }
+                        console.log('zovem expandNodeUpToTheTree 2222222222222)', { keyExpanded, catKey })
+                        await expandNodesUpToTheTree(catKey, answerId);
+                        console.log('zavrsio expandNodeUpToTheTree 2222222222222 DONE)')
                     }
                 }
+
+                if (!chatBotDlgEnabled) // show ChatBotDlg button
+                    setChatBotDlgEnabled();
             }
         })()
-    }, [groupId_answerId, groupId_answerId_done, topRowsLoaded, keyExpanded, nodeOpening, nodeOpened]);
+    }, [groupId_answerId, groupId_answerId_done, topRowsLoaded, keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, fromChatBotDlg, chatBotDlgEnabled, setChatBotDlgEnabled]);
 
-
+    const route = `/knowledge/groups`;
     useEffect(() => {
-        setLastRouteVisited(`/knowledge/groups`);
-    }, [setLastRouteVisited])
+        if (lastRouteVisited !== route)
+            setLastRouteVisited(route);
+    }, [ lastRouteVisited, setLastRouteVisited ]);
 
     if (groupId_answerId !== 'add_answer') {
         if (/*keyExpanded ||*/ (groupId_answerId && groupId_answerId !== groupId_answerId_done)) {
@@ -128,16 +128,14 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
         }
     }
 
-    console.log('===>>> Groups !!!!!!!!!!!!!!!!!', { activeGroup }, {topRowsLoaded})
-
-
     //if (!nodeOpened)
     //if (!allGroupRowsLoaded || !topRowsLoaded || topRows.length === 0) {
-    if (!topRowsLoaded) { //} || topRows.length === 0) {
+    if (!topRowsLoaded) {// || topRows.length === 0) {
         console.log('===>>> Groups  VRATIO')
         return null
     }
 
+    console.log('===>>> Groups !!!!!!!!!!!!!!!!!', activeGroup)
 
     return (
         <>
@@ -148,12 +146,12 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                     <Col>
                         <div className="d-flex justify-content-start align-items-center">
                             <div className="w-75 my-1 answers">
-                                    <AutoSuggestAnswers
-                                        tekst={tekst}
-                                        onSelectAnswer={onSelectAnswer}
-                                        allGroupRows={allGroupRows}
-                                        searchAnswers={searchAnswers}
-                                    />
+                                <AutoSuggestAnswers
+                                    tekst={tekst}
+                                    onSelectAnswer={onSelectAnswer}
+                                    allGroupRows={allGroupRows}
+                                    searchAnswers={searchAnswers}
+                                />
                             </div>
                         </div>
                     </Col>
@@ -170,7 +168,7 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                 <Row className="my-1 h-auto">
                     <Col xs={12} md={5}>
                         <div className="groups-border" style={{ position: 'relative' }}>
-                            <GroupList groupRow={null} title="ROOT" isExpanded={true} />
+                            <GroupList groupRow={{...initialGroup, groupRows: topRows }}  isExpanded={true} />
                         </div>
                     </Col>
                     <Col xs={0} md={7}>

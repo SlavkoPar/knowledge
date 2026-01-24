@@ -71,7 +71,7 @@ export const GroupReducer: Reducer<IGroupsState, Actions> = (state, action) => {
     return {
       ...state,
       keyExpanded,
-      //nodeOpened: keyExpanded === null ? true : state.nodeOpened
+      nodeOpened: keyExpanded === null ? true : state.nodeOpened
     }
   }
 
@@ -145,7 +145,7 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
 
     case ActionTypes.SET_TOP_ROWS: {
       const { topRows } = action.payload;
-      console.log('=> GroupsReducer ActionTypes.SET_TOP_ROWS', state.topRows, topRows)
+      console.log('=> GroupsReducer ActionTypes.SET_TOP_ROWS', topRows)
       return {
         ...state,
         topRows,

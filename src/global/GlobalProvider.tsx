@@ -22,7 +22,7 @@ import type {
   ICategoryRowDto, ICategoryRow
 } from "@/categories/types";
 
-import { CategoryRow, QuestionKey, Question } from "@/categories/types";
+import { CategoryRow, QuestionKey, Question, QuestionRow } from "@/categories/types";
 
 import type {
   IAnswer, IAnswerDto, IAnswerKey, IAnswerRow, IAnswerRowDto, IAnswerRowDtosEx, IGroupRow, IGroupRowDto
@@ -71,8 +71,6 @@ const initGlobalState: IGlobalState = {
   bg: 'dark',
   loading: false,
   topRows: [],
-  allGroupRowsGlobal: new Map<string, IGroupRow>(),
-  allGroupRowsGlobalLoaded: undefined,
   nodesReLoaded: false,
   lastRouteVisited: '/knowledge/categories',
   chatBotDlgEnabled: false
@@ -83,7 +81,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   // we reset changes, and again we use initialGlobalState
   // so, don't use globalDispatch inside of inner Provider, like Categories Provider
   const [globalState, dispatch] = useReducer(GlobalReducer, initGlobalState);
-  const { KnowledgeAPI, workspace, allGroupRowsGlobal, allGroupRowsGlobalLoaded } = globalState;
+  const { KnowledgeAPI, workspace, } = globalState;
 
   console.log('--------> GlobalProvider')
 
@@ -251,7 +249,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   // load all groupRows
   // ---------------------------
 
-  const loadAndCacheAllGroupRows = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
+  const loadAllGroupRowsGlobal = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
     return new Promise(async (resolve) => {
       try {
         console.time();
@@ -273,8 +271,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
               grp.titlesUpTheTree = titlesUpTheTree;
               allGroupRows.set(id, grp);
             })
-            dispatch({ type: GlobalActionTypes.SET_ALL_GROUP_ROWS_GLOBAL, payload: { allGroupRows } });
             resolve(allGroupRows)
+            // with no dispatch
           });
       }
       catch (error: any) {
@@ -283,7 +281,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       }
       resolve(null);
     });
-  }, [KnowledgeAPI.endpointCategoryRow, workspace]);
+  }, [KnowledgeAPI.endpointGroupRow, workspace]);
 
   //const searchQuestions = useCallback(async (execute: (method: string, endpoint: string) => Promise<any>, filter: string, count: number): Promise<any> => {
   const searchQuestions = async (filter: string, count: number): Promise<any> => {
@@ -293,36 +291,19 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         const filterEncoded = encodeURIComponent(filter);
         const url = `${KnowledgeAPI.endpointQuestion}/${workspace}/${filterEncoded}/${count}/null/null`;
         await Execute("GET", url).then((dtosEx: IQuestionRowDtosEx) => {
-          const { questionRowDtos } = dtosEx;
+          const { questionRowDtos: dtos, msg } = dtosEx;
           console.log('questionRowDtos:', { dtos: dtosEx }, KnowledgeAPI.endpointCategory);
           console.timeEnd();
-          if (questionRowDtos) {
-            const questionRows: IQuestionRow[] = questionRowDtos.map((dto: IQuestionRowDto) => {
-              const { TopId, ParentId, Id, Title, NumOfAssignedAnswers, Included } = dto;
-              return {
-                topId: TopId,
-                parentId: ParentId ?? '',
-                id: Id,
-                title: Title,
-                categoryTitle: '',
-                numOfAssignedAnswers: NumOfAssignedAnswers ?? 0,
-                included: Included ?? false,
-              }
+          if (dtos) {
+            const questionRows: IQuestionRow[] = dtos.map((rowDto: IQuestionRowDto) => {
+              const questionRow = new QuestionRow(rowDto).questionRow;
+              return questionRow;
             })
-            // const list: IQuestionRow[] = dtos.map((q: IQuestionRowDto) => ({
-            //   topId: q.PartitionKey,
-            //   id: q.Id,
-            //   parentId: q.ParentId,
-            //   numOfAssignedAnswers: q.NumOfAssignedAnswers ?? 0,
-            //   title: q.Title,
-            //   categoryTitle: '',
-            //   isSelected: q.Included !== undefined
-            // }))
             resolve(questionRows);
           }
           else {
             // reject()
-            console.log('no rows in search')
+            console.log('no cat rows in search'+ msg)
           }
         })
       }
@@ -333,51 +314,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     });
   }
   //}, []);
-
-
-
-  const getGroupRows = useCallback(async (groupId: string | null) => {
-    if (!allGroupRowsGlobalLoaded) {
-      await loadAndCacheAllGroupRows();
-    }
-    try {
-      //const { allGroupRows: groupRows } = globalState;
-      let parentHeader = "";
-      const subGroupRows: IGroupRow[] = [];
-      allGroupRowsGlobal.forEach((groupRow) => {  // globalState.shortGroups is Map<string, IShortGroup>
-        if (groupRow.id === groupId) {
-          parentHeader = groupRow.header!;
-        }
-        else if (groupRow.parentId === groupId) {
-          const { topId, id, parentId, header, title, level, kind, hasSubGroups } = groupRow;
-          const row: IGroupRow = {
-            topId,
-            id,
-            header,
-            title,
-            parentId,
-            titlesUpTheTree: "",
-            hasSubGroups,
-            level,
-            kind,
-            isExpanded: false,
-            link: null,
-            groupRows: [],
-            variations: [],
-            numOfAnswers: 0,
-            answerRows: []
-          }
-          subGroupRows.push(row);
-        }
-      })
-      return { subGroupRows, parentHeader };
-    }
-    catch (error: any) {
-      console.log(error)
-      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
-      return { groupRows: [], parentHeader: 'Kiks' };
-    }
-  }, [allGroupRowsGlobal, allGroupRowsGlobalLoaded, loadAndCacheAllGroupRows]);
 
 
   const searchAnswers = async (filter: string, count: number, questionKey?: IQuestionKey): Promise<IAnswerRow[]> => {
@@ -395,20 +331,12 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
             const list: IAnswerRow[] = dtos.map((rowDto: IAnswerRowDto) => {
               const answerRow = new AnswerRow(rowDto).answerRow;
               return answerRow;
-              //const { PartitionKey, Id, ParentId, Title } = rowDto;
-              // return {
-              //   topId: PartitionKey,
-              //   id: Id,
-              //   parentId: ParentId,
-              //   title: Title,
-              //   groupTitle: ''
-              // }
             })
             resolve(list);
           }
           else {
             // reject()
-            console.log('no rows in search' + msg)
+            console.log('no group rows in search' + msg)
           }
         })
       }
@@ -656,6 +584,7 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
     });
   }
 
+  /*
   const globalGetGroupRow = useCallback(async (id: string): Promise<IGroupRow | undefined> => {
     try {
       //const { allGroupRows: groupRows } = globalState;
@@ -707,6 +636,7 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
     }
     return [];
   }
+  */
 
   const createWorkspace = useCallback(
     async (wsDto: IWorkspaceDto) => {
@@ -902,9 +832,11 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
     <GlobalContext.Provider value={{
       globalState, setLastRouteVisited,
       health,
-      loadAllCategoryRowsGlobal, loadTopRows, //getCat, getSubCats, getCatsByKind,
+      loadAllCategoryRowsGlobal,
+      loadAllGroupRowsGlobal,
+      loadTopRows, //getCat, getSubCats, getCatsByKind,
       searchQuestions, getQuestion,
-      loadAndCacheAllGroupRows, globalGetGroupRow, getGroupRows, getGroupRowsByKind, searchAnswers, getAnswer,
+      searchAnswers, getAnswer,
       setNodesReloaded,
       createWorkspace, getWorkspace,
       addHistory, getAnswersRated, addHistoryFilter,

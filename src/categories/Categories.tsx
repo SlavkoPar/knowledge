@@ -47,7 +47,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
     } = state;
 
     const { searchQuestions, setLastRouteVisited, setChatBotDlgEnabled } = useGlobalContext();
-    const { isDarkMode, chatBotDlgEnabled } = useGlobalState();
+    const { isDarkMode, chatBotDlgEnabled, lastRouteVisited } = useGlobalState();
 
     const [modalShow, setModalShow] = useState(false);
     // const handleClose = () => {
@@ -116,9 +116,13 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
         })()
     }, [categoryId_questionId, categoryId_questionId_done, topRowsLoaded, keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, fromChatBotDlg, chatBotDlgEnabled, setChatBotDlgEnabled]);
 
+    const route = `/knowledge/categories`;
     useEffect(() => {
-        setLastRouteVisited(`/knowledge/categories`);
-    }, [setLastRouteVisited])
+        if (lastRouteVisited !== route)
+            setLastRouteVisited(route);
+    }, [lastRouteVisited, setLastRouteVisited])
+
+    
 
     if (categoryId_questionId !== 'add_question') {
         if (/*keyExpanded ||*/ (categoryId_questionId && categoryId_questionId !== categoryId_questionId_done)) {
@@ -195,7 +199,6 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                     newQuestionRow={newQuestion}
                 />
             }
-
 
             {(loadingCategories || loadingQuestions) &&
                 <div className="d-flex justify-content-center align-items-center" style={{ position: 'absolute', top: '40%', left: '20%' }}>

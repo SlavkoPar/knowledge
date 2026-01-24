@@ -3,10 +3,11 @@ import { useCategoryContext } from '@/categories/CategoryProvider'
 
 import QuestionForm from "@/categories/components/questions/QuestionForm";
 import { type IQuestion } from "@/categories/types";
+import { useEffect } from 'react';
 
 const EditQuestion = ({ /*inLine*/ }: { inLine: boolean }) => {
-    const { state, updateQuestion } = useCategoryContext();
-    const { activeQuestion } = state;  // loadingQuestion: questionLoading, 
+    const { state, updateQuestion, loadAllGroupRows } = useCategoryContext();
+    const { activeQuestion, allGroupRowsLoaded } = state;  // loadingQuestion: questionLoading, 
     if (!activeQuestion)
         return null;
 
@@ -16,6 +17,14 @@ const EditQuestion = ({ /*inLine*/ }: { inLine: boolean }) => {
     if (!activeQuestion) {
         return <div>Loading question to edit...</div>
     }
+
+    useEffect(() => {
+        (async () => {
+            if (allGroupRowsLoaded === undefined) {
+                await loadAllGroupRows();
+            }
+        })()
+    }, [ allGroupRowsLoaded, loadAllGroupRows ]);
 
     const submitForm = async (questionObject: IQuestion) => {
         const newQuestion: IQuestion = {

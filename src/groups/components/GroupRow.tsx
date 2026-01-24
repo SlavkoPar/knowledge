@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRemove, faCaretRight, faCaretDown, faPlus, faFolder } from '@fortawesome/free-solid-svg-icons'
-import APlus from '@/assets/APlus.png';
+import QPlus from '@/assets/QPlus.png';
 
-import { ListGroup, Button, Badge } from "react-bootstrap";
+import { ListGroup, Button, Badge, Collapse } from "react-bootstrap";
 
 import { useGlobalState } from '@/global/GlobalProvider'
 import { type IGroupKey, type IGroupRow, FormMode, type IExpandInfo, GroupKey } from "@/groups/types";
@@ -19,7 +19,7 @@ import AddGroup from './AddGroup';
 
 const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: string | null }) => {
 
-    const { id, title, hasSubGroups, numOfAnswers, isExpanded } = groupRow;
+    const { id, title, hasSubGroups, numOfAnswers, isExpanded, groupRows } = groupRow;
     groupRow.level += 1;
 
     const groupKey: IGroupKey = new GroupKey(groupRow).groupKey!;
@@ -53,9 +53,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
         }
         else {
             const expandInfo: IExpandInfo = {
-                groupKey,
-                byClick: true,
-                formMode: canEdit ? FormMode.EditingGroup : FormMode.ViewingGroup
+                groupKey
             }
             await expandGroup(expandInfo);
         }
@@ -66,6 +64,11 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
     //     await editGroup(groupRow, answerId ?? 'null');
     // }
 
+    const [open, setOpen] = useState<boolean>(false);
+    useEffect(() => {
+        //if (groupRows.length > 0) 
+            setOpen(true);
+    }, [groupRows]);
 
     const onSelectGroup = async (): Promise<any> => {
         if (canEdit)
@@ -87,6 +90,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
     const [queue2, setQueue2] = useState<boolean>(false);
     useEffect(() => {
         if (queue2) {// && groupRow.id === 'generateId') {
+            // actegoryRow is after reducer update
             addAnswer(groupKey, isExpanded ?? false);
             setQueue2(false);
         }
@@ -116,11 +120,15 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
 
     const Row1 =
         <div>
-            <div id={`Row${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 group-row${isSelected ? '-selected' : ''}`} style={{ marginTop: '1px' }}>
+            <div id={`Row${id}`} 
+                className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 group-row${isSelected ? '-selected' : ''}`} 
+                style={{ marginTop: '1px' }} >
                 <Button
                     variant='link'
                     size="sm"
                     className="py-0 px-1" //  bg-light"
+                    aria-controls={id+'-2'}
+                    aria-expanded={open}
                     onClick={(e) => { handleExpandClick(); e.stopPropagation() }}
                     title="Expand"
                     disabled={inAdding || (!hasSubGroups && numOfAnswers === 0)}
@@ -152,11 +160,10 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                 {numOfAnswers > 0 &&
                     <Badge pill bg="secondary" className={'d-inline bg-transparent'}>
                         {numOfAnswers}Q
-                        {/* <FontAwesomeIcon icon={faThumbsUp} size='sm' /> */}
+                        {/* <FontAwesomeIcon icon={faAnswer} size='sm' /> */}
                         {/* <img width="22" height="18" src={Q} alt="Answer" /> */}
                     </Badge>
                 }
-
 
                 {canEdit && hovering && // && !alreadyAdding
                     <div className="position-absolute text-nowrap d-flex align-items-center border border-0 border-warning p-0 end-0">
@@ -171,7 +178,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                                     if (!isExpanded && (hasSubGroups || numOfAnswers > 0)) {
                                         await handleExpandClick();
                                     }
-                                    setTimeout(() => setQueue(true), 500);
+                                    setTimeout(() => setQueue(true), 1000);
                                 }}
                             >
                                 <FontAwesomeIcon icon={faPlus} size='lg' />
@@ -184,7 +191,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                                 <Button
                                     variant='link'
                                     size="sm"
-                                    className="p-0 mx-0 text-secondary position-relative float-end d-flex align-items-center"
+                                    className="p-0 mx-0 text-secondary d-flex align-items-center border border-0 border-warning1"
                                     title="Add Answer"
                                     onClick={async () => {
                                         //const groupInfo: IGroupInfo = { groupKey: { workspace: topId, id: groupRow.id }, level: groupRow.level }
@@ -194,9 +201,10 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                                         setTimeout(() => setQueue2(true), 500);
                                     }}
                                 >
-                                    <img width="22" height="18" src={APlus} alt="Add Answer" />
+                                    <img width="22" height="18" src={QPlus} alt="Add Answer" />
                                 </Button>
-                                <Button variant='link' size="sm" className="p-0 ms-0 position-relative float-end d-flex align-items-center"
+                                <Button variant='link' size="sm"
+                                    className="d-flex align-items-center border border-0 border-warning p-0"
                                     disabled={hasSubGroups || numOfAnswers > 0}
                                     onClick={deleteGroupRow}
                                 >
@@ -207,6 +215,9 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
 
                     </div>
                 }
+
+                {/* TODO what about archive answers  numOfAnswers === 0 &&*/}
+
             </div>
             {showAnswers &&
                 <div className='ps-3'>
@@ -245,7 +256,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                         {/* <div class="d-none d-md-block">
                             This content will be hidden on small screens and below, 
                             but visible on medium screens and above.</div> */}
-                        <div ref={hoverRef} className="">
+                        <div ref={hoverRef}>
                             {Row1}
                         </div>
                         {/* <div id='divInLine' className="ms-0 d-md-none w-100"> */}
@@ -258,7 +269,20 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                 {isSelected && formMode === FormMode.ViewingGroup &&
                     <>
                         {/* <div class="d-lg-none">hide on lg and wider screens</div> */}
-                        <div ref={hoverRef} className="">
+                        <div ref={hoverRef}>
+                            {Row1}
+                        </div>
+                        {/* <div id='divInLine' className="ms-0 d-md-none w-100"> */}
+                        <div id='divInLine' className="ms-0 d-md-none w-100">
+                            <ViewGroup inLine={false} />
+                        </div>
+                    </>
+                }
+
+                {isSelected && formMode === FormMode.None &&
+                    <>
+                        {/* <div class="d-lg-none">hide on lg and wider screens</div> */}
+                        <div ref={hoverRef}>
                             {Row1}
                         </div>
                         {/* <div id='divInLine' className="ms-0 d-md-none w-100"> */}
@@ -269,7 +293,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                 }
 
                 {!isSelected &&
-                    <div ref={hoverRef} className="">
+                    <div ref={hoverRef}>
                         {Row1}
                     </div>
                 }
@@ -288,21 +312,25 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
             {/* !inAdding && */}
             {(isExpanded) && // Row2   //  || inAdding
                 <ListGroup.Item
-                    className="py-0 px-0 border-0 border-warning border-bottom-0 group-bg" // border border-3 "
+                    className="py-0 px-0 border-0 border-warning border-bottom-0 group-bg p-0 m-0" // border border-3 "
                     variant={"primary"}
                     as="li"
                 >
-                    {isExpanded &&
-                        <>
-                            {hasSubGroups &&
-                                <GroupList groupRow={groupRow} title={title} isExpanded={isExpanded} />
-                            }
-                            {/* {showAnswers &&
+                    <div className="rambo">
+                        {hasSubGroups &&
+                            <Collapse in={open}>
+                                <div id={id+'-2'} style={{ marginTop: '1px' }}>
+                                    {/* Wrap content in a div to prevent choppy animations caused by margins/padding */}
+                                    <div style={{ border: '1px solid #ddd', borderRadius: '4px' }}>
+                                        <GroupList groupRow={groupRow} isExpanded={isExpanded} />
+                                    </div>
+                                </div>
+                            </Collapse>
+                        }
+                        {/* {showAnswers &&
                                 <AnswerList groupRow={groupRow} />
                             } */}
-                        </>
-                    }
-
+                    </div>
                 </ListGroup.Item>
             }
         </>

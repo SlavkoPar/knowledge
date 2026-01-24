@@ -439,7 +439,7 @@ export interface IGroupInfo {
 
 export interface IExpandInfo {
 	groupKey: IGroupKey;
-	formMode: FormMode;
+	formMode?: FormMode;
 	includeAnswerId?: string;
 	newGroupRow?: IGroupRow;
 	newAnswerRow?: IAnswerRow;
@@ -452,11 +452,11 @@ export interface IParentInfo {
 	// topId: string | null,
 	// parentId: string | null,
 	//groupKey: IGroupKey,
-	groupRow: IGroupRow | null,
+	groupRow: IGroupRow,
 	startCursor?: number,
 	includeAnswerId?: string | null
 	level?: number,
-	title: string, // to easier follow getting the list of sub-groups
+	//title: string, // to easier follow getting the list of sub-groups
 	inAdding?: boolean,
 	isExpanded?: boolean
 	//subGroups?: IGroup[]
@@ -498,7 +498,7 @@ export interface ILoadGroupAnswers {
 
 export interface IGroupsContext {
 	state: IGroupsState,
-	loadAllGroupRows: () => Promise<Map<string, IGroupRow> | null>
+	loadAllGroupRows: () => Promise<void>, //Promise<Map<string, IGroupRow> | null>
 	getGrp: (id: string) => Promise<IGroupRow | undefined>;
 	expandNodesUpToTheTree: (grpKey: IGroupKey, answerId: string | null, fromChatBotDlg?: string) => Promise<any>;
 	loadTopRows: () => Promise<any>,

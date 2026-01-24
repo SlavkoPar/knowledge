@@ -21,8 +21,8 @@ interface IProps {
 
 const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabled }: IProps) => {
 
-    const { globalState, searchAnswers, loadAndCacheAllGroupRows } = useGlobalContext();
-    const { isDarkMode, variant, allGroupRowsGlobal: allGroupRows, allGroupRowsGlobalLoaded: allGroupRowsLoaded } = globalState;
+    const { globalState, searchAnswers } = useGlobalContext();
+    const { isDarkMode, variant } = globalState;
 
     const [showAdd, setShowAdd] = useState(false);
     const handleClose = () => setShowAdd(false);
@@ -32,6 +32,8 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
     }
 
     const { state, assignQuestionAnswer } = useCategoryContext();
+
+    const { allGroupRows  } = state;
     const [showAssign, setShowAssign] = useState(false);
 
     const onSelectAnswer = async (assignedAnswerKey: IAssignedAnswerKey) => {
@@ -60,9 +62,9 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
     }
 
     const assignAnswer = async () => {
-        if (!allGroupRowsLoaded) {
-            await loadAndCacheAllGroupRows();
-        }
+        // if (!allGroupRowsGlobalLoaded) {
+        //     await loadAndCacheAllGroupRows();
+        // }
         setShowAssign(true);
     }
 
@@ -113,9 +115,9 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
                         disabled={isDisabled}
                         onClick={
                             async (e) => {
-                                if (!allGroupRowsLoaded) {
-                                    await loadAndCacheAllGroupRows();
-                                }
+                                // if (!allGroupRowsGlobalLoaded) {
+                                //     await loadAndCacheAllGroupRows();
+                                // }
                                 setShowAdd(true);
                                 e.preventDefault()
                             }

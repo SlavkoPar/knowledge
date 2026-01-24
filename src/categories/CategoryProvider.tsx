@@ -32,6 +32,7 @@ import {
 
 import { CategoryReducer, initialQuestion, initialCategory } from '@/categories/CategoryReducer';
 import { type IAssignedAnswer, AssignedAnswerDto } from '@/categories/types';
+import type { IGroupRow } from '@/groups/types';
 
 const CategoriesContext = createContext<ICategoriesContext>({} as any);
 const CategoryDispatchContext = createContext<Dispatch<any>>(() => null);
@@ -45,6 +46,9 @@ export const initialState: ICategoriesState = {
 
   allCategoryRows: new Map<string, ICategoryRow>(),
   allCategoryRowsLoaded: undefined,
+
+  allGroupRows: new Map<string, IGroupRow>(),
+  allGroupRowsLoaded: undefined,
 
   topRows: [],
   topRowsLoading: false,
@@ -74,7 +78,7 @@ export const initialState: ICategoriesState = {
 
 export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
-  const { loadAllCategoryRowsGlobal } = useGlobalContext();
+  const { loadAllCategoryRowsGlobal, loadAllGroupRowsGlobal } = useGlobalContext();
   const globalState = useGlobalState();
   const { KnowledgeAPI, isAuthenticated, workspace, authUser, canEdit } = globalState;
   const { nickName } = authUser;
@@ -182,7 +186,24 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       resolve(allCategoryRows);
     })
   }, [loadAllCategoryRowsGlobal]);
-  
+
+  // ---------------------------
+  // load all groupRows
+  // ---------------------------
+  const loadAllGroupRows = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
+    return new Promise(async (resolve) => {
+      const allGroupRows = await loadAllGroupRowsGlobal();
+      if (allGroupRows) {
+        dispatch({ type: ActionTypes.SET_ALL_GROUP_ROWS, payload: { allGroupRows } });
+      }
+      else {
+        dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error('Zajeb allGroupRows') } });
+      }
+      resolve(allGroupRows);
+    })
+  }, [loadAllGroupRowsGlobal]);
+
+
 
   const getCat = useCallback(async (id: string): Promise<ICategoryRow | undefined> => {
     try {
@@ -199,7 +220,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   useEffect(() => {
     (async () => {
       //if (allCategoryRowsLoaded === undefined) {
-        await loadAllCategoryRows();
+      await loadAllCategoryRows();
       //}
     })()
   }, [loadAllCategoryRows]);
@@ -237,7 +258,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
         await Execute("GET", url)
           .then((dtos: ICategoryRowDto[]) => {
             console.timeEnd();
-            console.log('loadTopRows BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
+            console.log('loadTopRows CCCCCCCCCCCCCCCCCCCC')
             const topRows: ICategoryRow[] = dtos!.map((dto: ICategoryRowDto) => {
               dto.IsExpanded = keyExpanded
                 ? dto.Id === keyExpanded.categoryId
@@ -1261,70 +1282,71 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   //     dispatch({ type: ActionTypes.RE_RENDER_TREE, payload: { categoryRow: categoryRow! } });
   //   }, [findCategoryRow, topRows]);
 
-const onCategoryTitleChanged = useCallback(
-  async (topId: string, id: string, title: string): Promise<void> => {
-    //const { topRows } = state;
-    //const topRow: ICategoryRow = topRows.find(c => c.id === category.topId)!;
-    const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-    //const categoryRow: ICategoryRow = findCategoryRow(topRow.categoryRows, id)!;
-    // if (!activeCategory || loadingCategory) { // just in case
-    //   console.log('Provider>>>>>>00000')
-    //   return;
-    // }
-    // const categoryRow: ICategoryRow = (topRow.id === id)
-    //   ? topRow
-    //   : findCategoryRow(topRow.categoryRows, id)!;
-    let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, id);
-    // console.log('Provider onCategoryTitleChanged >>>>>>:', category)
-    //console.log('Provider onCategoryTitleChanged:', title)
-    //category.title = title;
-    console.log('PROVIDER onCategoryTitleChanged::', categoryRow!.title, title)
-    if (categoryRow!.title !== title) {
-      categoryRow!.title = title === '' ? 'New Category' : title; // to avoid empty title
-      dispatch({
-        type: ActionTypes.RE_RENDER_TREE, payload: { categoryRow: categoryRow! }
-      });
-    }
-    return;
-  }, [findCategoryRow, topRows]);
+  const onCategoryTitleChanged = useCallback(
+    async (topId: string, id: string, title: string): Promise<void> => {
+      //const { topRows } = state;
+      //const topRow: ICategoryRow = topRows.find(c => c.id === category.topId)!;
+      const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
+      //const categoryRow: ICategoryRow = findCategoryRow(topRow.categoryRows, id)!;
+      // if (!activeCategory || loadingCategory) { // just in case
+      //   console.log('Provider>>>>>>00000')
+      //   return;
+      // }
+      // const categoryRow: ICategoryRow = (topRow.id === id)
+      //   ? topRow
+      //   : findCategoryRow(topRow.categoryRows, id)!;
+      let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, id);
+      // console.log('Provider onCategoryTitleChanged >>>>>>:', category)
+      //console.log('Provider onCategoryTitleChanged:', title)
+      //category.title = title;
+      console.log('PROVIDER onCategoryTitleChanged::', categoryRow!.title, title)
+      if (categoryRow!.title !== title) {
+        categoryRow!.title = title === '' ? 'New Category' : title; // to avoid empty title
+        dispatch({
+          type: ActionTypes.RE_RENDER_TREE, payload: { categoryRow: categoryRow! }
+        });
+      }
+      return;
+    }, [findCategoryRow, topRows]);
 
-const onQuestionTitleChanged = useCallback(
-  async (topRow: ICategoryRow, question: IQuestion, title: string): Promise<void> => {
-    const { parentId, id } = question;
-    const categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, parentId);
-    if (categoryRow) {
-      const questionRow = categoryRow.questionRows!.find(q => q.id === id)!;
-      questionRow.title = title;
-      // rerender
-      console.log('onQuestionTitleChanged+++>>>', id, categoryRow)
-      dispatch({ type: ActionTypes.QUESTION_TITLE_CHANGED, payload: { categoryRow } })
-    }
-  }, [findCategoryRow]);
+  const onQuestionTitleChanged = useCallback(
+    async (topRow: ICategoryRow, question: IQuestion, title: string): Promise<void> => {
+      const { parentId, id } = question;
+      const categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, parentId);
+      if (categoryRow) {
+        const questionRow = categoryRow.questionRows!.find(q => q.id === id)!;
+        questionRow.title = title;
+        // rerender
+        console.log('onQuestionTitleChanged+++>>>', id, categoryRow)
+        dispatch({ type: ActionTypes.QUESTION_TITLE_CHANGED, payload: { categoryRow } })
+      }
+    }, [findCategoryRow]);
 
 
-const contextValue: ICategoriesContext = {
-  state, loadAllCategoryRows, getSubCats, getCat,
-  expandNodesUpToTheTree,
-  loadTopRows,
-  addSubCategory, cancelAddCategory, createCategory,
-  viewCategory, editCategory, updateCategory, deleteCategory, deleteCategoryVariation,
-  expandCategory, collapseCategory, onCategoryTitleChanged,
-  loadCategoryQuestions,
-  addQuestion, cancelAddQuestion, createQuestion,
-  viewQuestion, editQuestion, updateQuestion, deleteQuestion, onQuestionTitleChanged,
-  assignQuestionAnswer
-}
+  const contextValue: ICategoriesContext = {
+    state, loadAllCategoryRows, getSubCats, getCat,
+    loadAllGroupRows,
+    expandNodesUpToTheTree,
+    loadTopRows,
+    addSubCategory, cancelAddCategory, createCategory,
+    viewCategory, editCategory, updateCategory, deleteCategory, deleteCategoryVariation,
+    expandCategory, collapseCategory, onCategoryTitleChanged,
+    loadCategoryQuestions,
+    addQuestion, cancelAddQuestion, createQuestion,
+    viewQuestion, editQuestion, updateQuestion, deleteQuestion, onQuestionTitleChanged,
+    assignQuestionAnswer
+  }
 
-if (!isAuthenticated || !allCategoryRowsLoaded)  // removed keyExpanded === null
-  return null;
+  if (!isAuthenticated || !allCategoryRowsLoaded)  // removed keyExpanded === null
+    return null;
 
-return (
-  <CategoriesContext.Provider value={contextValue}>
-    <CategoryDispatchContext.Provider value={dispatch}>
-      {children}
-    </CategoryDispatchContext.Provider>
-  </CategoriesContext.Provider>
-);
+  return (
+    <CategoriesContext.Provider value={contextValue}>
+      <CategoryDispatchContext.Provider value={dispatch}>
+        {children}
+      </CategoryDispatchContext.Provider>
+    </CategoriesContext.Provider>
+  );
 }
 
 export function useCategoryContext() {

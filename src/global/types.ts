@@ -172,9 +172,6 @@ export interface IGlobalState {
 	loading: boolean;
 	error?: Error;
 	topRows: ICategoryRow[];
-	allCategoryRowsLoaded?: number;
-	allGroupRowsGlobal: Map<string, IGroupRow>;
-	allGroupRowsGlobalLoaded?: number;
 	nodesReLoaded: boolean; // categoryNodeLoaded || groupNodeLoaded  ( to prevent showing of ChatBotDlg)
 	lastRouteVisited: string;
 	chatBotDlgEnabled: boolean;
@@ -199,21 +196,13 @@ export interface IParentInfo {
 
 export interface IGlobalContext {
 	globalState: IGlobalState;
-	//getUser: (nickName: string) => Promise<any>;
-	//OpenDB: () => Promise<any>;
 	setLastRouteVisited: (lastRouteVisited: string) => void;
 	health: () => void;
 	loadAllCategoryRowsGlobal: () => Promise<Map<string, ICategoryRow> | null>;
+	loadAllGroupRowsGlobal: () => Promise<Map<string, IGroupRow> | null>;
 	loadTopRows: () => Promise<any>,
-	// getCat: (categoryId: string) => Promise<ICategoryRow | undefined>;
-	// getSubCats: (categoryId: string | null) => Promise<any>;
-	// getCatsByKind: (kind: number) => Promise<ICategoryRow[]>;
 	searchQuestions: (filter: string, count: number) => Promise<IQuestionRow[]>;
 	getQuestion: (questionKey: IQuestionKey) => Promise<IQuestionEx>;
-	loadAndCacheAllGroupRows: () => Promise<Map<string, IGroupRow> | null>;
-	getGroupRows: (categoryId: string | null) => Promise<any>;
-	globalGetGroupRow: (groupRowId: string) => Promise<IGroupRow | undefined>;
-	getGroupRowsByKind: (kind: number) => Promise<IGroupRow[]>;
 	searchAnswers: (filter: string, count: number, questionKey?: IQuestionKey) => Promise<IAnswerRow[]>;
 	getAnswer: (answerKey: IAnswerKey) => Promise<IAnswer | null>;
 	createWorkspace: (wsDto: IWorkspaceDto) => Promise<void>;

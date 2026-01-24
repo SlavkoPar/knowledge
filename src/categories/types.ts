@@ -1,4 +1,5 @@
 import { type ActionMap, type IWhoWhen, type IRecord, Dto2WhoWhen, WhoWhen2Dto, type IWhoWhenDto, type IDtoKey } from '@/global/types';
+import type { IGroupRow } from '@/groups/types';
 
 export enum FormMode {
 	None = 'None',
@@ -266,6 +267,19 @@ export class QuestionRow {
 			//isSelected: Included
 		}
 	}
+
+	// const { TopId, ParentId, Id, Title, NumOfAssignedAnswers, Included } = rowDto;
+	// return {
+	//   topId: TopId,
+	//   parentId: ParentId ?? '',
+	//   id: Id,
+	//   title: Title,
+	//   categoryTitle: '',
+	//   numOfAssignedAnswers: NumOfAssignedAnswers ?? 0,
+	//   included: Included ?? false,
+	// }
+
+
 	questionRow: IQuestionRow
 }
 
@@ -541,6 +555,8 @@ export interface ICategoriesState {
 	topRows: ICategoryRow[];
 	allCategoryRows: Map<string, ICategoryRow>;
 	allCategoryRowsLoaded?: number;
+	allGroupRows: Map<string, IGroupRow>; // AutoSuggestAnswers uses it
+	allGroupRowsLoaded?: number;
 	topRowsLoading: boolean;
 	topRowsLoaded: boolean;
 	keyExpanded: IKeyExpanded | null; // ICategoryKey + questionId
@@ -573,6 +589,7 @@ export interface ILoadCategoryQuestions {
 export interface ICategoriesContext {
 	state: ICategoriesState,
 	loadAllCategoryRows: () => Promise<Map<string, ICategoryRow> | null>;
+	loadAllGroupRows: () => Promise<Map<string, IGroupRow> | null>;
 	getCat: (id: string) => Promise<ICategoryRow | undefined>;
 	expandNodesUpToTheTree: (catKey: ICategoryKey, questionId: string | null, fromChatBotDlg?: boolean) => Promise<boolean>;
 	loadTopRows: () => Promise<any>,
@@ -714,6 +731,7 @@ export enum ActionTypes {
 	CANCEL_ADD_SUB_CATEGORY = 'CANCEL_ADD_SUB_CATEGORY',
 	SET_CATEGORY_ADDED = 'SET_CATEGORY_ADDED',
 	SET_ALL_CATEGORY_ROWS = 'SET_ALL_CATEGORY_ROWS',
+	SET_ALL_GROUP_ROWS = 'SET_ALL_GROUP_ROWS',
 
 	SET_CATEGORY_TO_VIEW = 'SET_CATEGORY_TO_VIEW',
 	SET_CATEGORY_TO_EDIT = 'SET_CATEGORY_TO_EDIT',
@@ -833,6 +851,11 @@ export type Payload = {
 	[ActionTypes.SET_ALL_CATEGORY_ROWS]: {
 		categoryRow?: ICategoryRow;
 		allCategoryRows: Map<string, ICategoryRow>
+	};
+
+	[ActionTypes.SET_ALL_GROUP_ROWS]: {
+		categoryRow?: ICategoryRow;
+		allGroupRows: Map<string, IGroupRow>
 	};
 
 	[ActionTypes.RE_RENDER_TREE]: {

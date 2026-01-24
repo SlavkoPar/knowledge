@@ -71,22 +71,23 @@ export const initialState: IGroupsState = {
 
 export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
-  const { loadAndCacheAllGroupRows } = useGlobalContext();
+  const { loadAllGroupRowsGlobal } = useGlobalContext();
   const globalState = useGlobalState();
   const { KnowledgeAPI, isAuthenticated, workspace, authUser, canEdit } = globalState;
   const { nickName } = authUser;
 
   const [state, dispatch] = useReducer(GroupReducer, initialState);
 
-  const { formMode, activeGroup, activeAnswer, keyExpanded, topRows, allGroupRows, allGroupRowsLoaded } = state;
+  const { formMode, activeGroup, activeAnswer, keyExpanded,
+    allGroupRows, allGroupRowsLoaded, topRows } = state;
 
-  console.log('----->>> ----->>> ----->>> GroupProvider')
+  console.log('----->>> ----->>> ----->>> GroupProvider', topRows);
 
   useEffect(() => {
 
     let keyExpanded: IKeyExpanded | null = workspace === 'DEMO'
       ? { topId: "MTS", groupId: "MTS", answerId: "aaaaaa111" }
-      : null
+      : { topId: "", groupId: "", answerId: "" }
 
     if ('localStorage' in window) {
       let s = localStorage.getItem('GROUPS_STATE');
@@ -167,18 +168,48 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
   // ---------------------------
   // load all groupRows
   // ---------------------------
-  const loadAllGroupRows = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
-    return new Promise(async (resolve) => {
-      const allGroupRows = await loadAndCacheAllGroupRows();
+  const loadAllGroupRows = useCallback(async (): Promise<void> => { //} Promise<Map<string, IGroupRow> | null> => {
+    return new Promise(async () => {
+      const allGroupRows = await loadAllGroupRowsGlobal();
       if (allGroupRows) {
         dispatch({ type: ActionTypes.SET_ALL_GROUP_ROWS, payload: { allGroupRows } });
       }
       else {
         dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error('Zajeb allGroupRows') } });
       }
-      resolve(allGroupRows);
     })
-  }, [loadAndCacheAllGroupRows]);
+  }, [loadAllGroupRowsGlobal]);
+
+  const loadTopRows = useCallback(async () => {
+    return new Promise(async (resolve) => {
+      //const { keyExpanded } = state;
+      try {
+        dispatch({ type: ActionTypes.SET_TOP_ROWS_LOADING, payload: {} });
+        const url = `${KnowledgeAPI.endpointGroupRow}/${workspace}/toprows`;
+        console.log('GroupProvider loadTopRows url:', url)
+        console.log('loadTopRows AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        console.time();
+        await Execute("GET", url)
+          .then((dtos: IGroupRowDto[]) => {
+            console.timeEnd();
+            console.log('loadTopRows GGGGGGGGGGGGGGGGGG')
+            const topRows = dtos!.map((dto: IGroupRowDto) => {
+              dto.IsExpanded = keyExpanded
+                ? dto.Id === keyExpanded.groupId
+                : false;
+              //dto.TopId = dto.AnswerId;
+              return new GroupRow(dto).groupRow;
+            })
+            dispatch({ type: ActionTypes.SET_TOP_ROWS, payload: { topRows } });
+            resolve(true);
+          });
+      }
+      catch (error: any) {
+        console.log(error)
+        dispatch({ type: ActionTypes.SET_GROUP_ERROR, payload: { error } });
+      }
+    })
+  }, [Execute, KnowledgeAPI.endpointGroupRow, keyExpanded, workspace]); // state,
 
   const getGrp = useCallback(async (id: string): Promise<IGroupRow | undefined> => {
     try {
@@ -195,11 +226,25 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      if (allGroupRowsLoaded === undefined) {
+      if (!allGroupRowsLoaded) {
         await loadAllGroupRows();
       }
     })()
   }, [allGroupRowsLoaded, loadAllGroupRows]);
+
+
+  // useEffect(() => {
+  //   (async () => {
+  //     // SET_TOP_ROWS  Level:1
+  //     console.log('Providered useEffect loadTopRows', { topRowsLoading }, { topRowsLoaded })
+  //     if (!topRowsLoading && !topRowsLoaded) {
+  //       console.log('ZOVEM 111 loadTopRows()')
+  //       await loadTopRows()
+  //     }
+  //   })()
+  // }, [loadTopRows, topRowsLoading, topRowsLoaded]);
+
+
 
   const getSubGrps = useCallback(async (groupId: string | null) => {
     try {
@@ -221,37 +266,6 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       return { subCats: [], parentHeader: 'Kiks subCats' }
     }
   }, [allGroupRows]);
-
-  const loadTopRows = useCallback(async () => {
-    return new Promise(async (resolve) => {
-      //const { keyExpanded } = state;
-      try {
-        dispatch({ type: ActionTypes.SET_TOP_ROWS_LOADING, payload: {} });
-        const url = `${KnowledgeAPI.endpointGroupRow}/${workspace}/toprows`;
-        console.log('GroupProvider loadTopRows url:', url)
-        console.log('loadTopRows AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-        console.time();
-        await Execute("GET", url)
-          .then((dtos: IGroupRowDto[]) => {
-            console.timeEnd();
-            console.log('loadTopRows BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
-            const topRows = dtos!.map((dto: IGroupRowDto) => {
-              dto.IsExpanded = keyExpanded
-                ? dto.Id === keyExpanded.groupId
-                : false;
-              //dto.TopId = dto.AnswerId;
-              return new GroupRow(dto).groupRow;
-            })
-            dispatch({ type: ActionTypes.SET_TOP_ROWS, payload: { topRows } });
-            resolve(true);
-          });
-      }
-      catch (error: any) {
-        console.log(error)
-        dispatch({ type: ActionTypes.SET_GROUP_ERROR, payload: { error } });
-      }
-    })
-  }, [Execute, KnowledgeAPI.endpointGroupRow, keyExpanded, workspace]); // state, 
 
 
   // get group With subgroupRows and answerRows

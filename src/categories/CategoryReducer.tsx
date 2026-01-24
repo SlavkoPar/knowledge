@@ -100,7 +100,7 @@ export const CategoryReducer: Reducer<ICategoriesState, Actions> = (state, actio
     : false;
 
   const { topRows } = state;
-  
+
   const newState = doNotCallInnerReducerActions.includes(action.type)
     ? { ...state }
     : innerReducer(state, action);
@@ -183,6 +183,14 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
       };
     }
 
+    case ActionTypes.SET_ALL_GROUP_ROWS: {
+      const { allGroupRows } = action.payload;
+      return {
+        ...state,
+        allGroupRows,
+        allGroupRowsLoaded: Date.now()
+      };
+    }
 
     case ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE: {
       const { categoryId_questionId_done } = action.payload;
