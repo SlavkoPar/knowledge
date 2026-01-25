@@ -93,18 +93,18 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                         const arr = groupId_answerId.split('_');
                         const groupId = arr[0];
                         const answerId = arr[1];
-                        const catKey: IGroupKey = { topId: '', id: groupId, parentId: 'ROOT' };
+                        const grpKey: IGroupKey = { topId: '', id: groupId, parentId: 'ROOT' };
                         console.log('zovem expandNodesUpToTheTree 1111111111111111111)', { groupId_answerId }, { groupId_answerId_done })
-                        await expandNodesUpToTheTree(catKey, answerId !== 'null' ? answerId : null)
+                        await expandNodesUpToTheTree(grpKey, answerId !== 'null' ? answerId : null)
                         console.log('zavrsio expandNodeUpToTheTree 1111111111111111111 DONE)', { groupId_answerId })
                     }
                 }
                 else if (keyExpanded && !nodeOpened) {
                     const { topId, groupId, answerId } = keyExpanded;
                     if (groupId !== '') {
-                        const catKey: IGroupKey = { topId, id: groupId, parentId: 'ROOT' }
-                        console.log('zovem expandNodeUpToTheTree 2222222222222)', { keyExpanded, catKey })
-                        await expandNodesUpToTheTree(catKey, answerId);
+                        const grpKey: IGroupKey = { topId, id: groupId, parentId: 'ROOT' }
+                        console.log('zovem expandNodeUpToTheTree 2222222222222)', { keyExpanded, grpKey })
+                        await expandNodesUpToTheTree(grpKey, answerId);
                         console.log('zavrsio expandNodeUpToTheTree 2222222222222 DONE)')
                     }
                 }

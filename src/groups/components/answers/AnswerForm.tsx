@@ -107,7 +107,7 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
     //setTitle(value);
     setSearchTerm(id + '/' + value);
   };
-
+  
   const setParentId = (cat: IGroupRow) => {
     formik.setFieldValue('parentId', cat.id);
     formik.setFieldValue('groupTitle', cat.title);

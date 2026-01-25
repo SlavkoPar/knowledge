@@ -5,6 +5,22 @@ import {
   actionStoringToLocalStorage, FormMode, doNotModifyTree, doNotCallInnerReducerActions
 } from "@/groups/types";
 
+export const subCatRow: IGroupRow = {
+  topId: 'generateId', // for top rows: topId = ToUpperCase(id)
+  id: 'generateId',
+  parentId: null,
+  level: 1,
+  isExpanded: false,
+  groupRows: [],
+  kind: 0,
+  title: '',
+  link: null,
+  header: '',
+  hasSubGroups: false,
+  variations: [],
+  numOfAnswers: 0,
+  answerRows: []
+}
 
 export const initialAnswer: IAnswer = {
   topId: '',
@@ -39,7 +55,7 @@ export const initialGroup: IGroup = {
 export const GroupReducer: Reducer<IGroupsState, Actions> = (state, action) => {
 
   console.log('------------------------------->')
-  console.log('----------------------- GroupReducer >', action.type)
+  console.log('------------------------------->', action.type)
   console.log('------------------------------->')
   // ----------------------------------------------------------------------
   // Rubljov: "By giving the right name, you reveal the essence of things"
@@ -80,7 +96,6 @@ export const GroupReducer: Reducer<IGroupsState, Actions> = (state, action) => {
     : false;
 
   const { topRows } = state;
-
 
   const newState = doNotCallInnerReducerActions.includes(action.type)
     ? { ...state }
@@ -140,12 +155,12 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
         ...state,
         loadingGroups: true,
         topRowsLoading: true,
-        //topRowsLoaded: false
+        topRowsLoaded: false
       }
 
     case ActionTypes.SET_TOP_ROWS: {
       const { topRows } = action.payload;
-      console.log('=> GroupsReducer ActionTypes.SET_TOP_ROWS', topRows)
+      console.log('=> GroupsReducer ActionTypes.SET_TOP_ROWS', state.topRows, topRows)
       return {
         ...state,
         topRows,
@@ -164,33 +179,38 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
       };
     }
 
+    case ActionTypes.SET_ALL_GROUP_ROWS: {
+      const { allGroupRows } = action.payload;
+      return {
+        ...state,
+        allGroupRows,
+        allGroupRowsLoaded: Date.now()
+      };
+    }
+
     case ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE: {
-          const { groupId_answerId_done } = action.payload;
-          //const { keyExpanded /*, activeCategory, activeQuestion */ } = state;
-          return {
-            ...state,
-            groupId_answerId_done,
-            nodeOpening: true,
-            loadingGroups: true,
-            nodeOpened: false,
-            //keyExpanded: fromChatBotDlg ? null : { ...keyExpanded! },
-            activeGroup: null, //fromChatBotDlg ? null : activeCategory,
-            activeAnswer: null //fromChatBotDlg ? null : activeQuestion
-          }
-        }
-
-
+      const { groupId_answerId_done } = action.payload;
+      //const { keyExpanded /*, activeGroup, activeAnswer */ } = state;
+      return {
+        ...state,
+        groupId_answerId_done,
+        nodeOpening: true,
+        loadingGroups: true,
+        nodeOpened: false,
+        //keyExpanded: fromChatBotDlg ? null : { ...keyExpanded! },
+        activeGroup: null, //fromChatBotDlg ? null : activeGroup,
+        activeAnswer: null //fromChatBotDlg ? null : activeAnswer
+      }
+    }
 
     case ActionTypes.SET_NODE_EXPANDED_UP_THE_TREE: {
-      const { group, formMode, grpKey, answerId, answer } = action.payload;
-      const { id } = grpKey; //;
+      const { group, answerId, answer } = action.payload;
       return {
         ...state,
         activeGroup: group,
         activeAnswer: answer,
         selectedAnswerId: answerId,
-        formMode,
-        groupId_answerId_done: `${id}_${answerId}`,
+        //formMode,
         nodeOpening: false,
         nodeOpened: true,
         loadingGroups: false
@@ -219,6 +239,7 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
 
     case ActionTypes.FORCE_OPEN_NODE:
       const { keyExpanded } = action.payload;
+      alert('FORCE_OPEN_NODE is deprecated, use SET_ANSWER_SELECTED instead')
       return {
         ...state,
         topRows: state.topRows.filter(row => row.parentId === null),
@@ -251,7 +272,7 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
     }
 
 
-    case ActionTypes.SET_GROUP_ERROR: {
+    case ActionTypes.SET_ERROR: {
       const { error, whichRowId } = action.payload; // group.id or answer.id
       return {
         ...state,
@@ -263,35 +284,6 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
         loadingAnswer: false, answerLoaded: false
       };
     }
-
-    case ActionTypes.ADD_SUB_GROUP: {
-      const { groupKey, level } = action.payload;
-      const { topId } = groupKey;
-      const group: IGroup = {
-        ...initialGroup,
-        topId,
-        level,
-        parentId: '' //null
-      }
-      return {
-        ...state,
-        activeGroup: group,
-        formMode: FormMode.AddingGroup
-      };
-    }
-
-    /*
-    case ActionTypes.SET_GROUP_ADDED: {
-      const { groupRow } = action.payload;
-      return {
-        ...state,
-        // TODO Popravi
-        formMode: FormMode.None,
-        activeGroup: groupRow!,
-        loading: false
-      }
-    }
-      */
 
 
     // case ActionTypes.SET_GROUP_ROW: {
@@ -405,7 +397,8 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
         //keyExpanded: { ...state.keyExpanded, answerId: null },
         activeGroup,
         activeAnswer: null,
-        selectedAnswerId: null
+        selectedAnswerId: null,
+        error: undefined
       };
     }
 
@@ -422,7 +415,7 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
         activeAnswer: null,
         selectedAnswerId: null,
         topRows: [newGroupRow!, ...state.topRows],
-        formMode: FormMode.AddingGroup,
+        formMode: FormMode.AddingGroup
       };
     }
 
@@ -456,13 +449,12 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
         formMode: FormMode.EditingGroup, // none
         loadingGroup: false,
         groupLoaded: false,
-        //topRowsLoaded,
+        // topRowsLoaded,
         //groupKeyExpanded: state.groupKeyExpanded ? { ...state.groupKeyExpanded, answerId: null } : null,
         activeGroup,
         activeAnswer: null,
         selectedAnswerId: null,
         keyExpanded: { topId, groupId: id, answerId: null }, // set id to call openNode from groups
-        /////nodeOpened: false
       };
     }
 
@@ -484,6 +476,7 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
         activeGroup: group,
         activeAnswer: null,
         selectedAnswerId: null,
+        error: undefined
       };
     }
 
@@ -704,19 +697,6 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
       };
     }
 
-       case ActionTypes.SET_ERROR: {
-          const { error, whichRowId } = action.payload; // category.id or question.id
-          return {
-            ...state,
-            error,
-            whichRowId,
-            loadingGroups: false,
-            loadingAnswers: false,
-            loadingGroup: false, groupLoaded: false,
-            loadingAnswer: false, answerLoaded: false
-          };
-        }
-
     default:
       alert(`Action ${action.type} not allowed`)
       return {
@@ -737,13 +717,13 @@ export class DeepClone {
     const { topId, id, parentId, title, link, kind, header, level, variations, numOfAnswers,
       hasSubGroups, groupRows, created, modified, answerRows, isExpanded } = groupRow;
 
-    const subGrpRows = groupRows.map((catRow: IGroupRow) => {
-      console.log('DeepClone >>>>>>>>>>>>>>>', catRow.id)
-      if (catRow.id === DeepClone.idToSet) {
+    const subCatRows = groupRows.map((grpRow: IGroupRow) => {
+      console.log('DeepClone >>>>>>>>>>>>>>>', grpRow.id)
+      if (grpRow.id === DeepClone.idToSet) {
         return { ...DeepClone.newGroupRow }
       }
       else {
-        return new DeepClone(catRow).groupRow
+        return new DeepClone(grpRow).groupRow
       }
     });
 
@@ -757,7 +737,7 @@ export class DeepClone {
       header,
       level,
       hasSubGroups,
-      groupRows: subGrpRows,
+      groupRows: subCatRows,
       numOfAnswers,
       answerRows,
       variations: variations ?? [],

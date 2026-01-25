@@ -125,7 +125,7 @@ function App() {
 
 
   useEffect(() => {
-    if (locationPathname === '/knowledge' && !locationPathname.includes('/from_chat')) {
+    if (locationPathname !== lastRouteVisited || !locationPathname.includes('/from_chat')) {
       navigate(lastRouteVisited);
     }
   }, [lastRouteVisited])

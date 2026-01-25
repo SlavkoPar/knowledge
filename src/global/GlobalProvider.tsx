@@ -7,7 +7,8 @@ import type {
   IHistoryFilter,
   IWorkspaceDto,
   IWorkspaceDtoEx,
-  IUser
+  IUser,
+  ILocStorage
 } from '@/global/types'
 
 import { GlobalActionTypes } from '@/global/types'
@@ -69,7 +70,7 @@ const initGlobalState: IGlobalState = {
   isDarkMode: true,
   variant: 'dark',
   bg: 'dark',
-  loading: false,
+  loading: true,
   topRows: [],
   nodesReLoaded: false,
   lastRouteVisited: '/knowledge/categories',
@@ -81,37 +82,21 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   // we reset changes, and again we use initialGlobalState
   // so, don't use globalDispatch inside of inner Provider, like Categories Provider
   const [globalState, dispatch] = useReducer(GlobalReducer, initGlobalState);
-  const { KnowledgeAPI, workspace, } = globalState;
+  const { KnowledgeAPI, workspace, loading } = globalState;
 
   console.log('--------> GlobalProvider')
 
 
   useEffect(() => {
-    // let initState: IGlobalState = {
-    //   ...initGlobalState
-    // }
+    let locStorage: ILocStorage | null = null;
     if ('localStorage' in window) {
       console.log('GLOBAL_STATE loaded before signIn')
       let s = localStorage.getItem('GLOBAL_STATE');
       if (s !== null) {
-        const locStorage = JSON.parse(s);
-        //const { everLoggedIn, nickName, isDarkMode, variant, bg, lastRouteVisited } = locStorage;
-        // initState = {
-        //   ...initState,
-        //   everLoggedIn,
-        //   // authUser: {
-        //   //   ...authUser,
-        //   //   nickName
-        //   // },
-        //   isDarkMode,
-        //   variant,
-        //   bg,
-        //   lastRouteVisited
-        // }
-        dispatch({ type: GlobalActionTypes.SET_FROM_LOCAL_STORAGE, payload: { locStorage } });
+        locStorage = JSON.parse(s);
       }
     }
-
+    dispatch({ type: GlobalActionTypes.SET_STATE, payload: { locStorage } });
   }, []);
 
   const Execute = async (method: string, endpoint: string, data: Object | null = null): Promise<any> => {
@@ -303,7 +288,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           }
           else {
             // reject()
-            console.log('no cat rows in search'+ msg)
+            console.log('no cat rows in search' + msg)
           }
         })
       }
@@ -825,7 +810,10 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
 
   const setChatBotDlgEnabled = () => {
     dispatch({ type: GlobalActionTypes.SET_ENABLE_CHATBOT_DLG });
+  }
 
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (

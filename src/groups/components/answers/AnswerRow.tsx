@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRemove } from '@fortawesome/free-solid-svg-icons'
 
-import { ListGroup, Button } from "react-bootstrap";
+import { ListGroup, Button, Badge } from "react-bootstrap";
 
 import { useGlobalState } from '@/global/GlobalProvider'
 import { FormMode, type IGroupKey, type IAnswerRow } from "@/groups/types";
@@ -16,11 +16,11 @@ import Q from '@/assets/Q.png';
 import QPlus from '@/assets/QPlus.png';
 
 
-//const AnswerRow = ({ answer, groupInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, answer: IAnswer, groupInAdding: boolean | undefined }) => {
+//const AnswerRow = ({ answer, categoryInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, answer: IAnswer, categoryInAdding: boolean | undefined }) => {
 const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelected: boolean }) => {
     const { id, topId, parentId, title } = answerRow; // , isSelected
     //const answerKey: IAnswerKey = new AnswerKey(answerRow).answerKey!;
-    const groupKey: IGroupKey = { topId, parentId, id: parentId! } // proveri
+    const categoryKey: IGroupKey = { topId, parentId, id: parentId! } // proveri
 
     const { canEdit, authUser } = useGlobalState();
     const { state, viewAnswer, addAnswer, editAnswer, deleteAnswer } = useGroupContext();
@@ -79,7 +79,8 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
     }, [canEdit, editAnswer, formMode, id, isSelected, loadingAnswer, answerLoaded, answerRow, viewAnswer]);
 
     const Row1 =
-        <div id={`AnswerRow${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 answer-row${isSelected ? '-selected' : ''}`}  style={{ marginTop: '0px' }} >
+
+        <div id={`AnswerRow${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 mt-0 answer-row${isSelected ? '-selected' : ''}`} style={{ marginTop: '1px' }} >
             <Button
                 variant='link'
                 size="sm"
@@ -90,7 +91,7 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
             <Button
                 variant='link'
                 size="sm"
-                className={`p-0 px-1 m-0 ms-0 answer-row-title ${showForm ? 'fw-bold' : ''}`}
+                className={`p-0 px-1 m-1 ms-0 answer-row-title ${showForm ? 'fw-bold' : ''}`}
                 title={`id:${id!.toString()}`}
                 onClick={() => onSelectAnswer(id!)}
                 disabled={alreadyAdding}
@@ -115,8 +116,8 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
                         className="ms-1 p-0 text-secondary d-flex align-items-center"
                         title="Add Answer"
                         onClick={() => {
-                            //const groupInfo: IGroupInfo = { groupKey, level: 0 }
-                            addAnswer(groupKey, true);
+                            //const categoryInfo: IGroupInfo = { categoryKey, level: 0 }
+                            addAnswer(categoryKey, true);
                         }}
                     >
                         <img width="22" height="18" src={QPlus} alt="Add Answer" />
@@ -126,6 +127,7 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
                     >
                         <FontAwesomeIcon icon={faRemove} size='lg' />
                     </Button>
+
                 </div>
             }
         </div>

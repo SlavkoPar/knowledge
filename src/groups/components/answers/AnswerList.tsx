@@ -27,7 +27,7 @@ const AnswerList = ({ groupRow }: { groupRow: IGroupRow }) => {
 
       const x: ILoadGroupAnswers = {
         groupKey: new GroupKey(groupRow).groupKey!,
-        startCursor: answerRows.length,
+        startCursor: answerRows!.length,
         includeAnswerId: answerId ?? null
       }
       console.log('^^^^^^^^^^^^^ loadMore')
@@ -69,10 +69,10 @@ const AnswerList = ({ groupRow }: { groupRow: IGroupRow }) => {
       style={{ maxHeight: '400px', overflowY: 'auto' }}
     >
       <List>
-        {answerRows.length === 0 &&
+        {answerRows!.length === 0 &&
           <label>No answers</label>
         }
-        {answerRows.map((answerRow: IAnswerRow) => {
+        {answerRows!.map((answerRow: IAnswerRow) => {
           return <AnswerRow key={answerRow.id} answerRow={answerRow} isSelected={answerRow.id === selectedAnswerId} />
         })}
         {hasMoreAnswers && (

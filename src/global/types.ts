@@ -216,7 +216,7 @@ export interface IGlobalContext {
 
 export enum GlobalActionTypes {
 	SET_LOADING = 'SET_LOADING',
-	SET_FROM_LOCAL_STORAGE = "SET_FROM_LOCAL_STORAGE",
+	SET_STATE = "SET_STATE",
 	AUTHENTICATE = "AUTHENTICATE",
 	UN_AUTHENTICATE = "UN_AUTHENTICATE",
 	SET_ERROR = 'SET_ERROR',
@@ -271,8 +271,8 @@ export type GlobalPayload = {
 	[GlobalActionTypes.SET_LOADING]: {
 	};
 
-	[GlobalActionTypes.SET_FROM_LOCAL_STORAGE]: {
-		locStorage: ILocStorage
+	[GlobalActionTypes.SET_STATE]: {
+		locStorage: ILocStorage|null
 	};
 
 

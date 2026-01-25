@@ -52,12 +52,13 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
                 loading: true
             }
 
-        case GlobalActionTypes.SET_FROM_LOCAL_STORAGE: {
+        case GlobalActionTypes.SET_STATE: {
             const { locStorage } = action.payload;
-            return {
+            const newState = {
                 ...state,
-                ...locStorage
-            }
+                loading: false
+            };
+            return locStorage === null ? newState : { ...newState, ...locStorage };
         }
 
         case GlobalActionTypes.SET_ERROR: {
