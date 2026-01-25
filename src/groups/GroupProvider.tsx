@@ -89,8 +89,8 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       : null;
 
     if ('localStorage' in window) {
-      let s = localStorage.getItem('CATEGORIES_STATE');
-      console.log('CATEGORIES_STATE from localStorage', s)
+      let s = localStorage.getItem('GROUPS_STATE');
+      console.log('GROUPS_STATE from localStorage', s)
       if (s !== null) {
         const locStorage: ILocStorage = JSON.parse(s);
         if (locStorage.keyExpanded !== null)
@@ -183,8 +183,8 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
  
   const getGrp = useCallback(async (id: string): Promise<IGroupRow | undefined> => {
     try {
-      const cat: IGroupRow | undefined = allGroupRows.get(id);  // globalState.cats is Map<string, ICat>
-      return cat;
+      const grp: IGroupRow | undefined = allGroupRows.get(id);  // globalState.cats is Map<string, ICat>
+      return grp;
     }
     catch (error: any) {
       console.log(error)
@@ -204,21 +204,21 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
   const getSubGrps = useCallback(async (groupId: string | null) => {
     try {
       let parentHeader = "";
-      const subCats: IGroupRow[] = [];
+      const subGrps: IGroupRow[] = [];
       allGroupRows.forEach((cat, id) => {  // globalState.cats is Map<string, ICat>
         if (id === groupId) {
           parentHeader = ""; //cat.header!;
         }
         else if (cat.parentId === groupId) {
-          subCats.push(cat);
+          subGrps.push(cat);
         }
       })
-      return { subCats, parentHeader };
+      return { subGrps, parentHeader };
     }
     catch (error: any) {
       console.log(error)
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
-      return { subCats: [], parentHeader: 'Kiks subCats' }
+      return { subGrps: [], parentHeader: 'Kiks subGrps' }
     }
   }, [allGroupRows]);
 
@@ -288,18 +288,18 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       if (groupRow.topId === id)
         return groupRow;
       const { groupRows } = groupRow;
-      let cat: IGroupRow | undefined = groupRows.find(c => c.id === id);
-      if (!cat) {
+      let grp: IGroupRow | undefined = groupRows.find(c => c.id === id);
+      if (!grp) {
         for (const c of groupRows) {
-          const catRow = await findGroupRow(c, id);
-          if (catRow) {
-            cat = catRow;
+          const grpRow = await findGroupRow(c, id);
+          if (grpRow) {
+            grp = grpRow;
             console.log("findGroup Stop the loop for: " + id);
             break;
           }
         }
       }
-      return cat;
+      return grp;
     }, []);
 
 
@@ -425,7 +425,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
         const groupRow: IGroupRow = await getGroupRow(groupKey, true, includeAnswerId); // to reload Group
         if (groupRow instanceof Error) {
           dispatch({ type: ActionTypes.SET_ERROR, payload: { error: groupRow } });
-          console.error({ cat: groupRow })
+          console.error({ groupRow })
         }
         else {
           let selectedAnswerId: string | undefined = undefined;
@@ -460,14 +460,14 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       const { topId, id } = groupRow;
       //const { topRows } = state;
       const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
-      const catRow: IGroupRow | undefined = await findGroupRow(topRow, id);
+      const grpRow: IGroupRow | undefined = await findGroupRow(topRow, id);
       /*
       const catRow: IGroupRow = (topRow.id === id)
         ? topRow
         : (await findGroupRow(topRow, id))!;
       */
-      if (catRow) {
-        groupRow = { ...catRow, isExpanded: false, groupRows: [], answerRows: [] }
+      if (grpRow) {
+        groupRow = { ...grpRow, isExpanded: false, groupRows: [], answerRows: [] }
         // rerender
         dispatch({ type: ActionTypes.SET_ROW_COLLAPSED, payload: { groupRow } })
       }
@@ -702,8 +702,8 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
     if (group instanceof Error)
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error: group } });
     else {
-      const catRow: IGroupRow = { ...group, isExpanded: false, groupRows: [], answerRows: [] }
-      dispatch({ type: ActionTypes.SET_GROUP_TO_EDIT, payload: { groupRow: catRow, group } });
+      const grpRow: IGroupRow = { ...group, isExpanded: false, groupRows: [], answerRows: [] }
+      dispatch({ type: ActionTypes.SET_GROUP_TO_EDIT, payload: { groupRow: grpRow, group } });
       /*
       if (parentId === null) { // topRow
         group.topId = groupRow.topId;
@@ -909,10 +909,10 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
         // console.assert(isExpanded);
         // if (isExpanded) {
         const topRow: IGroupRow = state.topRows.find(c => c.id === topId)!;
-        const catRow: IGroupRow | undefined = await findGroupRow(topRow, id)!;
+        const grpRow: IGroupRow | undefined = await findGroupRow(topRow, id)!;
         dispatch({
           type: ActionTypes.ADD_NEW_ANSWER_TO_ROW, payload: {
-            groupRow: { ...catRow!, answerRows: [newAnswerRow, ...catRow!.answerRows!] },
+            groupRow: { ...grpRow!, answerRows: [newAnswerRow, ...grpRow!.answerRows!] },
             newAnswerRow
           }
         });
