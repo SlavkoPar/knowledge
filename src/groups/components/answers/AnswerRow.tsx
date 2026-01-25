@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRemove } from '@fortawesome/free-solid-svg-icons'
 
-import { ListGroup, Button, Badge } from "react-bootstrap";
+import { ListGroup, Button } from "react-bootstrap";
 
 import { useGlobalState } from '@/global/GlobalProvider'
 import { FormMode, type IGroupKey, type IAnswerRow } from "@/groups/types";
