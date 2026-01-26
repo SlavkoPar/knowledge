@@ -204,13 +204,13 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
     }
 
     case ActionTypes.SET_NODE_EXPANDED_UP_THE_TREE: {
-      const { group, answerId, answer } = action.payload;
+      const { group, answerId, answer, formMode } = action.payload;
       return {
         ...state,
         activeGroup: group,
         activeAnswer: answer,
         selectedAnswerId: answerId,
-        //formMode,
+        formMode,
         nodeOpening: false,
         nodeOpened: true,
         loadingGroups: false

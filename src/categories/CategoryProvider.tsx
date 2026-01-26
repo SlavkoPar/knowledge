@@ -334,15 +334,15 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
           let { topId, parentId, id } = catKey;
           console.assert(id !== null, 'id ne sme biti null u expandNodesUpToTheTree');
           if (id) {
-            const categoryRow: ICategoryRow | undefined = allCategoryRows.get(id);
-            if (categoryRow) {
-              topId = categoryRow.topId;
-              parentId = categoryRow.parentId;
-            }
-            else {
-              alert('reload all categoryRow:' + id)
-              //return
-            }
+            // const categoryRow: ICategoryRow | undefined = allCategoryRows.get(id);
+            // if (categoryRow) {
+            //   topId = categoryRow.topId;
+            //   parentId = categoryRow.parentId;
+            // }
+            // else {
+            //   alert('reload all categoryRow:' + id)
+            //   //return
+            // }
           }
           dispatch({
             type: ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE, payload: {
@@ -363,12 +363,12 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
               if (categoryRowDto) {
                 let category: ICategory | null = null;
                 let question: IQuestion | null = null;
-                let categoryRow: ICategoryRow | null = new CategoryRow(categoryRowDto).categoryRow;
+                const topRowNew: ICategoryRow | null = new CategoryRow(categoryRowDto).categoryRow;
+                const bottomRow = await findCategoryRow(topRowNew, id!);
                 if (parentId !== null) {
-                  const row = await findCategoryRow(categoryRow, id!);
-                  category = { ...row!, doc1: '' };
+                  category = { ...bottomRow!, doc1: '' };
                   if (questionId) {
-                    const questionRow = row!.questionRows!.find(q => q.id === questionId && q.included)!;
+                    const questionRow = bottomRow!.questionRows!.find(q => q.id === questionId && q.included)!;
                     if (questionRow) {
                       category = null;
                       question = {
@@ -383,7 +383,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
                     }
                   }
                 }
-                console.log('>>> expandNodeUpToTheTree categoryRow', { categoryRow, questionId: "'" + (questionId ?? 'jok') + "'" + (questionId ?? "JOK") })
+                console.log('>>> expandNodeUpToTheTree categoryRow', { categoryRow: bottomRow, questionId: "'" + (questionId ?? 'jok') + "'" + (questionId ?? "JOK") })
                 const formMode = questionId
                   ? canEdit
                     ? FormMode.EditingQuestion
@@ -395,7 +395,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
                 dispatch({
                   type: ActionTypes.SET_NODE_EXPANDED_UP_THE_TREE, payload: {
                     catKey,
-                    categoryRow,
+                    categoryRow: topRowNew,
                     category: category!,
                     questionId: questionId ?? null,
                     question,
