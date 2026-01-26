@@ -202,33 +202,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     });
   }, [KnowledgeAPI.endpointCategoryRow, workspace]);
 
-  const loadTopRows = useCallback(async () => {
-    return new Promise(async (resolve) => {
-      //const { keyExpanded } = state;
-      try {
-        dispatch({ type: GlobalActionTypes.SET_TOP_ROWS_LOADING, payload: { loading: true } });
-        const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}/null/topRows/all`;
-        console.log('CategoryProvider loadTopRows url:', url)
-        console.log('loadTopRows AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-        console.time();
-        await Execute("GET", url)
-          .then((dtos: ICategoryRowDto[]) => {
-            console.timeEnd();
-            console.log('loadTopRows BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
-            const topRows = dtos!.map((dto: ICategoryRowDto) => {
-              return new CategoryRow(dto).categoryRow;
-            })
-            dispatch({ type: GlobalActionTypes.SET_TOP_ROWS, payload: { topRows } });
-            resolve(true);
-          });
-      }
-      catch (error: any) {
-        console.log(error)
-        dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
-      }
-    })
-  }, [Execute, KnowledgeAPI.endpointCategoryRow, workspace]); // state, 
-
+ 
 
   // ---------------------------
   // load all groupRows
@@ -822,7 +796,6 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
       health,
       loadAllCategoryRowsGlobal,
       loadAllGroupRowsGlobal,
-      loadTopRows, //getCat, getSubCats, getCatsByKind,
       searchQuestions, getQuestion,
       searchAnswers, getAnswer,
       setNodesReloaded,

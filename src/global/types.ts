@@ -200,7 +200,6 @@ export interface IGlobalContext {
 	health: () => void;
 	loadAllCategoryRowsGlobal: () => Promise<Map<string, ICategoryRow> | null>;
 	loadAllGroupRowsGlobal: () => Promise<Map<string, IGroupRow> | null>;
-	loadTopRows: () => Promise<any>,
 	searchQuestions: (filter: string, count: number) => Promise<IQuestionRow[]>;
 	getQuestion: (questionKey: IQuestionKey) => Promise<IQuestionEx>;
 	searchAnswers: (filter: string, count: number, questionKey?: IQuestionKey) => Promise<IAnswerRow[]>;
