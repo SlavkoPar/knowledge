@@ -1272,33 +1272,10 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     }, [Execute, KnowledgeAPI.endpointQuestionAnswer, nickName, workspace]);
 
 
-  // const onCategoryIdChanged = useCallback(
-  //   async (topId: string, id: string): Promise<void> => {
-  //     const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-  //     console.log('Provider onCategoryIdChanged >>>>>>:', topRow)
-  //     const categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, 'generateId');
-  //     console.log('Provider onCategoryIdChanged >>>>>>:', categoryRow, id)
-  //     categoryRow!.id = id;
-  //     dispatch({ type: ActionTypes.RE_RENDER_TREE, payload: { categoryRow: categoryRow! } });
-  //   }, [findCategoryRow, topRows]);
-
   const onCategoryTitleChanged = useCallback(
     async (topId: string, id: string, title: string): Promise<void> => {
-      //const { topRows } = state;
-      //const topRow: ICategoryRow = topRows.find(c => c.id === category.topId)!;
       const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-      //const categoryRow: ICategoryRow = findCategoryRow(topRow.categoryRows, id)!;
-      // if (!activeCategory || loadingCategory) { // just in case
-      //   console.log('Provider>>>>>>00000')
-      //   return;
-      // }
-      // const categoryRow: ICategoryRow = (topRow.id === id)
-      //   ? topRow
-      //   : findCategoryRow(topRow.categoryRows, id)!;
       let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, id);
-      // console.log('Provider onCategoryTitleChanged >>>>>>:', category)
-      //console.log('Provider onCategoryTitleChanged:', title)
-      //category.title = title;
       console.log('PROVIDER onCategoryTitleChanged::', categoryRow!.title, title)
       if (categoryRow!.title !== title) {
         categoryRow!.title = title === '' ? 'New Category' : title; // to avoid empty title
@@ -1309,19 +1286,22 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       return;
     }, [findCategoryRow, topRows]);
 
+  
   const onQuestionTitleChanged = useCallback(
-    async (topRow: ICategoryRow, question: IQuestion, title: string): Promise<void> => {
-      const { parentId, id } = question;
-      const categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, parentId);
+    async (topId: string, id: string, title: string): Promise<void> => {
+      const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
+      let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, id);
       if (categoryRow) {
         const questionRow = categoryRow.questionRows!.find(q => q.id === id)!;
-        questionRow.title = title;
-        // rerender
-        console.log('onQuestionTitleChanged+++>>>', id, categoryRow)
-        dispatch({ type: ActionTypes.QUESTION_TITLE_CHANGED, payload: { categoryRow } })
+        if (questionRow!.title !== title) {
+          questionRow.title = title === '' ? 'New Question' : title; // to avoid empty title;
+          // rerender
+          console.log('onQuestionTitleChanged+++>>>', id, categoryRow)
+          dispatch({ type: ActionTypes.QUESTION_TITLE_CHANGED, payload: { categoryRow } })
+        }
       }
-    }, [findCategoryRow]);
-
+      return;
+    }, [findCategoryRow, topRows]);
 
   const contextValue: ICategoriesContext = {
     state, loadAllCategoryRows, getSubCats, getCat,

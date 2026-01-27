@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FormEvent, useState, useEffect, useRef, lazy, Suspense } from "react";
+import { type ChangeEvent, type FormEvent, useState, useEffect, useRef } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -15,7 +15,7 @@ import CatList from '@/global/Components/SelectCategory/CatList'
 
 import { useCategoryContext, useCategoryDispatch } from "@/categories/CategoryProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
-//import AssignedAnswers from './AssignedAnswers';
+import AssignedAnswers from './AssignedAnswers';
 import RelatedFilters from './RelatedFilters';
 
 const QuestionForm = ({ question, submitForm, children, showCloseButton, source = 0, closeModal }: IQuestionFormProps) => {
@@ -24,12 +24,12 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
   // const { isDarkMode, variant, bg } = globalState;
 
   const { state, onQuestionTitleChanged } = useCategoryContext();
-  let { formMode, topRows } = state;
+  let { formMode } = state;
 
-  const AssignedAnswers = lazy(() =>
-    // named export
-    import("@/categories/components/questions/AssignedAnswers").then((module) => ({ default: module.default }))
-  );
+  // const AssignedAnswers = lazy(() =>
+  //   // named export
+  //   import("@/categories/components/questions/AssignedAnswers").then((module) => ({ default: module.default }))
+  // );
 
   const viewing = formMode === FormMode.ViewingQuestion;
   const editing = formMode === FormMode.EditingQuestion;
@@ -61,10 +61,10 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
     }
   }
 
-  const [searchTerm, setSearchTerm] = useState(id + '/' + qTitle);
+  const [searchTerm, setSearchTerm] = useState(qTitle);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const [topRow] = useState<ICategoryRow>(topRows.find(c => c.id === topId)!);
+  //const [topRow] = useState<ICategoryRow>(topRows.find(c => c.id === topId)!);
 
   // eslint-disable-next-line no-self-compare
   const nameRef = useRef<HTMLTextAreaElement>(null);
@@ -80,24 +80,21 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
       // console.log('QuestionForm.onSubmit', JSON.stringify(values, null, 2))
       submitForm(values)
       //props.handleClose(false);
-      setSearchTerm(values.id + '/' + values.title);
+      setSearchTerm(values.title);
     }
   });
 
   useEffect(() => {
     const goBre = async () => {
-      //if (debouncedSearchTerm && formik.values.title !== debouncedSearchTerm) {
-      //if (debouncedSearchTerm && searchTerm !== debouncedSearchTerm) {
-      const old = debouncedSearchTerm.split('/');
-      const Id = old[0];
-      if (formik.values.id === Id) {
-        console.log('QuestionForm.useEffect - onQuestioTitleChanged', { debouncedSearchTerm, searchTerm, title: formik.values.title });
-        const Title = old[1]
-        await onQuestionTitleChanged(topRow, formik.values, Title);
+      // console.log('QuestionForm.useEffect - onQuestionTitleChanged', { debouncedSearchTerm, title: formik.values.title });
+      if (/*debouncedSearchTerm &&*/ formik.values.title !== debouncedSearchTerm) {
+        /*await*/ onQuestionTitleChanged(topId, id, formik.values.title);
       }
     };
     goBre();
-  }, [debouncedSearchTerm, formik.values, onQuestionTitleChanged, searchTerm, topRow]);
+  }, [debouncedSearchTerm, formik.values.title, onQuestionTitleChanged, topId, id]);
+
+  
 
   useEffect(() => {
     nameRef.current!.focus();
@@ -112,7 +109,7 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
     const value = event.target.value;
     //if (value !== debouncedTitle)
     //setTitle(value);
-    setSearchTerm(id + '/' + value);
+    setSearchTerm(value);
   };
 
   const setParentId = (cat: ICategoryRow) => {
@@ -120,7 +117,6 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
     formik.setFieldValue('categoryTitle', cat.title);
   }
 
-  console.log('@@@@@@@@@@@@@@@@@@@@@ QuestionForm.render: ', { searchTerm, qTitle, debouncedSearchTerm });
   //useEffect(() => {
   //  setSearchTerm(qTitle);
   //}, [qTitle]);
@@ -255,14 +251,12 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
 
         {(viewing || editing) &&
           <div className="my-1">
-            <Suspense fallback={<div>Loading...</div>}>
               <AssignedAnswers
                 questionKey={questionKey!}
                 questionTitle={searchTerm}
                 assignedAnswers={assignedAnswers}
                 isDisabled={isDisabled}
               />
-            </Suspense>
 
             <RelatedFilters
               questionKey={questionKey!}

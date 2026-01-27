@@ -22,7 +22,7 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
   // const { isDarkMode, variant, bg } = globalState;
 
   const { state, onAnswerTitleChanged } = useGroupContext();
-  let { formMode, topRows } = state;
+  let { formMode } = state;
 
   const viewing = formMode === FormMode.ViewingAnswer;
   const editing = formMode === FormMode.EditingAnswer;
@@ -54,10 +54,9 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
     }
   }
 
-  const [searchTerm, setSearchTerm] = useState(id + '/' + qTitle);
+  const [searchTerm, setSearchTerm] = useState(qTitle);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const [topRow] = useState<IGroupRow>(topRows.find(c => c.id === topId)!);
 
   // eslint-disable-next-line no-self-compare
   const nameRef = useRef<HTMLTextAreaElement>(null);
@@ -73,24 +72,19 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
       // console.log('AnswerForm.onSubmit', JSON.stringify(values, null, 2))
       submitForm(values)
       //props.handleClose(false);
-      setSearchTerm(values.id + '/' + values.title);
+      setSearchTerm(values.title);
     }
   });
 
   useEffect(() => {
     const goBre = async () => {
-      //if (debouncedSearchTerm && formik.values.title !== debouncedSearchTerm) {
-      //if (debouncedSearchTerm && searchTerm !== debouncedSearchTerm) {
-      const old = debouncedSearchTerm.split('/');
-      const Id = old[0];
-      if (formik.values.id === Id) {
-        console.log('AnswerForm.useEffect - onQuestioTitleChanged', { debouncedSearchTerm, searchTerm, title: formik.values.title });
-        const Title = old[1]
-        await onAnswerTitleChanged(topRow, formik.values, Title);
+      // console.log('QuestionForm.useEffect - onQuestionTitleChanged', { debouncedSearchTerm, title: formik.values.title });
+      if (/*debouncedSearchTerm &&*/ formik.values.title !== debouncedSearchTerm) {
+        /*await*/ onAnswerTitleChanged(topId, id, formik.values.title);
       }
     };
     goBre();
-  }, [debouncedSearchTerm, formik.values, onAnswerTitleChanged, searchTerm, topRow]);
+  }, [debouncedSearchTerm, formik.values.title, onAnswerTitleChanged, topId, id]);
 
   useEffect(() => {
     nameRef.current!.focus();
@@ -105,15 +99,14 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
     const value = event.target.value;
     //if (value !== debouncedTitle)
     //setTitle(value);
-    setSearchTerm(id + '/' + value);
+    setSearchTerm(value);
   };
-  
+
   const setParentId = (cat: IGroupRow) => {
     formik.setFieldValue('parentId', cat.id);
     formik.setFieldValue('groupTitle', cat.title);
   }
 
-  console.log('@@@@@@@@@@@@@@@@@@@@@ AnswerForm.render: ', { searchTerm, qTitle, debouncedSearchTerm });
   //useEffect(() => {
   //  setSearchTerm(qTitle);
   //}, [qTitle]);

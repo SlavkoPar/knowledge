@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Container, Row, Col, Button } from "react-bootstrap";
 
 import { useParams } from 'react-router-dom';
@@ -18,7 +18,7 @@ import EditAnswer from "@/groups/components/answers/EditAnswer";
 import { initialGroup, initialAnswer } from "@/groups/GroupReducer";
 import ModalAddAnswer from './ModalAddAnswer';
 import AddGroup from './components/AddGroup';
-import { AutoSuggestAnswers } from './AutoSuggestAnswers';
+//import { AutoSuggestAnswers } from '@/global/Components/AutoSuggests/AutoSuggestAnswers';
 import AddAnswer from './components/answers/AddAnswer';
 
 interface IProps {
@@ -26,9 +26,9 @@ interface IProps {
     fromChatBotDlg?: string;
 }
 
-// const AutoSuggestAnswers = lazy(() =>
-//     import("@/groups/AutoSuggestAnswers").then((module) => ({ default: module.AutoSuggestAnswers }))
-// );
+const AutoSuggestAnswers = lazy(() =>
+    import("@/global/Components/AutoSuggests/AutoSuggestAnswers").then((module) => ({ default: module.AutoSuggestAnswers }))
+);
 
 const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
     const { state, expandNodesUpToTheTree, loadTopRows, addSubGroup } = useGroupContext();
@@ -119,7 +119,7 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
     useEffect(() => {
         if (lastRouteVisited !== route)
             setLastRouteVisited(route);
-    }, [ lastRouteVisited, setLastRouteVisited ]);
+    }, [lastRouteVisited, setLastRouteVisited]);
 
     if (groupId_answerId !== 'add_answer') {
         if (/*keyExpanded ||*/ (groupId_answerId && groupId_answerId !== groupId_answerId_done)) {
@@ -146,12 +146,14 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                     <Col>
                         <div className="d-flex justify-content-start align-items-center">
                             <div className="w-75 my-1 answers">
-                                <AutoSuggestAnswers
-                                    tekst={tekst}
-                                    onSelectAnswer={onSelectAnswer}
-                                    allGroupRows={allGroupRows}
-                                    searchAnswers={searchAnswers}
-                                />
+                                <Suspense fallback={<div>Loading...</div>}>
+                                    <AutoSuggestAnswers
+                                        tekst={tekst}
+                                        onSelectAnswer={onSelectAnswer}
+                                        allGroupRows={allGroupRows}
+                                        searchAnswers={searchAnswers}
+                                    />
+                                </Suspense>
                             </div>
                         </div>
                     </Col>
@@ -168,7 +170,7 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                 <Row className="my-1 h-auto">
                     <Col xs={12} md={5}>
                         <div className="groups-border" style={{ position: 'relative' }}>
-                            <GroupList groupRow={{...initialGroup, groupRows: topRows }}  isExpanded={true} />
+                            <GroupList groupRow={{ ...initialGroup, groupRows: topRows }} isExpanded={true} />
                         </div>
                     </Col>
                     <Col xs={0} md={7}>

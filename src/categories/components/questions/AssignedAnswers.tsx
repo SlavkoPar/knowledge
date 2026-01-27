@@ -1,16 +1,16 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Button, ListGroup, Modal } from "react-bootstrap";
 import type { IAssignedAnswer, IAssignedAnswerKey, IQuestionKey } from "@/categories/types";
 import { useCategoryContext } from "@/categories/CategoryProvider";
 import { useGlobalContext } from "@/global/GlobalProvider";
 import AssignedAnswer from "./AssignedAnswer";
-import { AutoSuggestAnswers } from '@/groups/AutoSuggestAnswers';
+//import { AutoSuggestAnswers } from '@/global/Components/AutoSuggests/AutoSuggestAnswers';
 import { type IAnswer } from "@/groups/types";
 import AddAnswer from "@/categories/components/questions/AddAnswer"
 
-// const AutoSuggestAnswers = lazy(() =>
-//     import("@/groups/AutoSuggestAnswers").then((module) => ({ default: module.AutoSuggestAnswers }))
-// );
+const AutoSuggestAnswers = lazy(() =>
+    import("@/global/Components/AutoSuggests/AutoSuggestAnswers").then((module) => ({ default: module.AutoSuggestAnswers }))
+);
 
 interface IProps {
     questionKey: IQuestionKey,
@@ -33,7 +33,7 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
 
     const { state, assignQuestionAnswer } = useCategoryContext();
 
-    const { allGroupRows  } = state;
+    const { allGroupRows } = state;
     const [showAssign, setShowAssign] = useState(false);
 
     const onSelectAnswer = async (assignedAnswerKey: IAssignedAnswerKey) => {
@@ -160,12 +160,14 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
                     <Modal.Title>Assign the answer</Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{ height: '40vh', width: '50vw' }} className="answers">
-                    <AutoSuggestAnswers
-                        tekst={'tekst'}
-                        onSelectAnswer={onSelectAnswer}
-                        allGroupRows={allGroupRows}
-                        searchAnswers={searchAnswers}
-                    />
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <AutoSuggestAnswers
+                            tekst={'tekst'}
+                            onSelectAnswer={onSelectAnswer}
+                            allGroupRows={allGroupRows}
+                            searchAnswers={searchAnswers}
+                        />
+                    </Suspense>
                 </Modal.Body>
             </Modal>
         </div >

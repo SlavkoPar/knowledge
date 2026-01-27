@@ -1227,19 +1227,22 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       return;
     }, [findGroupRow, topRows]);
 
-  const onAnswerTitleChanged = useCallback(
-    async (topRow: IGroupRow, answer: IAnswer, title: string): Promise<void> => {
-      const { parentId, id } = answer;
-      const groupRow: IGroupRow | undefined = await findGroupRow(topRow, parentId);
-      if (groupRow) {
-        const answerRow = groupRow.answerRows!.find(q => q.id === id)!;
-        answerRow.title = title;
-        // rerender
-        console.log('onAnswerTitleChanged+++>>>', id, groupRow)
-        dispatch({ type: ActionTypes.ANSWER_TITLE_CHANGED, payload: { groupRow } })
-      }
-    }, [findGroupRow]);
-
+    const onAnswerTitleChanged = useCallback(
+      async (topId: string, id: string, title: string): Promise<void> => {
+        const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
+        let groupRow: IGroupRow | undefined = await findGroupRow(topRow, id);
+        if (groupRow) {
+          const answerRow = groupRow.answerRows!.find(a => a.id === id)!;
+          if (answerRow!.title !== title) {
+            answerRow.title = title === '' ? 'New Question' : title; // to avoid empty title;
+            // rerender
+            console.log('onAnswerTitleChanged+++>>>', id, groupRow)
+            dispatch({ type: ActionTypes.ANSWER_TITLE_CHANGED, payload: { groupRow } })
+          }
+        }
+        return;
+      }, [findGroupRow, topRows]);
+  
 
   const contextValue: IGroupsContext = {
     state, getSubGrps, getGrp,
