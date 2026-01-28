@@ -550,6 +550,8 @@ export interface IParentInfo {
 	//subCategories?: ICategory[]
 }
 
+export const _generateId = 'generateId';
+
 export interface ICategoriesState {
 	formMode: FormMode;
 	topRows: ICategoryRow[];
@@ -593,7 +595,7 @@ export interface ICategoriesContext {
 	getCat: (id: string) => Promise<ICategoryRow | undefined>;
 	expandNodesUpToTheTree: (catKey: ICategoryKey, questionId: string | null, fromChatBotDlg?: boolean) => Promise<boolean>;
 	loadTopRows: () => Promise<any>,
-	addSubCategory: (parentCategoryRow: ICategoryRow | null) => Promise<any>;
+	addCategory: (parentCategoryRow: ICategoryRow | null) => Promise<any>;
 	cancelAddCategory: () => Promise<any>;
 	createCategory: (category: ICategory) => void,
 	viewCategory: (categoryRow: ICategoryRow, includeQuestionId: string) => void,
@@ -625,6 +627,8 @@ export interface ICategoryFormProps {
 	category: ICategory;
 	questionId: string | null;
 	formMode: FormMode;
+	cancel: () => void,
+	close: () => void,
 	submitForm: (category: ICategory) => void,
 	children: string
 }
@@ -726,9 +730,8 @@ export enum ActionTypes {
 	SET_ROW_EXPANDED = 'SET_ROW_EXPANDED',
 	SET_ROW_COLLAPSING = 'SET_ROW_COLLAPSING',
 	SET_ROW_COLLAPSED = 'SET_ROW_COLLAPSED',
-	SET_CATEGORY_TO_ADD_TOP = 'SET_CATEGORY_TO_ADD_TOP',
 	SET_CATEGORY_TO_ADD = 'SET_CATEGORY_TO_ADD',
-	CANCEL_ADD_SUB_CATEGORY = 'CANCEL_ADD_SUB_CATEGORY',
+	CANCEL_ADD_CATEGORY = 'CANCEL_ADD_CATEGORY',
 	SET_CATEGORY_ADDED = 'SET_CATEGORY_ADDED',
 	SET_ALL_CATEGORY_ROWS = 'SET_ALL_CATEGORY_ROWS',
 	SET_ALL_GROUP_ROWS = 'SET_ALL_GROUP_ROWS',
@@ -787,12 +790,13 @@ export const doNotModifyTree = [
 	// zasto je bilo ActionTypes.SET_CATEGORY_UPDATED,
 	ActionTypes.ADD_NEW_QUESTION_TO_ROW,
 	ActionTypes.CANCEL_CATEGORY_FORM,
-	ActionTypes.CLOSE_CATEGORY_FORM
+	ActionTypes.CANCEL_ADD_CATEGORY
+	// ActionTypes.CLOSE_CATEGORY_FORM
 ]
 
 export const doNotCallInnerReducerActions = [
 	ActionTypes.RE_RENDER_TREE,
-	ActionTypes.QUESTION_TITLE_CHANGED,
+	ActionTypes.QUESTION_TITLE_CHANGED
 ]
 
 export type Payload = {
@@ -859,15 +863,16 @@ export type Payload = {
 	};
 
 	[ActionTypes.RE_RENDER_TREE]: {
-		categoryRow: ICategoryRow;
+		categoryRow?: ICategoryRow;
 	}
 
 	[ActionTypes.QUESTION_TITLE_CHANGED]: {
 		categoryRow?: ICategoryRow;
 	}
 
-	[ActionTypes.CANCEL_ADD_SUB_CATEGORY]: {
+	[ActionTypes.CANCEL_ADD_CATEGORY]: {
 		categoryRow?: ICategoryRow;
+		topRows: ICategoryRow[];
 	}
 
 	[ActionTypes.SET_CATEGORY]: {
@@ -917,14 +922,8 @@ export type Payload = {
 		categoryRow: ICategoryRow;
 	};
 
-	[ActionTypes.SET_CATEGORY_TO_ADD_TOP]: {
-		categoryRow?: ICategoryRow;
-		newCategoryRow: ICategoryRow;
-		//category: ICategory;
-	};
-
 	[ActionTypes.SET_CATEGORY_TO_ADD]: {
-		categoryRow: ICategoryRow;
+		categoryRow?: ICategoryRow;
 		newCategoryRow: ICategoryRow;
 		//category: ICategory;
 	};

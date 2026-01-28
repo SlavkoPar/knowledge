@@ -5,16 +5,16 @@ import { Form, CloseButton, Row, Stack } from "react-bootstrap";
 import { CreatedModifiedForm } from "@/common/CreateModifiedForm"
 import { FormButtons } from "@/common/FormButtons"
 import type { ICategoryFormProps, ICategory, IVariation, ICategoryKey } from "@/categories/types";
-import { FormMode, ActionTypes, CategoryKey } from "@/categories/types";
+import { FormMode, CategoryKey } from "@/categories/types";
 
-import { useCategoryContext, useCategoryDispatch } from "@/categories/CategoryProvider";
+import { useCategoryContext } from "@/categories/CategoryProvider";
 import QuestionList from "@/categories/components/questions/QuestionList";
 import VariationList from "@/categories/VariationList";
 import { Select } from "@/common/components/Select";
 import { kindOptions } from "@/common/Options";
 import { useDebounce } from "@uidotdev/usehooks";
 
-const CategoryForm = ({ formMode, category, submitForm, children }: ICategoryFormProps) => {
+const CategoryForm = ({ formMode, category, cancel, close, submitForm, children }: ICategoryFormProps) => {
 
   //const { globalState } = useGlobalContext();
   //const { isDarkMode, variant, bg } = globalState;
@@ -41,14 +41,16 @@ const CategoryForm = ({ formMode, category, submitForm, children }: ICategoryFor
     so we execute loadCategoryQuestions() twice in QuestionList, but OK
   */
 
-  const dispatch = useCategoryDispatch();
+  //const dispatch = useCategoryDispatch();
 
   const closeForm = () => {
-    dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM, payload: {} })
+    //dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM, payload: {} })
+    close();
   }
 
   const cancelForm = () => {
-    dispatch({ type: ActionTypes.CANCEL_CATEGORY_FORM, payload: {} })
+    cancel();
+    //dispatch({ type: ActionTypes.CANCEL_CATEGORY_FORM, payload: {} })
   }
 
   const [searchTerm, setSearchTerm] = useState(catTitle);

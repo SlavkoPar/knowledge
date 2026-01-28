@@ -29,7 +29,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
 
     const { canEdit, authUser } = useGlobalState();
 
-    const { state, addSubCategory, viewCategory, editCategory, deleteCategory, expandCategory, collapseCategory, addQuestion } = useCategoryContext();
+    const { state, addCategory, viewCategory, editCategory, deleteCategory, expandCategory, collapseCategory, addQuestion } = useCategoryContext();
     //const dispatch = useCategoryDispatch();
 
     let { formMode, activeCategory, loadingCategory, categoryLoaded } = state;
@@ -80,16 +80,16 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
     const [queue, setQueue] = useState<boolean>(false);
 
     useEffect(() => {
-        if (queue) {// && categoryRow.id === 'generateId') {
-            addSubCategory(categoryRow);
+        if (queue) {// && categoryRow.id === _generateId) {
+            addCategory(categoryRow);
             setQueue(false);
         }
-    }, [addSubCategory, categoryRow, queue]);
+    }, [addCategory, categoryRow, queue]);
 
 
     const [queue2, setQueue2] = useState<boolean>(false);
     useEffect(() => {
-        if (queue2) {// && categoryRow.id === 'generateId') {
+        if (queue2) {// && categoryRow.id === _generateId) {
             // actegoryRow is after reducer update
             addQuestion(categoryKey, isExpanded ?? false);
             setQueue2(false);
@@ -165,7 +165,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                     </Badge>
                 }
 
-                {canEdit && hovering && // && !alreadyAdding
+                {!inAdding &&canEdit && hovering && // && !alreadyAdding
                     <div className="position-absolute text-nowrap d-flex align-items-center border border-0 border-warning p-0 end-0">
                         <div className="d-flex align-items-center">
                             <Button

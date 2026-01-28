@@ -2,12 +2,13 @@ import { type Reducer } from 'react'
 import {
   ActionTypes, type Actions, type ILocStorage, IsGroup,
   type IGroupsState, type IGroup, type IGroupRow, type IAnswer,
-  actionStoringToLocalStorage, FormMode, doNotModifyTree, doNotCallInnerReducerActions
+  actionStoringToLocalStorage, FormMode, doNotModifyTree, doNotCallInnerReducerActions,
+  _generateId
 } from "@/groups/types";
 
 export const subCatRow: IGroupRow = {
-  topId: 'generateId', // for top rows: topId = ToUpperCase(id)
-  id: 'generateId',
+  topId: _generateId, // for top rows: topId = ToUpperCase(id)
+  id: _generateId,
   parentId: null,
   level: 1,
   isExpanded: false,
@@ -25,7 +26,7 @@ export const subCatRow: IGroupRow = {
 export const initialAnswer: IAnswer = {
   topId: '',
   parentId: 'null',
-  id: 'generateId', //  keep 'generateId', it is expected at BackEnd
+  id: _generateId, //  keep _generateId, it is expected at BackEnd
   groupTitle: '',
   title: '',
   source: 0,
@@ -117,7 +118,7 @@ export const GroupReducer: Reducer<IGroupsState, Actions> = (state, action) => {
     else {
       // actually topRows is from previous state
       const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
-      DeepClone.idToSet = action.type === 'SET_GROUP_ADDED' ? 'generateId' : id;
+      DeepClone.idToSet = action.type === 'SET_GROUP_ADDED' ? _generateId : id;
       DeepClone.newGroupRow = groupRow!;
       const newTopRow = new DeepClone(topRow).groupRow;
       newTopRows = topRows.map(c => c.id === topId
@@ -541,9 +542,11 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
     }
     */
 
-    case ActionTypes.CANCEL_ADD_SUB_GROUP: {
+    case ActionTypes.CANCEL_ADD_GROUP: {
+      const { topRows } = action.payload;
       return {
         ...state,
+        topRows,
         activeGroup: null,
         activeAnswer: null,
         selectedAnswerId: null,

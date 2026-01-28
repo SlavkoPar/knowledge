@@ -8,10 +8,20 @@ import { FormMode, type ICategory } from "@/categories/types";
 const AddCategory = ({ activeCategory }: { activeCategory: ICategory | null }) => {
     const globalState = useGlobalState();
     const { nickName } = globalState.authUser;
-    const { createCategory } = useCategoryContext();
+    const { cancelAddCategory, createCategory } = useCategoryContext();
     //const { activeCategory } = state;
 
     const [formValues] = useState<ICategory>({ ...activeCategory! });
+
+
+    const cancel = async () => {
+        await cancelAddCategory();
+    }
+
+    const close = async () => {
+        await cancelAddCategory();
+    }
+
 
     const submitForm = async (category: ICategory) => {
         const cat: ICategory = {
@@ -46,6 +56,8 @@ const AddCategory = ({ activeCategory }: { activeCategory: ICategory | null }) =
                 category={formValues}
                 questionId={null}
                 formMode={FormMode.AddingCategory}
+                cancel={cancel}
+                close={close}
                 submitForm={submitForm}
             >
                 Create Category

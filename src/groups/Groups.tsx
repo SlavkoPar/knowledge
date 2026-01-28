@@ -31,7 +31,7 @@ const AutoSuggestAnswers = lazy(() =>
 );
 
 const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
-    const { state, expandNodesUpToTheTree, loadTopRows, addSubGroup } = useGroupContext();
+    const { state, expandNodesUpToTheTree, loadTopRows, addGroup } = useGroupContext();
     const {
         allGroupRows, //allGroupRowsLoaded,
         topRows, topRowsLoading, topRowsLoaded,
@@ -161,7 +161,7 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
 
                 <Button variant="secondary" size="sm" type="button" style={{ padding: '1px 4px' }}
                     onClick={
-                        () => addSubGroup(null)
+                        () => addGroup(null)
                     }
                 >
                     Add Group

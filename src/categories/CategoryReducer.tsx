@@ -2,12 +2,13 @@ import { type Reducer } from 'react'
 import {
   ActionTypes, type Actions, type ILocStorage, IsCategory,
   type ICategoriesState, type ICategory, type ICategoryRow, type IQuestion,
-  actionStoringToLocalStorage, FormMode, doNotModifyTree, doNotCallInnerReducerActions
+  actionStoringToLocalStorage, FormMode, doNotModifyTree, doNotCallInnerReducerActions,
+  _generateId
 } from "@/categories/types";
 
 export const subCatRow: ICategoryRow = {
-  topId: 'generateId', // for top rows: topId = ToUpperCase(id)
-  id: 'generateId',
+  topId: _generateId, // for top rows: topId = ToUpperCase(id)
+  id: _generateId,
   parentId: null,
   level: 1,
   isExpanded: false,
@@ -25,7 +26,7 @@ export const subCatRow: ICategoryRow = {
 export const initialQuestion: IQuestion = {
   topId: '',
   parentId: 'null',
-  id: 'generateId', //  keep 'generateId', it is expected at BackEnd
+  id: _generateId, //  keep _generateId, it is expected at BackEnd
   categoryTitle: '',
   title: '',
   assignedAnswers: [],
@@ -121,7 +122,7 @@ export const CategoryReducer: Reducer<ICategoriesState, Actions> = (state, actio
     else {
       // actually topRows is from previous state
       const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-      DeepClone.idToSet = action.type === 'SET_CATEGORY_ADDED' ? 'generateId' : id;
+      DeepClone.idToSet = action.type === 'SET_CATEGORY_ADDED' ? _generateId : id;
       DeepClone.newCategoryRow = categoryRow!;
       const newTopRow = new DeepClone(topRow).categoryRow;
       newTopRows = topRows.map(c => c.id === topId
@@ -406,25 +407,9 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
       };
     }
 
-    case ActionTypes.SET_CATEGORY_TO_ADD_TOP: {
-      const { newCategoryRow } = action.payload; // ICategory extends ICategoryRow
-      //const { topId } = category;
-      //console.assert(IsCategory(categoryRow))
-      // TODO what about instanceof?
-      return {
-        ...state,
-        loadingCategory: false,
-        categoryLoaded: true,
-        activeCategory: { ...newCategoryRow, doc1: '' },
-        activeQuestion: null,
-        selectedQuestionId: null,
-        topRows: [newCategoryRow!, ...state.topRows],
-        formMode: FormMode.AddingCategory
-      };
-    }
-
     case ActionTypes.SET_CATEGORY_TO_ADD: {
       const { newCategoryRow } = action.payload; // ICategory extends ICategoryRow
+      const { parentId } = newCategoryRow;  
       //const { topId } = category;
       //console.assert(IsCategory(categoryRow))
       // TODO what about instanceof?
@@ -435,6 +420,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         activeCategory: { ...newCategoryRow!, doc1: '' },
         activeQuestion: null,
         selectedQuestionId: null,
+        topRows: parentId ? state.topRows : [newCategoryRow!, ...state.topRows],
         formMode: FormMode.AddingCategory
       };
     }
@@ -545,9 +531,11 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
     }
     */
 
-    case ActionTypes.CANCEL_ADD_SUB_CATEGORY: {
+    case ActionTypes.CANCEL_ADD_CATEGORY: {
+      const { topRows } = action.payload;
       return {
         ...state,
+        topRows,
         activeCategory: null,
         activeQuestion: null,
         selectedQuestionId: null,

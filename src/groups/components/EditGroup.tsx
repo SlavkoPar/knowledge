@@ -8,10 +8,18 @@ const EditGroup = ({ inLine }: { inLine: boolean }) => {
     const globalState = useGlobalState();
     const { nickName } = globalState.authUser;
 
-    const { state, updateGroup } = useGroupContext();
+    const { state, updateGroup, cancelAddGroup } = useGroupContext();
 
     const { activeGroup, keyExpanded } = state;
     const { answerId } = keyExpanded!;
+
+    const cancel = async () => {
+        await cancelAddGroup();
+    }
+
+    const close = async () => {
+        await cancelAddGroup();
+    }
 
     const submitForm = async (groupObject: IGroup) => {
         const object: IGroup = {
@@ -31,6 +39,8 @@ const EditGroup = ({ inLine }: { inLine: boolean }) => {
             group={{ ...activeGroup! }}
             answerId={answerId}
             formMode={FormMode.EditingGroup}
+            cancel={cancel}
+            close={close}
             submitForm={submitForm}
         >
             Update Group

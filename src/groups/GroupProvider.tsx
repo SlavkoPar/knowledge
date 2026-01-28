@@ -25,7 +25,8 @@ import {
   GroupRow,
   AnswerKey,
   FormMode,
-  GroupRowDto
+  GroupRowDto,
+  _generateId
 } from '@/groups/types';
 
 import { GroupReducer, initialAnswer, initialGroup } from '@/groups/GroupReducer';
@@ -480,19 +481,19 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
     }, [findGroupRow, topRows]);
 
 
-  const addSubGroup = useCallback(
+  const addGroup = useCallback(
     async (parentGroupRow: IGroupRow | null) => {
       try {
         //if (formMode !== FormMode.None) {
         dispatch({ type: ActionTypes.CLOSE_GROUP_FORM, payload: {} })
         //}
-        //const id = 'generateId';
-        const { topId, id, level } = parentGroupRow ?? { topId: 'generateId', id: 'generateId', level: 0 };
+        //const id = _generateId;
+        const { topId, id, level } = parentGroupRow ?? { topId: _generateId, id: _generateId, level: 0 };
         const newGroupRow: IGroupRow = {
           ...initialGroup,
           topId,
           parentId: parentGroupRow ? id : null,
-          id: 'generateId',
+          id: _generateId,
           level: level + 1,
           title: 'New Group',
           isExpanded: false
@@ -533,7 +534,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
           //   ...initialGroup,
           //   topId,
           //   parentId,
-          //   id: 'generateId',
+          //   id: _generateId,
           //   level,
           //   title: '' // new Group
           // }
@@ -574,24 +575,28 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
   const cancelAddGroup = useCallback(
     async () => {
-      try {
-        //const { topId, id, parentId } = activeGroup!;
-        //const groupKey: IGroupKey = { topId, parentId, id }; // TODO proveri
-
-        // const expandInfo: IExpandInfo = {
-        //   groupKey,
-        //   formMode: FormMode.None
-        // }
-        // const groupRow: IGroupRow | null = await expandGroup(expandInfo);
-        const groupRow: IGroupRow = activeGroup!;
-        if (groupRow) {
-          dispatch({ type: ActionTypes.CANCEL_ADD_SUB_GROUP, payload: { groupRow } });
-        }
-      }
-      catch (error: any) {
-        console.log('error', error);
-        dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
-      }
+          try {
+              const { parentId } = activeGroup!;
+              let parentRow: IGroupRow | undefined = undefined;
+      
+              let rows: IGroupRow[] = [];
+              topRows.forEach(async topRow => {
+                if (parentId === null) {
+                  rows = topRows.filter(catRow => catRow.id !== _generateId);
+                }
+                else {
+                  parentRow = await findGroupRow(topRow, parentId!);
+                  if (parentRow) {
+                    parentRow.groupRows = parentRow.groupRows.filter((catRow: { id: string; }) => catRow.id !== _generateId);
+                  }
+                }
+              });
+              dispatch({ type: ActionTypes.CANCEL_ADD_GROUP, payload: { topRows: (rows.length > 0) ? rows : topRows } });
+            }
+            catch (error: any) {
+              console.log('error', error);
+              dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+            }
     }, [activeGroup, expandGroup]);
 
 
@@ -620,7 +625,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
               });
               //.then(async () => { // done: boolean
               //await loadTopRows();
-              //await onGroupIdChanged(topId, group.id); // replace 'generateId' with id, inside of tree
+              //await onGroupIdChanged(topId, group.id); // replace _generateId with id, inside of tree
               if (group.parentId === null) {
                 dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group } }); // IGroup extends IGroup Row
               }
@@ -899,7 +904,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
         const newAnswerRow: IAnswerRow = {
           topId,
           parentId: groupKey.id,
-          id: 'generateId', // do not change
+          id: _generateId, // do not change
           title: 'answer text',
           groupTitle: groupRow.title,
           included: true
@@ -1194,7 +1199,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
   //   async (topId: string, id: string): Promise<void> => {
   //     const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
   //     console.log('Provider onGroupIdChanged >>>>>>:', topRow)
-  //     const groupRow: IGroupRow | undefined = await findGroupRow(topRow, 'generateId');
+  //     const groupRow: IGroupRow | undefined = await findGroupRow(topRow, _generateId);
   //     console.log('Provider onGroupIdChanged >>>>>>:', groupRow, id)
   //     groupRow!.id = id;
   //     dispatch({ type: ActionTypes.RE_RENDER_TREE, payload: { groupRow: groupRow! } });
@@ -1249,7 +1254,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
     loadAllGroupRows,
     expandNodesUpToTheTree,
     loadTopRows,
-    addSubGroup, cancelAddGroup, createGroup,
+    addGroup, cancelAddGroup, createGroup,
     viewGroup, editGroup, updateGroup, deleteGroup, deleteGroupVariation,
     expandGroup, collapseGroup, onGroupTitleChanged,
     loadGroupAnswers,

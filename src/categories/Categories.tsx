@@ -32,7 +32,7 @@ interface IProps {
 // );
 
 const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
-    const { state, expandNodesUpToTheTree, loadTopRows, addSubCategory } = useCategoryContext();
+    const { state, expandNodesUpToTheTree, loadTopRows, addCategory } = useCategoryContext();
     const {
         allCategoryRows, //allCategoryRowsLoaded,
         topRows, topRowsLoading, topRowsLoaded,
@@ -162,7 +162,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
 
                 <Button variant="secondary" size="sm" type="button" style={{ padding: '1px 4px' }}
                     onClick={
-                        () => addSubCategory(null)
+                        () => addCategory(null)
                     }
                 >
                     Add Category

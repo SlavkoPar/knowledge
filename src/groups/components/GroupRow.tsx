@@ -29,7 +29,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
 
     const { canEdit, authUser } = useGlobalState();
 
-    const { state, addSubGroup, viewGroup, editGroup, deleteGroup, expandGroup, collapseGroup, addAnswer } = useGroupContext();
+    const { state, addGroup, viewGroup, editGroup, deleteGroup, expandGroup, collapseGroup, addAnswer } = useGroupContext();
     //const dispatch = useGroupDispatch();
 
     let { formMode, activeGroup, loadingGroup, groupLoaded } = state;
@@ -80,16 +80,16 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
     const [queue, setQueue] = useState<boolean>(false);
 
     useEffect(() => {
-        if (queue) {// && groupRow.id === 'generateId') {
-            addSubGroup(groupRow);
+        if (queue) {// && groupRow.id === _generateId) {
+            addGroup(groupRow);
             setQueue(false);
         }
-    }, [addSubGroup, groupRow, queue]);
+    }, [addGroup, groupRow, queue]);
 
 
     const [queue2, setQueue2] = useState<boolean>(false);
     useEffect(() => {
-        if (queue2) {// && groupRow.id === 'generateId') {
+        if (queue2) {// && groupRow.id === _generateId) {
             // actegoryRow is after reducer update
             addAnswer(groupKey, isExpanded ?? false);
             setQueue2(false);

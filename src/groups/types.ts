@@ -180,7 +180,7 @@ export class AnswerKeyDto {
 }
 
 
-
+export const _generateId = 'generateId';
 
 
 export interface IVariation {
@@ -502,7 +502,7 @@ export interface IGroupsContext {
 	getGrp: (id: string) => Promise<IGroupRow | undefined>;
 	expandNodesUpToTheTree: (grpKey: IGroupKey, answerId: string | null, fromChatBotDlg?: boolean) => Promise<boolean>;
 	loadTopRows: () => Promise<any>,
-	addSubGroup: (parentGroupRow: IGroupRow | null) => Promise<any>;
+	addGroup: (parentGroupRow: IGroupRow | null) => Promise<any>;
 	cancelAddGroup: () => Promise<any>;
 	createGroup: (group: IGroup) => void,
 	viewGroup: (groupRow: IGroupRow, includeAnswerId: string) => void,
@@ -533,6 +533,8 @@ export interface IGroupFormProps {
 	group: IGroup;
 	answerId: string | null;
 	formMode: FormMode;
+	cancel: () => void,
+	close: () => void,
 	submitForm: (group: IGroup) => void,
 	children: string
 }
@@ -561,7 +563,7 @@ export enum ActionTypes {
 	ADD_SUB_GROUP = 'ADD_SUB_GROUP',
 	SET_ERROR = 'SET_ERROR',
 	RE_RENDER_TREE = 'RE_RENDER_TREE',
-	CANCEL_ADD_SUB_GROUP = 'CANCEL_ADD_SUB_GROUP',
+	CANCEL_ADD_GROUP = 'CANCEL_ADD_GROUP',
 	SET_GROUP = 'SET_GROUP',
 	//SET_GROUP_ROW = 'SET_GROUP_ROW',
 	ADD_NEW_ANSWER_TO_ROW = 'ADD_NEW_ANSWER_TO_ROW',
@@ -624,7 +626,8 @@ export const doNotModifyTree = [
 	//ActionTypes.SET_GROUP_UPDATED,
 	ActionTypes.ADD_NEW_ANSWER_TO_ROW,
 	ActionTypes.CANCEL_GROUP_FORM,
-	ActionTypes.CLOSE_GROUP_FORM
+	ActionTypes.CLOSE_GROUP_FORM,
+	ActionTypes.CANCEL_ADD_GROUP
 ]
 
 export const doNotCallInnerReducerActions = [
@@ -710,8 +713,9 @@ export type Payload = {
 		groupRow?: IGroupRow;
 	}
 
-	[ActionTypes.CANCEL_ADD_SUB_GROUP]: {
+	[ActionTypes.CANCEL_ADD_GROUP]: {
 		groupRow?: IGroupRow;
+		topRows: IGroupRow[];
 	}
 
 	[ActionTypes.SET_GROUP]: {

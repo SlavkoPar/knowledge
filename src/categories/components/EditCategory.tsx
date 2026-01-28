@@ -8,10 +8,19 @@ const EditCategory = ({ inLine }: { inLine: boolean }) => {
     const globalState = useGlobalState();
     const { nickName } = globalState.authUser;
 
-    const { state, updateCategory } = useCategoryContext();
+    const { state, cancelAddCategory, updateCategory } = useCategoryContext();
 
     const { activeCategory, keyExpanded } = state;
     const { questionId } = keyExpanded!;
+
+
+    const cancel = async () => {
+        await cancelAddCategory();
+    }
+
+    const close = async () => {
+        await cancelAddCategory();
+    }
 
     const submitForm = async (categoryObject: ICategory) => {
         const object: ICategory = {
@@ -31,6 +40,8 @@ const EditCategory = ({ inLine }: { inLine: boolean }) => {
             category={{ ...activeCategory! }}
             questionId={questionId}
             formMode={FormMode.EditingCategory}
+            cancel={cancel}
+            close={close}
             submitForm={submitForm}
         >
             Update Category

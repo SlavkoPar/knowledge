@@ -8,11 +8,18 @@ import { FormMode, type IGroup } from "@/groups/types";
 const AddGroup = ({ activeGroup }: { activeGroup: IGroup | null }) => {
     const globalState = useGlobalState();
     const { nickName } = globalState.authUser;
-    const { createGroup } = useGroupContext();
+    const { cancelAddGroup, createGroup } = useGroupContext();
     //const { activeGroup } = state;
 
     const [formValues] = useState<IGroup>({ ...activeGroup! });
 
+     const cancel = async () => {
+        await cancelAddGroup();
+    }
+
+    const close = async () => {
+        await cancelAddGroup();
+    }
     const submitForm = async (group: IGroup) => {
         const cat: IGroup = {
             ...group,
@@ -46,6 +53,8 @@ const AddGroup = ({ activeGroup }: { activeGroup: IGroup | null }) => {
                 group={formValues}
                 answerId={null}
                 formMode={FormMode.AddingGroup}
+                cancel={cancel}
+                close={close}
                 submitForm={submitForm}
             >
                 Create Group
