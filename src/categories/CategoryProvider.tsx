@@ -581,7 +581,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       }
     }, [activeCategory, expandCategory]);
 
-
+ 
   const createCategory = useCallback(
     async (category: ICategory) => {
       const { id } = category;
