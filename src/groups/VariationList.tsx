@@ -44,7 +44,7 @@ const VariationList = ({ groupKey, variations }: { groupKey: IGroupKey, variatio
     >
       <Stack direction="horizontal" gap={2}>
         {variations.length === 0 &&
-          <div>No variations</div>
+          <div>No</div>
         }
         {variations.length > 0 &&
           variations.map((tag: IVariation) => {

@@ -755,6 +755,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     //dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });
     try {
       const { topId, parentId } = categoryRow;
+      categoryRow.modified = { time: new Date(), nickName };
       const categoryDto = new CategoryRowDto(categoryRow, workspace).categoryRowDto;
       const url = `${KnowledgeAPI.endpointCategory}`;
       console.time()

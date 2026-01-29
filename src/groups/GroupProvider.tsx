@@ -181,7 +181,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
     })
   }, [loadAllGroupRowsGlobal]);
 
- 
+
   const getGrp = useCallback(async (id: string): Promise<IGroupRow | undefined> => {
     try {
       const grp: IGroupRow | undefined = allGroupRows.get(id);  // globalState.cats is Map<string, ICat>
@@ -575,28 +575,28 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
   const cancelAddGroup = useCallback(
     async () => {
-          try {
-              const { parentId } = activeGroup!;
-              let parentRow: IGroupRow | undefined = undefined;
-      
-              let rows: IGroupRow[] = [];
-              topRows.forEach(async topRow => {
-                if (parentId === null) {
-                  rows = topRows.filter(catRow => catRow.id !== _generateId);
-                }
-                else {
-                  parentRow = await findGroupRow(topRow, parentId!);
-                  if (parentRow) {
-                    parentRow.groupRows = parentRow.groupRows.filter((catRow: { id: string; }) => catRow.id !== _generateId);
-                  }
-                }
-              });
-              dispatch({ type: ActionTypes.CANCEL_ADD_GROUP, payload: { topRows: (rows.length > 0) ? rows : topRows } });
+      try {
+        const { parentId } = activeGroup!;
+        let parentRow: IGroupRow | undefined = undefined;
+
+        let rows: IGroupRow[] = [];
+        topRows.forEach(async topRow => {
+          if (parentId === null) {
+            rows = topRows.filter(catRow => catRow.id !== _generateId);
+          }
+          else {
+            parentRow = await findGroupRow(topRow, parentId!);
+            if (parentRow) {
+              parentRow.groupRows = parentRow.groupRows.filter((catRow: { id: string; }) => catRow.id !== _generateId);
             }
-            catch (error: any) {
-              console.log('error', error);
-              dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
-            }
+          }
+        });
+        dispatch({ type: ActionTypes.CANCEL_ADD_GROUP, payload: { topRows: (rows.length > 0) ? rows : topRows } });
+      }
+      catch (error: any) {
+        console.log('error', error);
+        dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+      }
     }, [activeGroup, expandGroup]);
 
 
@@ -773,6 +773,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
     //dispatch({ type: ActionTypes.SET_GROUP_LOADING, payload: { id, loading: false } });
     try {
       const { topId, parentId } = groupRow;
+      groupRow.modified = { time: new Date(), nickName };
       const groupDto = new GroupRowDto(groupRow, workspace).groupRowDto;
       const url = `${KnowledgeAPI.endpointGroup}`;
       console.time()
@@ -1232,22 +1233,22 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       return;
     }, [findGroupRow, topRows]);
 
-    const onAnswerTitleChanged = useCallback(
-      async (topId: string, id: string, title: string): Promise<void> => {
-        const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
-        let groupRow: IGroupRow | undefined = await findGroupRow(topRow, id);
-        if (groupRow) {
-          const answerRow = groupRow.answerRows!.find(a => a.id === id)!;
-          if (answerRow!.title !== title) {
-            answerRow.title = title === '' ? 'New Question' : title; // to avoid empty title;
-            // rerender
-            console.log('onAnswerTitleChanged+++>>>', id, groupRow)
-            dispatch({ type: ActionTypes.ANSWER_TITLE_CHANGED, payload: { groupRow } })
-          }
+  const onAnswerTitleChanged = useCallback(
+    async (topId: string, id: string, title: string): Promise<void> => {
+      const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
+      let groupRow: IGroupRow | undefined = await findGroupRow(topRow, id);
+      if (groupRow) {
+        const answerRow = groupRow.answerRows!.find(a => a.id === id)!;
+        if (answerRow!.title !== title) {
+          answerRow.title = title === '' ? 'New Question' : title; // to avoid empty title;
+          // rerender
+          console.log('onAnswerTitleChanged+++>>>', id, groupRow)
+          dispatch({ type: ActionTypes.ANSWER_TITLE_CHANGED, payload: { groupRow } })
         }
-        return;
-      }, [findGroupRow, topRows]);
-  
+      }
+      return;
+    }, [findGroupRow, topRows]);
+
 
   const contextValue: IGroupsContext = {
     state, getSubGrps, getGrp,

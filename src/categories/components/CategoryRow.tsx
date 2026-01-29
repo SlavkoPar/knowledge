@@ -165,7 +165,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                     </Badge>
                 }
 
-                {!inAdding &&canEdit && hovering && // && !alreadyAdding
+                {!inAdding && canEdit && hovering && numOfQuestions === 0 &&
                     <div className="position-absolute text-nowrap d-flex align-items-center border border-0 border-warning p-0 end-0">
                         <div className="d-flex align-items-center">
                             <Button
@@ -185,17 +185,17 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                             </Button>
                         </div>
 
-                        {!inAdding && !hasSubCategories &&
+                        { !inAdding && !hasSubCategories &&
                             // top-0 end-0
-                            <div className="d-flex align-items-center">
+                            <div className="d-flex align-items-center border border-5">
                                 <Button
                                     variant='link'
                                     size="sm"
-                                    className="p-0 mx-0 text-secondary d-flex align-items-center border border-0 border-warning1"
+                                    // className="p-0 mx-0 text-secondary d-flex align-items-center border border-0 border-warning"
                                     title="Add Question"
                                     onClick={async () => {
                                         //const categoryInfo: ICategoryInfo = { categoryKey: { workspace: topId, id: categoryRow.id }, level: categoryRow.level }
-                                        if (!isExpanded && (hasSubCategories || numOfQuestions > 0)) {
+                                        if (!isExpanded && (/*hasSubCategories ||*/ numOfQuestions > 0)) {
                                             await handleExpandClick();
                                         }
                                         setTimeout(() => setQueue2(true), 500);

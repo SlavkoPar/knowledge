@@ -165,7 +165,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                     </Badge>
                 }
 
-                {canEdit && hovering && // && !alreadyAdding
+                {canEdit && hovering && numOfAnswers === 0 &&
                     <div className="position-absolute text-nowrap d-flex align-items-center border border-0 border-warning p-0 end-0">
                         <div className="d-flex align-items-center">
                             <Button
@@ -191,7 +191,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                                 <Button
                                     variant='link'
                                     size="sm"
-                                    className="p-0 mx-0 text-secondary d-flex align-items-center border border-0 border-warning1"
+                                    className="p-0 mx-0 text-secondary d-flex align-items-center border border-0 border-warning"
                                     title="Add Answer"
                                     onClick={async () => {
                                         //const groupInfo: IGroupInfo = { groupKey: { workspace: topId, id: groupRow.id }, level: groupRow.level }
