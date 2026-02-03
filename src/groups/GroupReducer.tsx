@@ -218,6 +218,13 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
       };
     }
 
+    case ActionTypes.SET_LOADING_GROUPS:
+      return {
+        ...state,
+        //activeGroup: null,
+        loadingGroups: true,
+      }
+
     case ActionTypes.SET_LOADING_GROUP:
       return {
         ...state,
@@ -499,11 +506,12 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
       }
     }
 
-    case ActionTypes.DELETE_GROUP: {
+    case ActionTypes.GROUP_DELETED: {
       //const { id } = action.payload;
       // TODO Popravi
       return {
         ...state,
+        loadingGroups: false,
         activeGroup: null,
         formMode: FormMode.None,
         error: undefined,

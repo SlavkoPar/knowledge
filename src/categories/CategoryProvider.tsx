@@ -136,7 +136,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
           };
 
           response = (await fetch(endpoint, options));
-          if (response.ok) {
+          if (response.ok || response.status === 404) {
             if ((response.status === 200 || response.status === 201)) {
               let responseData = null; //response;
               try {
@@ -554,7 +554,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       }
     }, []);
 
-  
+
   const cancelAddCategory = useCallback(
     async () => {
       try {
@@ -581,7 +581,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       }
     }, [activeCategory, expandCategory]);
 
- 
+
   const createCategory = useCallback(
     async (category: ICategory) => {
       const { id } = category;
@@ -754,34 +754,31 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   const deleteCategory = useCallback(async (categoryRow: ICategoryRow) => {
     //dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });
     try {
-      const { topId, parentId } = categoryRow;
+      const { parentId, id } = categoryRow;
       categoryRow.modified = { time: new Date(), nickName };
       const categoryDto = new CategoryRowDto(categoryRow, workspace).categoryRowDto;
       const url = `${KnowledgeAPI.endpointCategory}`;
       console.time()
+      dispatch({ type: ActionTypes.SET_LOADING_CATEGORIES, payload: {} });
       await Execute("DELETE", url, categoryDto)    //Modified: {  Time: new Date(), NickName: globalState.authUser.nickName }
         .then(async (categoryDtoEx: ICategoryDtoEx) => {
           console.timeEnd();
           const { categoryDto, msg } = categoryDtoEx;
           if (msg === "OK") {
-            // await loadAndCacheAllCategoryRows(); // reload
             console.log('Category successfully deleted', { categoryRow })
-            await loadAllCategoryRows()
-              .then(async () => {
-                const expandInfo: IExpandInfo = {
-                  categoryKey: { topId, parentId: '', id: parentId! },
-                  formMode: FormMode.None
-                }
-                if (parentId) {
-                  await loadTopRows();
-                }
-                else {
-                  await expandCategory(expandInfo).then(() => {
-                    // dispatch({ type: ActionTypes.DELETE_CATEGORY, payload: { id: categoryDto!.Id } });
-                    // dispatch({ type: ActionTypes.SET_CATEGORY, payload: { categoryRow: category } }); // ICategory extends ICategory Row
-                  });
-                }
-              })
+            let parentRow: ICategoryRow | undefined = undefined;
+            if (parentId !== null) {
+              for await (const topRow of topRows) {
+                parentRow = await findCategoryRow(topRow, parentId!);
+                if (parentRow) 
+                  break;
+              }
+              parentRow!.hasSubCategories = categoryDto!.HasSubCategories;
+              if (!parentRow!.hasSubCategories)
+                parentRow!.isExpanded = false;
+              parentRow!.categoryRows = parentRow!.categoryRows.filter(row => row.id !== id);
+            }
+            dispatch({ type: ActionTypes.CATEGORY_DELETED, payload: { categoryRow: parentRow, id } });
           }
           else if (msg === "HasSubCategories") {
             dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error("First remove sub categories"), whichRowId: categoryDto!.Id } });

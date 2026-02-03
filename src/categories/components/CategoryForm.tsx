@@ -101,10 +101,10 @@ const CategoryForm = ({ formMode, category, cancel, close, submitForm, children 
   const nameRef = useRef<HTMLTextAreaElement>(null);
 
 
-  useEffect(() => {
+  //useEffect(() => {
     //setTitle(category.title);
     //nameRef.current!.focus()
-  }, [nameRef])
+  //}, [nameRef])
 
   const isDisabled = false;
 

@@ -174,10 +174,10 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         console.time();
         const url = `${KnowledgeAPI.endpointCategoryRow}/${workspace}`;
         await Execute("GET", url, null)
-          .then((groupRowDtos: ICategoryRowDto[]) => {   //  | Response
+          .then((rowDtos: ICategoryRowDto[]) => {   //  | Response
             const allCategoryRows = new Map<string, ICategoryRow>();
             console.timeEnd();
-            groupRowDtos.forEach((rowDto: ICategoryRowDto) => allCategoryRows.set(rowDto.Id, new CategoryRow(rowDto).categoryRow));
+            rowDtos.forEach((rowDto: ICategoryRowDto) => allCategoryRows.set(rowDto.Id, new CategoryRow(rowDto).categoryRow));
             allCategoryRows.forEach(cat => {
               let { id, parentId } = cat; // , title, variations, hasSubCategories, level, kind
               let titlesUpTheTree = id;
@@ -214,10 +214,10 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         console.time();
         const url = `${KnowledgeAPI.endpointGroupRow}/${workspace}`;
         await Execute("GET", url, null)
-          .then((groupRowDtos: IGroupRowDto[]) => {   //  | Response
+          .then((rowDtos: IGroupRowDto[]) => {   //  | Response
             const allGroupRows = new Map<string, IGroupRow>();
             console.timeEnd();
-            groupRowDtos.forEach((rowDto: IGroupRowDto) => allGroupRows.set(rowDto.Id, new GroupRow(rowDto).groupRow));
+            rowDtos.forEach((rowDto: IGroupRowDto) => allGroupRows.set(rowDto.Id, new GroupRow(rowDto).groupRow));
             allGroupRows.forEach(grp => {
               let { id, parentId } = grp; // , title, variations, hasSubCategories, level, kind
               let titlesUpTheTree = id;

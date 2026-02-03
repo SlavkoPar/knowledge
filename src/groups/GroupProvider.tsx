@@ -772,34 +772,32 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
   const deleteGroup = useCallback(async (groupRow: IGroupRow) => {
     //dispatch({ type: ActionTypes.SET_GROUP_LOADING, payload: { id, loading: false } });
     try {
-      const { topId, parentId } = groupRow;
+      const { parentId, id } = groupRow;
       groupRow.modified = { time: new Date(), nickName };
       const groupDto = new GroupRowDto(groupRow, workspace).groupRowDto;
       const url = `${KnowledgeAPI.endpointGroup}`;
       console.time()
+      dispatch({ type: ActionTypes.SET_LOADING_GROUPS, payload: {} });
       await Execute("DELETE", url, groupDto)    //Modified: {  Time: new Date(), NickName: globalState.authUser.nickName }
         .then(async (groupDtoEx: IGroupDtoEx) => {
           console.timeEnd();
           const { groupDto, msg } = groupDtoEx;
           if (msg === "OK") {
-            // await loadAndCacheAllGroupRows(); // reload
             console.log('Group successfully deleted', { groupRow })
-            await loadAllGroupRows()
-              .then(async () => {
-                const expandInfo: IExpandInfo = {
-                  groupKey: { topId, parentId: '', id: parentId! },
-                  formMode: FormMode.None
+            let parentRow: IGroupRow | undefined = undefined;
+            let rows: IGroupRow[] = [];
+            topRows.forEach(async topRow => {
+              if (parentId === null) {
+                rows = topRows.filter(catRow => catRow.id !== id);
+              }
+              else {
+                parentRow = await findGroupRow(topRow, parentId!);
+                if (parentRow) {
+                  parentRow.groupRows = parentRow.groupRows.filter((groupRow: { id: string; }) => groupRow.id !== id);
                 }
-                if (parentId) {
-                  await loadTopRows();
-                }
-                else {
-                  await expandGroup(expandInfo).then(() => {
-                    // dispatch({ type: ActionTypes.DELETE_GROUP, payload: { id: groupDto!.Id } });
-                    // dispatch({ type: ActionTypes.SET_GROUP, payload: { groupRow: group } }); // IGroup extends IGroup Row
-                  });
-                }
-              })
+              }
+            });
+            dispatch({ type: ActionTypes.GROUP_DELETED, payload: { id } });
           }
           else if (msg === "HasSubGroups") {
             dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error("First remove sub groups"), whichRowId: groupDto!.Id } });
@@ -1208,26 +1206,13 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
   const onGroupTitleChanged = useCallback(
     async (topId: string, id: string, title: string): Promise<void> => {
-      //const { topRows } = state;
-      //const topRow: IGroupRow = topRows.find(c => c.id === group.topId)!;
       const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
-      //const groupRow: IGroupRow = findGroupRow(topRow.groupRows, id)!;
-      // if (!activeGroup || loadingGroup) { // just in case
-      //   console.log('Provider>>>>>>00000')
-      //   return;
-      // }
-      // const groupRow: IGroupRow = (topRow.id === id)
-      //   ? topRow
-      //   : findGroupRow(topRow.groupRows, id)!;
       let groupRow: IGroupRow | undefined = await findGroupRow(topRow, id);
-      // console.log('Provider onGroupTitleChanged >>>>>>:', group)
-      //console.log('Provider onGroupTitleChanged:', title)
-      //group.title = title;
       console.log('PROVIDER onGroupTitleChanged::', groupRow!.title, title)
       if (groupRow!.title !== title) {
-        groupRow!.title = title === '' ? 'New Group' : title; // to avoid empty title
+        groupRow!.title = title === '' ? 'New Category' : title; // to avoid empty title
         dispatch({
-          type: ActionTypes.RE_RENDER_TREE, payload: { groupRow: groupRow! }
+          type: ActionTypes.RE_RENDER_TREE, payload: {} //categoryRow: categoryRow! }
         });
       }
       return;

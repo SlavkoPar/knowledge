@@ -222,6 +222,13 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
       };
     }
 
+    case ActionTypes.SET_LOADING_CATEGORIES:
+      return {
+        ...state,
+        //activeCategory: null,
+        loadingCategories: true
+      }
+
     case ActionTypes.SET_LOADING_CATEGORY:
       return {
         ...state,
@@ -409,7 +416,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
 
     case ActionTypes.SET_CATEGORY_TO_ADD: {
       const { newCategoryRow } = action.payload; // ICategory extends ICategoryRow
-      const { parentId } = newCategoryRow;  
+      const { parentId } = newCategoryRow;
       //const { topId } = category;
       //console.assert(IsCategory(categoryRow))
       // TODO what about instanceof?
@@ -488,11 +495,15 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
       }
     }
 
-    case ActionTypes.DELETE_CATEGORY: {
-      //const { id } = action.payload;
-      // TODO Popravi
+    case ActionTypes.CATEGORY_DELETED: {
+      const { categoryRow, id } = action.payload;
+      const topRows = !categoryRow   
+        ? state.topRows.filter(catRow => catRow.id !== id)
+        : state.topRows;      
       return {
         ...state,
+        topRows,
+        loadingCategories: false,
         activeCategory: null,
         formMode: FormMode.None,
         error: undefined,

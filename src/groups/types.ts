@@ -554,6 +554,7 @@ export enum ActionTypes {
 	SET_KEY_EXPANDED = "SET_KEY_EXPANDED",
 	SET_TOP_ROWS = 'SET_TOP_ROWS',
 	SET_NODE_EXPANDED_UP_THE_TREE = "SET_NODE_EXPANDED_UP_THE_TREE",
+	SET_LOADING_GROUPS = 'SET_LOADING_GROUPS',
 	SET_LOADING_GROUP = 'SET_LOADING_GROUP',
 	SET_LOADING_ANSWER = 'SET_LOADING_ANSWER',
 	SET_TOP_ROWS_LOADING = 'SET_TOP_ROWS_LOADING',
@@ -579,7 +580,8 @@ export enum ActionTypes {
 	SET_GROUP_TO_VIEW = 'SET_GROUP_TO_VIEW',
 	SET_GROUP_TO_EDIT = 'SET_GROUP_TO_EDIT',
 	SET_GROUP_UPDATED = 'SET_GROUP_UPDATED',
-	DELETE_GROUP = 'DELETE_GROUP',
+	GROUP_DELETED = 'GROUP_DELETED',
+
 	RESET_GROUP_ANSWER_DONE = 'RESET_GROUP_ANSWER_DONE',
 
 	CLOSE_GROUP_FORM = 'CLOSE_GROUP_FORM',
@@ -643,6 +645,10 @@ export type Payload = {
 	}
 
 	[ActionTypes.SET_TOP_ROWS_LOADING]: {
+		groupRow?: IGroupRow;
+	}
+
+	[ActionTypes.SET_LOADING_GROUPS]: {
 		groupRow?: IGroupRow;
 	}
 
@@ -782,7 +788,7 @@ export type Payload = {
 		//group: IGroup;
 	};
 
-	[ActionTypes.DELETE_GROUP]: {
+	[ActionTypes.GROUP_DELETED]: {
 		groupRow?: IGroupRow;
 		id: string;
 	};

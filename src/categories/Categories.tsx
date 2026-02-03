@@ -120,9 +120,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
     useEffect(() => {
         if (lastRouteVisited !== route)
             setLastRouteVisited(route);
-    }, [lastRouteVisited, setLastRouteVisited])
-
-    
+    }, [lastRouteVisited, setLastRouteVisited]); 
 
     if (categoryId_questionId !== 'add_question') {
         if (/*keyExpanded ||*/ (categoryId_questionId && categoryId_questionId !== categoryId_questionId_done)) {
