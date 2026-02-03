@@ -785,19 +785,18 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
           if (msg === "OK") {
             console.log('Group successfully deleted', { groupRow })
             let parentRow: IGroupRow | undefined = undefined;
-            let rows: IGroupRow[] = [];
-            topRows.forEach(async topRow => {
-              if (parentId === null) {
-                rows = topRows.filter(catRow => catRow.id !== id);
-              }
-              else {
+            if (parentId !== null) {
+              for await (const topRow of topRows) {
                 parentRow = await findGroupRow(topRow, parentId!);
-                if (parentRow) {
-                  parentRow.groupRows = parentRow.groupRows.filter((groupRow: { id: string; }) => groupRow.id !== id);
-                }
+                if (parentRow)
+                  break;
               }
-            });
-            dispatch({ type: ActionTypes.GROUP_DELETED, payload: { id } });
+              parentRow!.hasSubGroups = groupDto!.HasSubGroups;
+              if (!parentRow!.hasSubGroups)
+                parentRow!.isExpanded = false;
+              parentRow!.groupRows = parentRow!.groupRows.filter(row => row.id !== id);
+            }
+            dispatch({ type: ActionTypes.GROUP_DELETED, payload: { groupRow: parentRow, id } });
           }
           else if (msg === "HasSubGroups") {
             dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error("First remove sub groups"), whichRowId: groupDto!.Id } });
