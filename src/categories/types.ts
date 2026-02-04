@@ -777,7 +777,9 @@ export const actionStoringToLocalStorage = [
 	ActionTypes.SET_CATEGORY_TO_EDIT,
 	ActionTypes.SET_QUESTION_TO_VIEW,
 	ActionTypes.SET_QUESTION_TO_EDIT,
-	ActionTypes.FORCE_OPEN_NODE
+	ActionTypes.FORCE_OPEN_NODE,
+	ActionTypes.CATEGORY_DELETED,
+	ActionTypes.QUESTION_DELETED
 ];
 
 export const doNotModifyTree = [

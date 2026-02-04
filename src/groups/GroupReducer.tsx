@@ -507,16 +507,25 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
     }
 
     case ActionTypes.GROUP_DELETED: {
-      //const { id } = action.payload;
-      // TODO Popravi
+      const { groupRow, id } = action.payload;
+      const topRows = !groupRow
+        ? state.topRows.filter(catRow => catRow.id !== id)
+        : state.topRows;
       return {
         ...state,
+        topRows,
         loadingGroups: false,
         activeGroup: null,
         formMode: FormMode.None,
         error: undefined,
-        whichRowId: undefined
+        whichRowId: undefined,
+        keyExpanded: {
+          topId: groupRow ? groupRow.topId : '',
+          groupId: groupRow ? groupRow.parentId ?? '' : '',
+          answerId: ''
+        }
       };
+
     }
 
     case ActionTypes.CANCEL_GROUP_FORM:

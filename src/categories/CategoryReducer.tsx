@@ -507,7 +507,12 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         activeCategory: null,
         formMode: FormMode.None,
         error: undefined,
-        whichRowId: undefined
+        whichRowId: undefined,
+        keyExpanded: { 
+          topId: categoryRow ? categoryRow.topId : '', 
+          categoryId: categoryRow ? categoryRow.parentId ?? '' : '', 
+          questionId: '' 
+        }
       };
     }
 
