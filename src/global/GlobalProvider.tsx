@@ -635,7 +635,7 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
       try {
         console.log("workspaceDto", wsDto)
         const url = `${KnowledgeAPI.endpointWorkspace}/get`;
-        const { DisplayName, Email, Environment } = wsDto;
+        const { Email, Environment } = wsDto;
         console.time()
         await Execute("POST", url, { Email })
           .then(async (workspaceDtoEx: IWorkspaceDtoEx) => {
