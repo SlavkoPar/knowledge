@@ -642,9 +642,9 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
             const { workspaceDto } = workspaceDtoEx;
             console.timeEnd();
             if (workspaceDto) {
-              console.log('Workspace successfully created', { workspaceDto });
+              console.log('Workspace found', { workspaceDto });
               //const { ObjectId, DisplayName } = workspaceDto;
-              const { Workspace } = workspaceDto;
+              const { Workspace, DisplayName } = workspaceDto;
               const user: IUser = {
                 workspace: Workspace,
                 nickName: DisplayName!,
