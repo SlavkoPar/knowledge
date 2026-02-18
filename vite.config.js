@@ -14,12 +14,14 @@ export default defineConfig({
          '@': path.resolve(__dirname, './src') // Example: '@' maps to the 'src' directory
       },
    },
-   // ... other Vite configurations
-   //    css: {
-   //     preprocessorOptions: {
-   //       scss: {
-   //         additionalData: `@use "@/styles/variables.scss" as *; @use "@/styles/mixins.scss" as *;`,
-   //       },
-   //     },
-   //   }
+   css: {
+    preprocessorOptions: {
+      scss: {
+        // Silences warnings from node_modules
+        quietDeps: true,
+        // Specifically silence the color-functions deprecation
+        silenceDeprecations: ['color-functions', 'import', 'global-builtin'],
+      }
+    }
+  }
 });

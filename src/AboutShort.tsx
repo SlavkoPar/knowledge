@@ -17,7 +17,7 @@ const AboutShort: React.FC<IAboutShort> = () => {
     await instance.loginPopup({
       ...loginRequest,
       prompt: 'create',
-      redirectUri: '/knowledge',
+      redirectUri: '/redirect',
     })
       .then(response => {
         // Handle the successful login response here
@@ -34,7 +34,8 @@ const AboutShort: React.FC<IAboutShort> = () => {
         // Optional: set the active account
         localStorage.setItem('createWS', JSON.stringify(wsDto));
       })
-      .catch((error) => console.log(error));
+      .catch((error) => 
+        console.log(error));
   }
 
   return (
