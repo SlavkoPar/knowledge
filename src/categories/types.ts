@@ -613,6 +613,7 @@ export interface ICategoriesContext {
 	getSubCats: (categoryId: string | null) => Promise<any>;
 	addQuestion: (categoryKey: ICategoryKey, isExpanded: boolean) => Promise<any>;
 	cancelAddQuestion: () => Promise<any>;
+	getAnswerCount: () => Promise<number>;
 	createQuestion: (question: IQuestion, fromModal: boolean) => Promise<any>;
 	viewQuestion: (questionRow: IQuestionRow) => void;
 	editQuestion: (questionRow: IQuestionRow) => void;

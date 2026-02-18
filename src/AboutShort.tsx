@@ -67,7 +67,7 @@ const AboutShort: React.FC<IAboutShort> = () => {
                   e.preventDefault();
                   await handleSignUp();
                 }}>
-                  Create your Workspace</a><br />at our Azure platform, no credit card required.
+                  <b>Create your Workspace</b></a><br />at our Azure platform, no credit card required.
               </li>
               <li className="my-1">Use this Web App, as the Admin model for maintenace of your Q/A</li>
               <li className="my-1">

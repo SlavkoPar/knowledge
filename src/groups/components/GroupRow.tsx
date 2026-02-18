@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRemove, faCaretRight, faCaretDown, faPlus, faFolder } from '@fortawesome/free-solid-svg-icons'
-import QPlus from '@/assets/QPlus.png';
+import APlus from '@/assets/APlus.png';
 
 import { ListGroup, Button, Badge, Collapse } from "react-bootstrap";
 
@@ -201,7 +201,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                                         setTimeout(() => setQueue2(true), 500);
                                     }}
                                 >
-                                    <img width="22" height="18" src={QPlus} alt="Add Answer" />
+                                    <img width="22" height="18" src={APlus} alt="Add Answer" />
                                 </Button>
                                 <Button variant='link' size="sm"
                                     className="d-flex align-items-center border border-0 border-warning p-0"

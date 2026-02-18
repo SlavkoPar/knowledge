@@ -543,60 +543,7 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
     });
   }
 
-  /*
-  const globalGetGroupRow = useCallback(async (id: string): Promise<IGroupRow | undefined> => {
-    try {
-      //const { allGroupRows: groupRows } = globalState;
-      const groupRow: IGroupRow | undefined = allGroupRowsGlobal.get(id);  // globalState.cats is Map<string, ICat>
-      return groupRow!;
-    }
-    catch (error: any) {
-      console.log(error)
-      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
-    }
-    return undefined;
-  }, [allGroupRowsGlobal]);
-
-
-  const getGroupRowsByKind = async (kind: number): Promise<IGroupRow[]> => {
-    try {
-      const { allGroupRowsGlobal: shortGroups } = globalState;
-      const groups: IGroupRow[] = [];
-      shortGroups.forEach((c) => {
-        if (c.kind === kind) {
-          const { topId, id, header, title, level } = c;
-          const groupRow: IGroupRow = {
-            topId,
-            id,
-            header,
-            title,
-            //link,
-            parentId: "",
-            titlesUpTheTree: "",
-            //variations: [],
-            hasSubGroups: false,
-            level,
-            kind,
-            isExpanded: false,
-            link: null,
-            groupRows: [],
-            variations: [],
-            numOfAnswers: 0,
-            answerRows: []
-          }
-          groups.push(groupRow);
-        }
-      })
-      return groups;
-    }
-    catch (error: any) {
-      console.log(error)
-      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
-    }
-    return [];
-  }
-  */
-
+  
   const createWorkspace = useCallback(
     async (wsDto: IWorkspaceDto) => {
       //dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });

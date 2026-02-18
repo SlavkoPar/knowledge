@@ -148,12 +148,6 @@ function App() {
               <Routes>
                 <Route path="/" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
                 <Route path="/knowledge" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
-                {/* <Route path="" element={(!isAuthenticated && !everLoggedIn) ? <About /> : <Categories />} /> */}
-                {/* <Route path="/register/:returnUrl" element={<RegisterForm />} />
-                    <Route path="/sign-in" element={<LoginForm initialValues={formInitialValues} invitationId='' />} /> */}
-                {/* <Route path="/supporter/:source/:tekst" element={<SupportPage />} />
-                <Route path="/supporter/:source/:tekst/:email" element={<SupportPage />} /> */}
-                {/* <Route path="/ChatBotPage/:source/:tekst/:email" element={<ChatBotPage />} /> */}
                 <Route path="/knowledge/categories/:categoryId_questionId/:fromChatBotDlg" element={<Categories />} />
                 <Route path="/knowledge/categories" element={<Categories />} />
                 <Route path="/categories" element={<Categories />} />

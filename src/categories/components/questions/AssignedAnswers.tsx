@@ -31,10 +31,11 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
         handleClose();
     }
 
-    const { state, assignQuestionAnswer } = useCategoryContext();
+    const { state, assignQuestionAnswer, getAnswerCount } = useCategoryContext();
 
     const { allGroupRows } = state;
     const [showAssign, setShowAssign] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
 
     const onSelectAnswer = async (assignedAnswerKey: IAssignedAnswerKey) => {
         // TODO in next version do not update MongoDB immediately, wait until user presses Save
@@ -62,9 +63,11 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
     }
 
     const assignAnswer = async () => {
-        // if (!allGroupRowsGlobalLoaded) {
-        //     await loadAndCacheAllGroupRows();
-        // }
+        const count = await getAnswerCount();
+        if (count === 0) {
+            setErrorMsg('No answer available to assign. Please navigate to Answers and create an answer first.');
+            return;
+        }
         setShowAssign(true);
     }
 
@@ -94,37 +97,43 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
                 {/* {state.loading && <div>...loading</div>} */}
             </div>
             {true && // we expect no question will ever assign all the answers from the database
-                <div className="d-flex justify-content-start w-100 align-items-center py-1">
-                    <Button
-                        size="sm"
-                        className="button-edit py-0 rounded-1"
-                        title="Assign a new Answer"
-                        style={{ border: '1px solid silver', fontSize: '12px' }}
-                        variant={variant}
-                        disabled={isDisabled}
-                        onClick={assignAnswer} // event.preventDefault()}
-                    >
-                        Assign answer
-                    </Button>
-                    <Button
-                        size="sm"
-                        className="button-edit py-0 rounded-1 mx-1"
-                        title="Add and Assign a new Answer"
-                        style={{ border: '1px solid silver', fontSize: '12px' }}
-                        variant={variant}
-                        disabled={isDisabled}
-                        onClick={
-                            async (e) => {
-                                // if (!allGroupRowsGlobalLoaded) {
-                                //     await loadAndCacheAllGroupRows();
-                                // }
-                                setShowAdd(true);
-                                e.preventDefault()
-                            }
-                        }>
-                        Add a new answer
-                    </Button>
-                </div>
+                <>
+                    <div className="d-flex justify-content-start w-100 align-items-center py-1">
+                        <Button
+                            size="sm"
+                            className="button-edit py-0 rounded-1"
+                            title="Assign a new Answer"
+                            style={{ border: '1px solid silver', fontSize: '12px' }}
+                            variant={variant}
+                            disabled={isDisabled}
+                            onClick={assignAnswer} // event.preventDefault()}
+                        >
+                            Assign answer
+                        </Button>
+                        <Button
+                            size="sm"
+                            className="button-edit py-0 rounded-1 mx-1"
+                            title="Add and Assign a new Answer"
+                            style={{ border: '1px solid silver', fontSize: '12px' }}
+                            variant={variant}
+                            disabled={isDisabled}
+                            onClick={
+                                async (e) => {
+                                    // if (!allGroupRowsGlobalLoaded) {
+                                    //     await loadAndCacheAllGroupRows();
+                                    // }
+                                    setShowAdd(true);
+                                    e.preventDefault()
+                                }
+                            }>
+                            Add a new answer
+                        </Button>
+
+                    </div>
+                    <div className="text-muted d-block">
+                        {errorMsg && <span className="text-danger">{errorMsg}</span>}
+                    </div>
+                </>
             }
 
             <Modal

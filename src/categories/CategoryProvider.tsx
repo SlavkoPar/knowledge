@@ -770,7 +770,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
             if (parentId !== null) {
               for await (const topRow of topRows) {
                 parentRow = await findCategoryRow(topRow, parentId!);
-                if (parentRow) 
+                if (parentRow)
                   break;
               }
               parentRow!.hasSubCategories = categoryDto!.HasSubCategories;
@@ -1175,125 +1175,141 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   }, [cancelAddCategory, cancelAddQuestion, formMode, getQuestion]);
 
 
-  // action: 'Assign' or 'UnAssign'
-  const assignQuestionAnswer = useCallback(
-    async (action: 'Assign' | 'UnAssign', questionKey: IQuestionKey, assignedAnswerKey: IAssignedAnswerKey): Promise<any> => {
+  const getAnswerCount = useCallback(async (): Promise<number> => {
+    return new Promise(async (resolve) => {
       try {
-        var { topId, id } = assignedAnswerKey;
-        var assignedAnswer: IAssignedAnswer = {
-          topId,
-          id,
-          created: {
-            time: new Date(),
-            nickName
-          }
-        }
-        const dto = new AssignedAnswerDto(assignedAnswer).assignedAnswerDto;
-        dto.QuestionKeyDto = new QuestionKeyDto(questionKey, workspace).dto;
-        let question: IQuestion | null = null;
-        const url = `${KnowledgeAPI.endpointQuestionAnswer}/${action}`;
-        console.time()
-        await Execute("POST", url, dto)
-          .then(async (questionDtoEx: IQuestionDtoEx) => {
-            console.timeEnd();
-            const { questionDto } = questionDtoEx;
-            console.log("::::::::::::::::::::", { questionDtoEx });
-            if (questionDto) {
-              question = new Question(questionDto).question;
-              console.log('Question successfully modified')
-              //dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: assignedAnswer } });
-              //dispatch({ type: ActionTypes.CLOSE_QUESTION_FORM })
-            }
+        const url = `${KnowledgeAPI.endpointAnswer}/${workspace}`;
+        await Execute("GET", url)
+          .then((count: number) => {
+            resolve(count);
           });
-        if (question) {
-          dispatch({ type: ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question } });
-        }
-        /*
-        const assignedAnswers = [...question.assignedAnswers, newAssignedAnwser];
-        const obj: IQuestion = {
-          ...question,
-          assignedAnswers,
-          numOfAssignedAnswers: assignedAnswers.length
-        }
-        await dbp!.put('Questions', obj, questionId);
-        console.log("Question Answer successfully assigned", obj);
-        */
-        ///////////////////
-        // newAssignedAnwser.answer.title = answer.title;
-        // obj.assignedAnswers = [...question.assignedAnswers, newAssignedAnwser];;
-        // dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: obj } });
-        //dispatch({ type: ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question: { ...obj } } });
       }
       catch (error: any) {
         console.log('error', error);
         dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
       }
-    }, [Execute, KnowledgeAPI.endpointQuestionAnswer, nickName, workspace]);
+    });
+  }, [Execute, KnowledgeAPI.endpointAnswer, workspace]);
 
-
-  const onCategoryTitleChanged = useCallback(
-    async (topId: string, id: string, title: string): Promise<void> => {
-      const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-      let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, id);
-      console.log('PROVIDER onCategoryTitleChanged::', categoryRow!.title, title)
-      if (categoryRow!.title !== title) {
-        categoryRow!.title = title === '' ? 'New Category' : title; // to avoid empty title
-        dispatch({
-          type: ActionTypes.RE_RENDER_TREE, payload: {} //categoryRow: categoryRow! }
-        });
-      }
-      return;
-    }, [findCategoryRow, topRows]);
-
-
-  const onQuestionTitleChanged = useCallback(
-    async (topId: string, id: string, title: string): Promise<void> => {
-      const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-      let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, id);
-      if (categoryRow) {
-        const questionRow = categoryRow.questionRows!.find(q => q.id === id)!;
-        if (questionRow!.title !== title) {
-          questionRow.title = title === '' ? 'New Question' : title; // to avoid empty title;
-          // rerender
-          console.log('onQuestionTitleChanged+++>>>', id, categoryRow)
-          dispatch({ type: ActionTypes.QUESTION_TITLE_CHANGED, payload: { categoryRow } })
+    // action: 'Assign' or 'UnAssign'
+    const assignQuestionAnswer = useCallback(
+      async (action: 'Assign' | 'UnAssign', questionKey: IQuestionKey, assignedAnswerKey: IAssignedAnswerKey): Promise<any> => {
+        try {
+          var { topId, id } = assignedAnswerKey;
+          var assignedAnswer: IAssignedAnswer = {
+            topId,
+            id,
+            created: {
+              time: new Date(),
+              nickName
+            }
+          }
+          const dto = new AssignedAnswerDto(assignedAnswer).assignedAnswerDto;
+          dto.QuestionKeyDto = new QuestionKeyDto(questionKey, workspace).dto;
+          let question: IQuestion | null = null;
+          const url = `${KnowledgeAPI.endpointQuestionAnswer}/${action}`;
+          console.time()
+          await Execute("POST", url, dto)
+            .then(async (questionDtoEx: IQuestionDtoEx) => {
+              console.timeEnd();
+              const { questionDto } = questionDtoEx;
+              console.log("::::::::::::::::::::", { questionDtoEx });
+              if (questionDto) {
+                question = new Question(questionDto).question;
+                console.log('Question successfully modified')
+                //dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: assignedAnswer } });
+                //dispatch({ type: ActionTypes.CLOSE_QUESTION_FORM })
+              }
+            });
+          if (question) {
+            dispatch({ type: ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question } });
+          }
+          /*
+          const assignedAnswers = [...question.assignedAnswers, newAssignedAnwser];
+          const obj: IQuestion = {
+            ...question,
+            assignedAnswers,
+            numOfAssignedAnswers: assignedAnswers.length
+          }
+          await dbp!.put('Questions', obj, questionId);
+          console.log("Question Answer successfully assigned", obj);
+          */
+          ///////////////////
+          // newAssignedAnwser.answer.title = answer.title;
+          // obj.assignedAnswers = [...question.assignedAnswers, newAssignedAnwser];;
+          // dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: obj } });
+          //dispatch({ type: ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question: { ...obj } } });
         }
-      }
-      return;
-    }, [findCategoryRow, topRows]);
+        catch (error: any) {
+          console.log('error', error);
+          dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+        }
+      }, [Execute, KnowledgeAPI.endpointQuestionAnswer, nickName, workspace]);
 
-  const contextValue: ICategoriesContext = {
-    state, loadAllCategoryRows, getSubCats, getCat,
-    loadAllGroupRows,
-    expandNodesUpToTheTree,
-    loadTopRows,
-    addCategory, cancelAddCategory, createCategory,
-    viewCategory, editCategory, updateCategory, deleteCategory, deleteCategoryVariation,
-    expandCategory, collapseCategory, onCategoryTitleChanged,
-    loadCategoryQuestions,
-    addQuestion, cancelAddQuestion, createQuestion,
-    viewQuestion, editQuestion, updateQuestion, deleteQuestion, onQuestionTitleChanged,
-    assignQuestionAnswer
+
+    const onCategoryTitleChanged = useCallback(
+      async (topId: string, id: string, title: string): Promise<void> => {
+        const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
+        let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, id);
+        console.log('PROVIDER onCategoryTitleChanged::', categoryRow!.title, title)
+        if (categoryRow!.title !== title) {
+          categoryRow!.title = title === '' ? 'New Category' : title; // to avoid empty title
+          dispatch({
+            type: ActionTypes.RE_RENDER_TREE, payload: {} //categoryRow: categoryRow! }
+          });
+        }
+        return;
+      }, [findCategoryRow, topRows]);
+
+
+    const onQuestionTitleChanged = useCallback(
+      async (topId: string, id: string, title: string): Promise<void> => {
+        const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
+        let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, id);
+        if (categoryRow) {
+          const questionRow = categoryRow.questionRows!.find(q => q.id === id)!;
+          if (questionRow!.title !== title) {
+            questionRow.title = title === '' ? 'New Question' : title; // to avoid empty title;
+            // rerender
+            console.log('onQuestionTitleChanged+++>>>', id, categoryRow)
+            dispatch({ type: ActionTypes.QUESTION_TITLE_CHANGED, payload: { categoryRow } })
+          }
+        }
+        return;
+      }, [findCategoryRow, topRows]);
+
+    const contextValue: ICategoriesContext = {
+      state, loadAllCategoryRows, getSubCats, getCat,
+      loadAllGroupRows,
+      expandNodesUpToTheTree,
+      loadTopRows,
+      addCategory, cancelAddCategory, createCategory,
+      viewCategory, editCategory, updateCategory, deleteCategory, deleteCategoryVariation,
+      expandCategory, collapseCategory, onCategoryTitleChanged,
+      loadCategoryQuestions,
+      addQuestion, cancelAddQuestion, createQuestion,
+      viewQuestion, editQuestion, updateQuestion, deleteQuestion, onQuestionTitleChanged,
+      getAnswerCount, assignQuestionAnswer
+    }
+
+    if (!isAuthenticated || !allCategoryRowsLoaded)  // removed keyExpanded === null
+      return null;
+
+    return (
+      <CategoriesContext.Provider value={contextValue}>
+        <CategoryDispatchContext.Provider value={dispatch}>
+          {children}
+        </CategoryDispatchContext.Provider>
+      </CategoriesContext.Provider>
+    );
   }
 
-  if (!isAuthenticated || !allCategoryRowsLoaded)  // removed keyExpanded === null
-    return null;
-
-  return (
-    <CategoriesContext.Provider value={contextValue}>
-      <CategoryDispatchContext.Provider value={dispatch}>
-        {children}
-      </CategoryDispatchContext.Provider>
-    </CategoriesContext.Provider>
-  );
-}
-
 export function useCategoryContext() {
-  return useContext(CategoriesContext);
-}
+    return useContext(CategoriesContext);
+  }
 
-export const useCategoryDispatch = () => {
-  return useContext(CategoryDispatchContext)
-};
+  export const useCategoryDispatch = () => {
+    return useContext(CategoryDispatchContext)
+  };
 
 
