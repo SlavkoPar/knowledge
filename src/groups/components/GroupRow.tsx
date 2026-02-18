@@ -159,7 +159,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
 
                 {numOfAnswers > 0 &&
                     <Badge pill bg="secondary" className={'d-inline bg-transparent'}>
-                        {numOfAnswers}Q
+                        {numOfAnswers}A
                         {/* <FontAwesomeIcon icon={faAnswer} size='sm' /> */}
                         {/* <img width="22" height="18" src={Q} alt="Answer" /> */}
                     </Badge>

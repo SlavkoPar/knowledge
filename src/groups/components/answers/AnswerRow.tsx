@@ -12,8 +12,8 @@ import { useHover } from "@uidotdev/usehooks";
 import AddAnswer from "@/groups/components/answers/AddAnswer";
 import EditAnswer from "@/groups/components/answers/EditAnswer";
 import ViewAnswer from "@/groups/components/answers/ViewAnswer";
-import Q from '@/assets/Q.png';
-import QPlus from '@/assets/QPlus.png';
+import A from '@/assets/A.png';
+import APlus from '@/assets/APlus.png';
 
 
 //const AnswerRow = ({ answer, categoryInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, answer: IAnswer, categoryInAdding: boolean | undefined }) => {
@@ -86,7 +86,7 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
                 size="sm"
                 className="d-flex align-items-center px-1 text-secondary"
             >
-                <img width="22" height="18" src={Q} alt="Answer" />
+                <img width="22" height="18" src={A} alt="Answer" />
             </Button>
             <Button
                 variant='link'
@@ -120,7 +120,7 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
                             addAnswer(categoryKey, true);
                         }}
                     >
-                        <img width="22" height="18" src={QPlus} alt="Add Answer" />
+                        <img width="22" height="18" src={APlus} alt="Add Answer" />
                     </Button>
                     <Button variant='link' size="sm" className="ms-0 p-0 text-secondary"
                         onClick={del}
