@@ -111,13 +111,22 @@ export const CategoryReducer: Reducer<ICategoriesState, Actions> = (state, actio
   // Actually part topRows of state
   if (modifyTree && categoryRow) { //} && categoryRow.topId !== 'ROOT') {
     let newTopRows: ICategoryRow[];
+    const SET_CATEGORY_ADDED = action.type === 'SET_CATEGORY_ADDED';
     const { topId, id } = categoryRow!;
     if (id === topId) {
-      // actually topRows is from previous state
-      newTopRows = topRows.map(c => c.id === topId
-        ? new DeepClone(categoryRow!).categoryRow
-        : new DeepClone(c).categoryRow
-      );
+      if (SET_CATEGORY_ADDED) {
+        newTopRows = topRows.map(c => c.id === _generateId
+          ? new DeepClone(categoryRow!).categoryRow
+          : new DeepClone(c).categoryRow
+        );
+      }
+      else {
+        // actually topRows is from previous state
+        newTopRows = topRows.map(c => c.id === topId
+          ? new DeepClone(categoryRow!).categoryRow
+          : new DeepClone(c).categoryRow
+        );
+      }
     }
     else {
       // actually topRows is from previous state
@@ -497,9 +506,9 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
 
     case ActionTypes.CATEGORY_DELETED: {
       const { categoryRow, id } = action.payload;
-      const topRows = !categoryRow   
+      const topRows = !categoryRow
         ? state.topRows.filter(catRow => catRow.id !== id)
-        : state.topRows;      
+        : state.topRows;
       return {
         ...state,
         topRows,
@@ -508,10 +517,10 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         formMode: FormMode.None,
         error: undefined,
         whichRowId: undefined,
-        keyExpanded: { 
-          topId: categoryRow ? categoryRow.topId : '', 
-          categoryId: categoryRow ? categoryRow.parentId ?? '' : '', 
-          questionId: '' 
+        keyExpanded: {
+          topId: categoryRow ? categoryRow.topId : '',
+          categoryId: categoryRow ? categoryRow.parentId ?? '' : '',
+          questionId: ''
         }
       };
     }

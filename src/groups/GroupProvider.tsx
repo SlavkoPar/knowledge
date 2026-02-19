@@ -894,6 +894,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
     async (groupKey: IGroupKey) => {
       try {
         const { topId, id } = groupKey;
+        console.log(groupKey);
         let groupRow = await getGrp(id!);
         if (!groupRow) {
           alert(`Not found ${id}. Reload all Groups`)

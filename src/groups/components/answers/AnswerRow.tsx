@@ -20,7 +20,7 @@ import APlus from '@/assets/APlus.png';
 const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelected: boolean }) => {
     const { id, topId, parentId, title } = answerRow; // , isSelected
     //const answerKey: IAnswerKey = new AnswerKey(answerRow).answerKey!;
-    const categoryKey: IGroupKey = { topId, parentId, id: parentId! } // proveri
+    const groupKey: IGroupKey = { topId, parentId, id: parentId! } // proveri
 
     const { canEdit, authUser } = useGlobalState();
     const { state, viewAnswer, addAnswer, editAnswer, deleteAnswer } = useGroupContext();
@@ -116,8 +116,8 @@ const AnswerRow = ({ answerRow, isSelected }: { answerRow: IAnswerRow, isSelecte
                         className="ms-1 p-0 text-secondary d-flex align-items-center"
                         title="Add Answer"
                         onClick={() => {
-                            //const categoryInfo: IGroupInfo = { categoryKey, level: 0 }
-                            addAnswer(categoryKey, true);
+                            //const categoryInfo: IGroupInfo = { groupKey, level: 0 }
+                            addAnswer(groupKey, true);
                         }}
                     >
                         <img width="22" height="18" src={APlus} alt="Add Answer" />

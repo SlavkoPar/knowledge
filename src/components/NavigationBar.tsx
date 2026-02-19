@@ -4,12 +4,12 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import Q from '@/assets/Q.png';
 import A from '@/assets/A.png';
 
-
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal, useMsalAuthentication } from '@azure/msal-react';
 import { InteractionType, type AccountInfo } from "@azure/msal-browser";
 import { Navbar, Dropdown, DropdownButton, NavDropdown } from 'react-bootstrap';
 
 import { loginRequest, protectedResources } from '@/authConfig';
+import type { IWorkspaceDto } from "@/global/types";
 
 export const NavigationBar = () => {
 
@@ -51,6 +51,31 @@ export const NavigationBar = () => {
         instance.loginRedirect(loginRequest)
             .catch((error) => console.log(error));
     };
+
+    const handleSignUp = async () => {
+        await instance.loginPopup({
+          ...loginRequest,
+          prompt: 'create',
+          redirectUri: '/redirect',
+        })
+          .then(response => {
+            // Handle the successful login response here
+            console.log("Login success:", response.account);
+            const { environment, tenantId, name, username } = response.account;
+            const wsDto: IWorkspaceDto = {
+              Workspace: '',
+              TopId: '',
+              TenantId: tenantId!,
+              Environment: environment,
+              DisplayName: name!,
+              Email: username
+            };
+            // Optional: set the active account
+            localStorage.setItem('createWS', JSON.stringify(wsDto));
+          })
+          .catch((error) => 
+            console.log(error));
+      }
 
     const handleLoginPopup = async () => {
         /**
@@ -160,6 +185,11 @@ export const NavigationBar = () => {
                         Implement Chatbot at your site
                     </a>
                     <div className="collapse navbar-collapse justify-content-end">
+                        <DropdownButton variant="secondary" className="ml-auto px-2" drop="start" title="Sign Up">
+                            <Dropdown.Item as="button" onClick={handleSignUp}>
+                                Create your Workspace
+                            </Dropdown.Item>
+                        </DropdownButton>
                         <DropdownButton variant="secondary" className="ml-auto" drop="start" title="Sign In">
                             <Dropdown.Item as="button" onClick={handleLoginPopup}>
                                 Sign in using Popup

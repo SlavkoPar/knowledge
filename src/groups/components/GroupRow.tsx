@@ -22,8 +22,9 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
     const { id, title, hasSubGroups, numOfAnswers, isExpanded, groupRows } = groupRow;
     groupRow.level += 1;
 
+    console.log(groupRow);
     const groupKey: IGroupKey = new GroupKey(groupRow).groupKey!;
-
+    console.log(groupKey);
     // const [groupKey] = useState<IGroupKey>({ topId, id }); // otherwise reloads
     // const [catKeyExpanded] = useState<IAnswerKey>({ topId, id, answerId }); // otherwise reloads
 
