@@ -1,7 +1,7 @@
 
 //import { lazy, Suspense } from 'react'
 import { MsalProvider, AuthenticatedTemplate, useMsal, UnauthenticatedTemplate } from '@azure/msal-react';
-import { Button, Container } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { PageLayout } from './PageLayout';
 //import { IdTokenData } from '@/components/DataDisplay';
 
@@ -12,7 +12,7 @@ import { GlobalProvider } from '@/global/GlobalProvider';
 
 import App from './App';
 import AboutShort from './AboutShort';
-import { loginRequest } from './authConfig';
+// import { loginRequest } from './authConfig';
 /**
 * Most applications will need to conditionally render certain components based on whether a user is signed in or not. 
 * msal-react provides 2 easy ways to do this. AuthenticatedTemplate and UnauthenticatedTemplate components will 
@@ -31,7 +31,7 @@ const MainContent = () => {
 
     const activeAccount = instance.getActiveAccount();
     
-    /**/
+    /*
     const handleRedirect = () => {
         instance
             .loginRedirect({
@@ -40,7 +40,7 @@ const MainContent = () => {
             })
             .catch((error) => console.log(error));
     };
-    /**/
+    */
     // const App = lazy(() =>
     //     // named export
     //     import("./App").then((module) => ({ default: module.default }))
