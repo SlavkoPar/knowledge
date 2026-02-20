@@ -6,7 +6,7 @@ import A from '@/assets/A.png';
 
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal, useMsalAuthentication } from '@azure/msal-react';
 import { InteractionType, type AccountInfo } from "@azure/msal-browser";
-import { Navbar, Dropdown, DropdownButton, NavDropdown } from 'react-bootstrap';
+import { Navbar, Dropdown, DropdownButton, NavDropdown, DropdownDivider } from 'react-bootstrap';
 
 import { loginRequest, protectedResources } from '@/authConfig';
 import type { IWorkspaceDto } from "@/global/types";
@@ -185,12 +185,11 @@ export const NavigationBar = () => {
                         Implement Chatbot at your site
                     </a>
                     <div className="collapse navbar-collapse justify-content-end">
-                        <DropdownButton variant="secondary" className="ml-auto px-2" drop="start" title="Sign Up">
+                        <DropdownButton variant="secondary" className="ml-auto" drop="start" title="Sign">
                             <Dropdown.Item as="button" onClick={handleSignUp}>
                                 Create your Workspace
                             </Dropdown.Item>
-                        </DropdownButton>
-                        <DropdownButton variant="secondary" className="ml-auto" drop="start" title="Sign In">
+                            <DropdownDivider className='mx-2' />
                             <Dropdown.Item as="button" onClick={handleLoginPopup}>
                                 Sign in using Popup
                             </Dropdown.Item>
