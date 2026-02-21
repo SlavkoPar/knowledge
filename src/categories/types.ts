@@ -938,6 +938,7 @@ export type Payload = {
 
 	[ActionTypes.SET_CATEGORY_ADDED]: {
 		categoryRow?: ICategoryRow;
+		idToSet?: string;
 		//category: ICategory;
 	};
 

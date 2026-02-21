@@ -111,11 +111,11 @@ export const CategoryReducer: Reducer<ICategoriesState, Actions> = (state, actio
   // Actually part topRows of state
   if (modifyTree && categoryRow) { //} && categoryRow.topId !== 'ROOT') {
     let newTopRows: ICategoryRow[];
-    const SET_CATEGORY_ADDED = action.type === 'SET_CATEGORY_ADDED';
     const { topId, id } = categoryRow!;
+    const idToSet = (action.payload as any).idToSet ?? id; // for SET_CATEGORY_ADDED
+
     if (id === topId) { // root category is added or updated
-      const lookFor = SET_CATEGORY_ADDED ? _generateId : topId;
-      newTopRows = topRows.map(c => c.id === lookFor
+      newTopRows = topRows.map(c => c.id === idToSet
         ? new DeepClone(categoryRow!).categoryRow
         : new DeepClone(c).categoryRow
       );
@@ -123,7 +123,7 @@ export const CategoryReducer: Reducer<ICategoriesState, Actions> = (state, actio
     else {
       // actually topRows is from previous state
       const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-      DeepClone.idToSet = action.type === 'SET_CATEGORY_ADDED' ? _generateId : id;
+      DeepClone.idToSet = idToSet;
       DeepClone.newCategoryRow = categoryRow!;
       const newTopRow = new DeepClone(topRow).categoryRow;
       newTopRows = topRows.map(c => c.id === topId

@@ -608,8 +608,9 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
               //.then(async () => { // done: boolean
               //await loadTopRows();
               //await onCategoryIdChanged(topId, category.id); // replace _generateId with id, inside of tree
+              const idToSet = _generateId;
               if (category.parentId === null) {
-                dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
+                dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category, idToSet } }); // ICategory extends ICategory Row
               }
               else {
                 // const parentCategoryKey: ICategoryKey = {
@@ -625,7 +626,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
                 // await expandCategory(expandInfo).then(() => {
                 //   dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
                 // });
-                dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category } }); // ICategory extends ICategory Row
+                dispatch({ type: ActionTypes.SET_CATEGORY_ADDED, payload: { categoryRow: category, idToSet } }); // ICategory extends ICategory Row
               }
               //})
             }

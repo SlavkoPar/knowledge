@@ -626,8 +626,9 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
               //.then(async () => { // done: boolean
               //await loadTopRows();
               //await onGroupIdChanged(topId, group.id); // replace _generateId with id, inside of tree
+              const idToSet = _generateId;
               if (group.parentId === null) {
-                dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group } }); // IGroup extends IGroup Row
+                dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group, idToSet } }); // IGroup extends IGroup Row
               }
               else {
                 // const parentGroupKey: IGroupKey = {
@@ -643,7 +644,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
                 // await expandGroup(expandInfo).then(() => {
                 //   dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group } }); // IGroup extends IGroup Row
                 // });
-                dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group } }); // IGroup extends IGroup Row
+                dispatch({ type: ActionTypes.SET_GROUP_ADDED, payload: { groupRow: group, idToSet } }); // IGroup extends IGroup Row
               }
               //})
             }

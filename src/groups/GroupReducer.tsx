@@ -108,12 +108,10 @@ export const GroupReducer: Reducer<IGroupsState, Actions> = (state, action) => {
   if (modifyTree && groupRow) { //} && groupRow.topId !== 'ROOT') {
     let newTopRows: IGroupRow[];
     const { topId, id } = groupRow!;
-
-    const SET_GROUP_ADDED = action.type === 'SET_GROUP_ADDED';
+    const idToSet = (action.payload as any).idToSet ?? id; // for SET_GROUP_ADDED
     if (id === topId) { // root group is added or updated
       // actually topRows is from previous state
-      const lookFor = SET_GROUP_ADDED ? _generateId : topId;
-      newTopRows = topRows.map(c => c.id === lookFor
+      newTopRows = topRows.map(c => c.id === idToSet
         ? new DeepClone(groupRow!).groupRow
         : new DeepClone(c).groupRow
       );
@@ -121,7 +119,7 @@ export const GroupReducer: Reducer<IGroupsState, Actions> = (state, action) => {
     else {
       // actually topRows is from previous state
       const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
-      DeepClone.idToSet = SET_GROUP_ADDED ? _generateId : id;
+      DeepClone.idToSet = idToSet;
       DeepClone.newGroupRow = groupRow!;
       const newTopRow = new DeepClone(topRow).groupRow;
       newTopRows = topRows.map(c => c.id === topId

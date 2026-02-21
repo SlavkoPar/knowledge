@@ -787,6 +787,7 @@ export type Payload = {
 
 	[ActionTypes.SET_GROUP_ADDED]: {
 		groupRow?: IGroupRow;
+		idToSet?: string;
 		//group: IGroup;
 	};
 
@@ -794,7 +795,6 @@ export type Payload = {
 		groupRow?: IGroupRow;
 		id: string;
 	};
-
 
 	[ActionTypes.CLOSE_GROUP_FORM]: {
 		groupRow?: IGroupRow;
