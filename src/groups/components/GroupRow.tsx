@@ -68,7 +68,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
     const [open, setOpen] = useState<boolean>(false);
     useEffect(() => {
         //if (groupRows.length > 0) 
-            setOpen(true);
+        setOpen(true);
     }, [groupRows]);
 
     const onSelectGroup = async (): Promise<any> => {
@@ -121,14 +121,14 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
 
     const Row1 =
         <div>
-            <div id={`Row${id}`} 
-                className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 group-row${isSelected ? '-selected' : ''}`} 
+            <div id={`Row${id}`}
+                className={`d-relative d-flex justify-content-start align-items-end w-100 mt-1 group-row${isSelected ? '-selected' : ''}`}
                 style={{ marginTop: '1px' }} >
                 <Button
                     variant='link'
                     size="sm"
                     className="py-0 px-1" //  bg-light"
-                    aria-controls={id+'-2'}
+                    aria-controls={id + '-2'}
                     aria-expanded={open}
                     onClick={(e) => { handleExpandClick(); e.stopPropagation() }}
                     title="Expand"
@@ -166,37 +166,40 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                     </Badge>
                 }
 
-                {canEdit && hovering && numOfAnswers === 0 &&
-                    <div className="position-absolute text-nowrap d-flex align-items-center border border-0 border-warning p-0 end-0">
-                        <div className="d-flex align-items-center">
-                            <Button
-                                variant='link'
-                                size="sm"
-                                className="border-0 py-0 px-0 ms-0 text-success"
-                                title="Add SubGroup"
-                                onClick={async () => {
-                                    //dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM, payload: {} })
-                                    if (!isExpanded && (hasSubGroups || numOfAnswers > 0)) {
-                                        await handleExpandClick();
-                                    }
-                                    setTimeout(() => setQueue(true), 1000);
-                                }}
-                            >
-                                <FontAwesomeIcon icon={faPlus} size='lg' />
-                            </Button>
-                        </div>
+                {!inAdding && canEdit && hovering &&
 
-                        {!inAdding && !hasSubGroups &&
-                            // top-0 end-0
-                            <div className="d-flex align-items-center">
+                    <div className="position-absolute text-nowrap d-flex align-items-end border border-0 border-warning p-0 end-0">
+                        <div className="d-flex align-items-end">
+                            {numOfAnswers === 0 &&
                                 <Button
                                     variant='link'
                                     size="sm"
-                                    className="p-0 mx-0 text-secondary d-flex align-items-center border border-0 border-warning"
+                                    className="border-0 py-0 px-0 ms-0 text-success"
+                                    title="Add SubGroup"
+                                    onClick={async () => {
+                                        //dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM, payload: {} })
+                                        if (!isExpanded && (hasSubGroups || numOfAnswers > 0)) {
+                                            await handleExpandClick();
+                                        }
+                                        setTimeout(() => setQueue(true), 1000);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faPlus} size='lg' />
+                                </Button>
+                            }
+                        </div>
+
+                        {!hasSubGroups &&
+                            // top-0 end-0
+                            <div className="d-flex align-items-end">
+                                <Button
+                                    variant='link'
+                                    size="sm"
+                                    className="p-0 mx-0 text-secondary d-flex align-items-end border border-0 border-warning"
                                     title="Add Answer"
                                     onClick={async () => {
                                         //const groupInfo: IGroupInfo = { groupKey: { workspace: topId, id: groupRow.id }, level: groupRow.level }
-                                        if (!isExpanded && (hasSubGroups || numOfAnswers > 0)) {
+                                        if (!isExpanded && numOfAnswers > 0) {
                                             await handleExpandClick();
                                         }
                                         setTimeout(() => setQueue2(true), 500);
@@ -204,8 +207,9 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                                 >
                                     <img width="22" height="18" src={APlus} alt="Add Answer" />
                                 </Button>
+
                                 <Button variant='link' size="sm"
-                                    className="d-flex align-items-center border border-0 border-warning p-0"
+                                    className="d-flex align-items-end border border-0 border-warning p-0"
                                     disabled={hasSubGroups || numOfAnswers > 0}
                                     onClick={deleteGroupRow}
                                 >
@@ -320,7 +324,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                     <div className="rambo">
                         {hasSubGroups &&
                             <Collapse in={open}>
-                                <div id={id+'-2'} style={{ marginTop: '1px' }}>
+                                <div id={id + '-2'} style={{ marginTop: '1px' }}>
                                     {/* Wrap content in a div to prevent choppy animations caused by margins/padding */}
                                     <div style={{ border: '1px solid #ddd', borderRadius: '4px' }}>
                                         <GroupList groupRow={groupRow} isExpanded={isExpanded} />

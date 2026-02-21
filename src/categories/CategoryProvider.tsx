@@ -872,7 +872,8 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     }
   }, [Execute, KnowledgeAPI.endpointQuestion, workspace]);
 
-
+  //////////////////////////////////////////
+  // Set initialQuestion to QuestionForm
   const addQuestion = useCallback(
     async (categoryKey: ICategoryKey) => {
       try {
