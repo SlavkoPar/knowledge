@@ -208,13 +208,13 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
                                     <img width="22" height="18" src={APlus} alt="Add Answer" />
                                 </Button>
 
-                                <Button variant='link' size="sm"
+                                {numOfAnswers === 0 && <Button variant='link' size="sm"
                                     className="d-flex align-items-end border border-0 border-warning p-0"
-                                    disabled={hasSubGroups || numOfAnswers > 0}
                                     onClick={deleteGroupRow}
                                 >
                                     <FontAwesomeIcon icon={faRemove} size='lg' />
                                 </Button>
+                                }
                             </div>
                         }
 

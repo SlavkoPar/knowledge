@@ -166,7 +166,6 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                 }
 
                 {!inAdding && canEdit && hovering && //numOfQuestions === 0 &&
-
                     <div className="position-absolute text-nowrap d-flex align-items-center border border-0 border-warning p-0 end-0">
                         {numOfQuestions === 0 &&
                             <div className="d-flex align-items-center">
@@ -208,21 +207,18 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                                     <img width="22" height="18" src={QPlus} alt="Add Question" />
                                 </Button>
 
-                                <Button variant='link' size="sm"
+                                {numOfQuestions === 0 && <Button variant='link' size="sm"
                                     className="d-flex align-items-end border border-0 border-warning p-0"
                                     disabled={hasSubCategories || numOfQuestions > 0}
                                     onClick={deleteCategoryRow}
                                 >
                                     <FontAwesomeIcon icon={faRemove} size='lg' />
                                 </Button>
+                                }
                             </div>
                         }
-
                     </div>
                 }
-
-                {/* TODO what about archive questions  numOfQuestions === 0 &&*/}
-
             </div>
             {showQuestions &&
                 <div className='ps-3'>
