@@ -37,7 +37,7 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
 
   const isDisabled = viewing;
 
-  const { topId, id, assignedAnswers, relatedFilters, title: qTitle } = question;
+  const { topId, parentId, id, assignedAnswers, relatedFilters, title: qTitle } = question;
   const questionKey = new QuestionKey(question).questionKey;
   // const categoryKey: ICategoryKey = { topId, parentId, id: parentId! }; // proveri
 
@@ -88,7 +88,7 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
     const goBre = async () => {
       // console.log('QuestionForm.useEffect - onQuestionTitleChanged', { debouncedSearchTerm, title: formik.values.title });
       if (/*debouncedSearchTerm &&*/ formik.values.title !== debouncedSearchTerm) {
-        /*await*/ onQuestionTitleChanged(topId, id, formik.values.title);
+        /*await*/ onQuestionTitleChanged(topId, parentId, id, formik.values.title);
       }
     };
     goBre();

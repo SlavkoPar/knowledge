@@ -1265,9 +1265,9 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
 
     const onQuestionTitleChanged = useCallback(
-      async (topId: string, id: string, title: string): Promise<void> => {
+      async (topId: string, categoryId: string, id: string, title: string): Promise<void> => {
         const topRow: ICategoryRow = topRows.find(c => c.id === topId)!;
-        let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, id);
+        let categoryRow: ICategoryRow | undefined = await findCategoryRow(topRow, categoryId);
         if (categoryRow) {
           const questionRow = categoryRow.questionRows!.find(q => q.id === id)!;
           if (questionRow!.title !== title) {

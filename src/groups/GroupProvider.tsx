@@ -1220,9 +1220,9 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
     }, [findGroupRow, topRows]);
 
   const onAnswerTitleChanged = useCallback(
-    async (topId: string, id: string, title: string): Promise<void> => {
+    async (topId: string, parentId: string, id: string, title: string): Promise<void> => {
       const topRow: IGroupRow = topRows.find(c => c.id === topId)!;
-      let groupRow: IGroupRow | undefined = await findGroupRow(topRow, id);
+      let groupRow: IGroupRow | undefined = await findGroupRow(topRow, parentId);
       if (groupRow) {
         const answerRow = groupRow.answerRows!.find(a => a.id === id)!;
         if (answerRow!.title !== title) {

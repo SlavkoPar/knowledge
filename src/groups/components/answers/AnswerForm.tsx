@@ -30,7 +30,7 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
 
   const isDisabled = viewing;
 
-  const { topId, id, title: qTitle } = answer;
+  const { topId, parentId, id, title: qTitle } = answer;
   //const answerKey = new AnswerKey(answer).answerKey;
   // const groupKey: IGroupKey = { topId, parentId, id: parentId! }; // proveri
 
@@ -80,7 +80,7 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
     const goBre = async () => {
       // console.log('QuestionForm.useEffect - onQuestionTitleChanged', { debouncedSearchTerm, title: formik.values.title });
       if (/*debouncedSearchTerm &&*/ formik.values.title !== debouncedSearchTerm) {
-        /*await*/ onAnswerTitleChanged(topId, id, formik.values.title);
+        /*await*/ onAnswerTitleChanged(topId, parentId, id, formik.values.title);
       }
     };
     goBre();

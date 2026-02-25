@@ -525,7 +525,7 @@ export interface IGroupsContext {
 	editAnswer: (answerRow: IAnswerRow) => void;
 	updateAnswer: (oldParentId: string, answer: IAnswer, groupChanged: boolean) => Promise<any>;
 	deleteAnswer: (answerRow: IAnswerRow, isActive: boolean) => void;
-	onAnswerTitleChanged: (topId: string, id: string, title: string) => Promise<void>;
+	onAnswerTitleChanged: (topId: string, parentId: string, id: string, title: string) => Promise<void>;
 }
 
 export interface IGroupFormProps {

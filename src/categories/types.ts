@@ -620,7 +620,7 @@ export interface ICategoriesContext {
 	updateQuestion: (oldParentId: string, question: IQuestion, categoryChanged: boolean) => Promise<any>;
 	assignQuestionAnswer: (action: 'Assign' | 'UnAssign', questionKey: IQuestionKey, assignedAnswerKey: IAssignedAnswerKey) => Promise<any>;
 	deleteQuestion: (questionRow: IQuestionRow, isActive: boolean) => void;
-	onQuestionTitleChanged: (topId: string, id: string, title: string) => Promise<void>;
+	onQuestionTitleChanged: (topId: string, categoryId: string, id: string, title: string) => Promise<void>;
 }
 
 export interface ICategoryFormProps {
