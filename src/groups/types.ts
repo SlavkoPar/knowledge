@@ -628,7 +628,7 @@ export const doNotModifyTree = [
 	//ActionTypes.SET_NODE_OPENED,
 	//ActionTypes.SET_GROUP_TO_ADD,
 	//ActionTypes.SET_GROUP_UPDATED,
-	ActionTypes.ADD_NEW_ANSWER_TO_ROW,
+	// ActionTypes.ADD_NEW_ANSWER_TO_ROW,
 	ActionTypes.CANCEL_GROUP_FORM,
 	ActionTypes.CLOSE_GROUP_FORM,
 	ActionTypes.CANCEL_ADD_GROUP

@@ -901,9 +901,10 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
         // if (isExpanded) {
         const topRow: ICategoryRow = state.topRows.find(c => c.id === topId)!;
         const catRow: ICategoryRow | undefined = await findCategoryRow(topRow, id)!;
+        const { numOfQuestions, questionRows } = catRow!;
         dispatch({
           type: ActionTypes.ADD_NEW_QUESTION_TO_ROW, payload: {
-            categoryRow: { ...catRow!, questionRows: [newQuestionRow, ...catRow!.questionRows!] },
+            categoryRow: { ...catRow!, isExpanded: true, numOfQuestions: numOfQuestions + 1, questionRows: [newQuestionRow, ...questionRows!] },
             newQuestionRow
           }
         });

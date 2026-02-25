@@ -918,9 +918,10 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
         // if (isExpanded) {
         const topRow: IGroupRow = state.topRows.find(c => c.id === topId)!;
         const grpRow: IGroupRow | undefined = await findGroupRow(topRow, id)!;
+        const { numOfAnswers, answerRows } = grpRow!;
         dispatch({
           type: ActionTypes.ADD_NEW_ANSWER_TO_ROW, payload: {
-            groupRow: { ...grpRow!, answerRows: [newAnswerRow, ...grpRow!.answerRows!] },
+            groupRow: { ...grpRow!, isExpanded: true, numOfAnswers: numOfAnswers + 1, answerRows: [newAnswerRow, ...answerRows!] },
             newAnswerRow
           }
         });
