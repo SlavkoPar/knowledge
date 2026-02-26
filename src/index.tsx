@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router } from 'react-router-dom'
+import { HashRouter as Router } from 'react-router-dom'
 
 import { PublicClientApplication, EventType, type AccountInfo, type EventMessage } from '@azure/msal-browser';
 import { msalConfig } from './authConfig';
