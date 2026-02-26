@@ -6,7 +6,14 @@ export default defineConfig({
    plugins: [react()],
    'base': '/knowledge',
    build: {
-      sourcemap: true
+      sourcemap: true,
+      rollupOptions: {
+         output: {
+            entryFileNames: `assets/[name].js`,
+            chunkFileNames: `assets/[name].js`,
+            assetFileNames: `assets/[name].[ext]`
+         }
+      }
    },
    resolve: {
       alias: {
@@ -15,13 +22,13 @@ export default defineConfig({
       },
    },
    css: {
-    preprocessorOptions: {
-      scss: {
-        // Silences warnings from node_modules
-        quietDeps: true,
-        // Specifically silence the color-functions deprecation
-        silenceDeprecations: ['color-functions', 'import', 'global-builtin'],
+      preprocessorOptions: {
+         scss: {
+            // Silences warnings from node_modules
+            quietDeps: true,
+            // Specifically silence the color-functions deprecation
+            silenceDeprecations: ['color-functions', 'import', 'global-builtin'],
+         }
       }
-    }
-  }
+   }
 });
