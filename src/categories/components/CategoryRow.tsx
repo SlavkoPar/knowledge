@@ -121,7 +121,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
     const Row1 =
         <div>
             <div id={`Row${id}`}
-                className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 category-row${isSelected ? '-selected' : ''}`}
+                className={`d-relative d-flex justify-content-start align-items-center w-100 mt-1 category-row  ${isSelected ? 'selected' : ''}`}
                 style={{ marginTop: '1px' }} >
                 <Button
                     variant='link'
@@ -148,7 +148,7 @@ const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, q
                 <Button
                     variant='link'
                     size="sm"
-                    className={`py-0 ms-0 me-1 category-row-title ${isSelected ? 'fw-bold text-white bg-transparent' : ''}`}
+                    className={`py-0 ms-0 me-1 title ${isSelected ? 'fw-bold text-white bg-transparent' : ''}`}
                     title={id}
                     onClick={onSelectCategory}
                     disabled={inAdding}
