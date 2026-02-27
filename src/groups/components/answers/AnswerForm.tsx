@@ -118,9 +118,9 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
       <Row className='text-center'>
         <Form.Label>Answer  {viewing ? 'Viewing' : editing ? 'Editing' : 'Adding'}</Form.Label>
       </Row>
-      <Form onSubmit={formik.handleSubmit}>
+      <Form onSubmit={formik.handleSubmit} className="answer-form">
 
-        <Stack direction="horizontal" gap={0} className="border">
+        <Stack direction="horizontal" gap={0} className="">
           <div className="p-0"><Form.Label>Group:</Form.Label></div>
           <div className="p-1">
             <Form.Group controlId="parentId" className="group-select form-select-sm w-90">

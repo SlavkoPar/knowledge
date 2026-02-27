@@ -7,7 +7,16 @@
 /* import bootstrap to set changes */
 @import '~bootstrap/scss/bootstrap';
 
+//////////////////////////////////////
+/// General
+
 .knowledge-row {
+  background-color: $gray-100;
+  color: #333;
+}
+
+// for Questions and Answers
+.slave-row {
   background-color: $gray-100;
   color: #333;
 }
@@ -18,14 +27,10 @@
 }
 
 ////////////////////////////
-/// Category -> Questions
+/// Category 
 
 .categories {
   color: $indigo-300;
-}
-
-.questions {
-  color: $yellow-500;
 }
 
 .categories-border {
@@ -55,11 +60,6 @@
   }
 }
 
-
-
-
-
-
 .category-spinner {
   color: $indigo-500
 }
@@ -68,29 +68,37 @@
   @extend .knowledge-form; // Inherit all properties from .knowledge-form
   background-color: $indigo-200;
   color: #ddd;
+
+  .form-label {
+    color: rgba(33, 37, 41, 0.75);
+    font-size: 14px;
+  }
 }
 
-.category-form label {
-  color: rgba(33, 37, 41, 0.75);
-  font-size: 14px;
+//////////////////
+/// Questions
+
+.questions {
+  color: $yellow-500;
 }
 
 .question-row {
+  @extend .slave-row; // Inherit all properties from .slave-row
   background-color: $yellow-400;
   color: #fff;
   border: 1px solid $yellow-200;
   border-radius: 1px;
-}
 
-.question-row-selected {
-  background-color: $yellow-500;
-  color: #fff;
-}
+  .selected {
+    background-color: $yellow-500;
+    color: #fff;
+  }
 
-.question-row-title {
-  background-color: $yellow-100;
-  color: $gray-700;
-  text-decoration: none;
+  .title {
+    background-color: $yellow-100;
+    color: $gray-700;
+    text-decoration: none;
+  }
 }
 
 .question-spinner {
@@ -101,12 +109,15 @@
   @extend .knowledge-form; // Inherit all properties from .knowledge-form
   background-color: $yellow-500;
   color: #ddd;
+
+  .form-label {
+    color: $indigo-700;
+    font-size: 14px;
+  }
 }
 
-.question-form label {
-  color: $indigo-700;
-  font-size: 14px;
-}
+///////////////////
+/// related filters
 
 .related-filters {
   background-color: $blue-100;
@@ -128,14 +139,10 @@
 
 
 ////////////////////////////
-/// Group -> Answers
+/// Group
 
 .groups {
   color: $teal-300;
-}
-
-.answers {
-  color: $cyan-500;
 }
 
 .groups-border {
@@ -151,19 +158,21 @@
   @extend .knowledge-row; // Inherit all properties from .knowledge-row
   background-color: $teal-200;
   color: #fff;
+
+  .selected {
+    background-color: $teal-400;
+    color: #fff;
+  }
+
+  .title {
+    background-color: $teal-100;
+    // background-color: $teal-100;
+    color: $teal-700;
+    text-decoration: none;
+  }
 }
 
-.group-row-selected {
-  background-color: $teal-400;
-  color: #fff;
-}
 
-.group-row-title {
-  background-color: $teal-100;
-  // background-color: $teal-100;
-  color: $teal-700;
-  text-decoration: none;
-}
 
 .group-spinner {
   color: $teal-500
@@ -173,15 +182,23 @@
   @extend .knowledge-form; // Inherit all properties from .knowledge-form 
   background-color: $teal-200;
   color: #ddd;
+
+  .form-label {
+    color: rgba(33, 37, 41, 0.75);
+    font-size: 14px;
+  }
 }
 
-.group-form label {
-  color: rgba(33, 37, 41, 0.75);
-  font-size: 14px;
+
+
+/////////////////////////////
+/// Answer
+.answers {
+  color: $cyan-500;
 }
 
 .answer-row {
-  @extend .knowledge-row; // Inherit all properties from .knowledge-row
+  @extend .slave-row; // Inherit all properties from .slave-row
   background-color: $cyan-400;
   color: #fff;
   border: 1px solid $cyan-200;
@@ -207,9 +224,9 @@
   @extend .knowledge-form; // Inherit all properties from .knowledge-form
   background-color: $cyan-500;
   color: #ddd;
-}
 
-.answer-form label {
-  color: $teal-700;
-  font-size: 14px;
+  .form-label {
+    color: $teal-700;
+    font-size: 14px;
+  }
 }

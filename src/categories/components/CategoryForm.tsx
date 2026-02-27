@@ -117,7 +117,7 @@ const CategoryForm = ({ formMode, category, cancel, close, submitForm, children 
       <Row className='text-center text-muted'>
         <Form.Label>Category {viewing ? 'Viewing' : editing ? 'Editing' : 'Adding'}</Form.Label>
       </Row>
-      <Form onSubmit={() => formik.handleSubmit}>
+      <Form onSubmit={() => formik.handleSubmit} className="category-form">
 
         <Form.Group controlId="Variations">
           <Stack direction="horizontal" gap={1}>

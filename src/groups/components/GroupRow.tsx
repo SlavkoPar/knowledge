@@ -122,7 +122,7 @@ const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: strin
     const Row1 =
         <div>
             <div id={`Row${id}`}
-                className={`d-relative d-flex justify-content-start align-items-end w-100 mt-1 group-row${isSelected ? '-selected' : ''}`}
+                className={`d-relative d-flex justify-content-start align-items-end w-100 mt-1 group-row ${isSelected ? 'selected' : ''}`}
                 style={{ marginTop: '1px' }} >
                 <Button
                     variant='link'
