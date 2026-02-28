@@ -12,8 +12,8 @@ import { useHover } from "@uidotdev/usehooks";
 import AddQuestion from "@/categories/components/questions/AddQuestion";
 import EditQuestion from "@/categories/components/questions/EditQuestion";
 import ViewQuestion from "@/categories/components/questions/ViewQuestion";
-import Q from '@/assets/Q.png';
-import QPlus from '@/assets/QPlus.png';
+import Q from '@/assets/QTrans.png';
+import QPlus from '@/assets/QPlusTrans.png';
 
 
 //const QuestionRow = ({ question, categoryInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, question: IQuestion, categoryInAdding: boolean | undefined }) => {
@@ -80,7 +80,7 @@ const QuestionRow = ({ questionRow, isSelected }: { questionRow: IQuestionRow, i
 
     const Row1 =
 
-        <div id={`QuestionRow${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 mt-0 question-row${isSelected ? '-selected' : ''}`} style={{ marginTop: '1px' }} >
+        <div id={`QuestionRow${id}`} className={`d-relative d-flex justify-content-start align-items-center w-100 mt-0 question-row ${isSelected ? 'selected' : ''}`} style={{ marginTop: '1px' }} >
             <Button
                 variant='link'
                 size="sm"

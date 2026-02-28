@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRemove, faCaretRight, faCaretDown, faPlus, faFolder } from '@fortawesome/free-solid-svg-icons'
-import QPlus from '@/assets/QPlus.png';
+import QPlus from '@/assets/QPlusTrans.png';
 
 import { ListGroup, Button, Badge, Collapse } from "react-bootstrap";
 

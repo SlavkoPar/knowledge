@@ -593,7 +593,7 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
               //const { ObjectId, DisplayName } = workspaceDto;
               const { Workspace, DisplayName } = workspaceDto;
               const user: IUser = {
-                workspace: Workspace,
+                workspace: Workspace, // 'DEMO',
                 nickName: DisplayName!,
                 name: DisplayName!,
                 email: Email!,

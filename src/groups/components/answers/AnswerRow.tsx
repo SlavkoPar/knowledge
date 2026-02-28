@@ -12,8 +12,8 @@ import { useHover } from "@uidotdev/usehooks";
 import AddAnswer from "@/groups/components/answers/AddAnswer";
 import EditAnswer from "@/groups/components/answers/EditAnswer";
 import ViewAnswer from "@/groups/components/answers/ViewAnswer";
-import A from '@/assets/A.png';
-import APlus from '@/assets/APlus.png';
+import A from '@/assets/ATrans.png';
+import APlus from '@/assets/APlusTrans.png';
 
 
 //const AnswerRow = ({ answer, categoryInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, answer: IAnswer, categoryInAdding: boolean | undefined }) => {
