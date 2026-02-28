@@ -15,7 +15,7 @@ import CategoryList from "@/categories/components/CategoryList";
 import EditCategory from "@/categories/components/EditCategory";
 import ViewCategory from "@/categories/components/ViewCategory";
 import QuestionList from './questions/QuestionList';
-import AddCategory from './AddCategory';
+import AddCategory from './AddCategory'; 
 
 const CategoryRow = ({ categoryRow, questionId }: { categoryRow: ICategoryRow, questionId: string | null }) => {
 

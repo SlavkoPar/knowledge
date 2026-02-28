@@ -15,7 +15,7 @@ import GroupList from "@/groups/components/GroupList";
 import EditGroup from "@/groups/components/EditGroup";
 import ViewGroup from "@/groups/components/ViewGroup";
 import AnswerList from './answers/AnswerList';
-import AddGroup from './AddGroup';
+import AddGroup from './AddGroup'; 
 
 const GroupRow = ({ groupRow, answerId }: { groupRow: IGroupRow, answerId: string | null }) => {
 

@@ -69,7 +69,7 @@ const QuestionRow = ({ questionRow, isSelected }: { questionRow: IQuestionRow, i
                             ? await editQuestion(questionRow)
                             : await viewQuestion(questionRow);
                         break;
-                }
+                } 
                 // hoverRef!.current?
                 const el = document.getElementById(`QuestionRow${id}`);
                 el?.scrollIntoView({ behavior: 'smooth', block: 'end' });
