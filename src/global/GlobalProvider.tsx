@@ -306,26 +306,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     });
   }
 
-  /*
-  const OpenDB = useCallback(async (): Promise<any> => {
-    try {
-      // await loadAndCacheAllCategoryRows();
-      // await loadAndCacheAllGroupRows();
-      //console.log('*** loadAndCacheAllCategoryRows')
-      // return true;
-    }
-    catch (err: any) {
-      console.log(err);
-      dispatch({
-        type: GlobalActionTypes.SET_ERROR,
-        payload: {
-          error: new Error("Greska Teska")
-        }
-      });
-      return false;
-    }
-  }, []);
-  */
 
   // differs from CategoryProvider, here we don't dispatch
   const getQuestion = useCallback(

@@ -1,5 +1,5 @@
 import { type ActionMap, type IWhoWhen, type IRecord, Dto2WhoWhen, WhoWhen2Dto, type IWhoWhenDto, type IDtoKey } from '@/global/types';
-import type { IGroupRow } from '@/groups/types';
+import type { IAnswerRow, IGroupRow } from '@/groups/types';
 
 export enum FormMode {
 	None = 'None',
@@ -613,7 +613,7 @@ export interface ICategoriesContext {
 	getSubCats: (categoryId: string | null) => Promise<any>;
 	addQuestion: (categoryKey: ICategoryKey, isExpanded: boolean) => Promise<any>;
 	cancelAddQuestion: () => Promise<any>;
-	getAnswerCount: () => Promise<number>;
+	getAnswerCount: () => Promise<IAnswerRow[]>;
 	createQuestion: (question: IQuestion, fromModal: boolean) => Promise<any>;
 	viewQuestion: (questionRow: IQuestionRow) => void;
 	editQuestion: (questionRow: IQuestionRow) => void;

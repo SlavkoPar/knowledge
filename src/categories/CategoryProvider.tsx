@@ -33,7 +33,7 @@ import {
 
 import { CategoryReducer, initialQuestion, initialCategory } from '@/categories/CategoryReducer';
 import { type IAssignedAnswer, AssignedAnswerDto } from '@/categories/types';
-import type { IGroupRow } from '@/groups/types';
+import { AnswerRow, type IAnswerRow, type IAnswerRowDto, type IAnswerRowDtosEx, type IGroupRow } from '@/groups/types';
 
 const CategoriesContext = createContext<ICategoriesContext>({} as any);
 const CategoryDispatchContext = createContext<Dispatch<any>>(() => null);
@@ -1178,21 +1178,36 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   }, [cancelAddCategory, cancelAddQuestion, formMode, getQuestion]);
 
 
-  const getAnswerCount = useCallback(async (): Promise<number> => {
-    return new Promise(async (resolve) => {
-      try {
-        const url = `${KnowledgeAPI.endpointAnswer}/${workspace}`;
-        await Execute("GET", url)
-          .then((count: number) => {
-            resolve(count);
-          });
-      }
-      catch (error: any) {
-        console.log('error', error);
-        dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
-      }
-    });
-  }, [Execute, KnowledgeAPI.endpointAnswer, workspace]);
+  const getAnswerCount = useCallback(async (): Promise<IAnswerRow[]> => {
+      return new Promise(async (resolve) => {
+        try {
+          console.time();
+          const url = `${KnowledgeAPI.endpointAnswer}/${workspace}`
+          await Execute("GET", url).then((answerRowDtosEx: IAnswerRowDtosEx) => {
+            const { answerRowDtos: dtos, msg } = answerRowDtosEx;
+            console.log('ANSWERSSSSS', { answerRowDtos: dtos }, url);
+            console.timeEnd();
+            if (dtos) {
+              const list: IAnswerRow[] = dtos.map((rowDto: IAnswerRowDto) => {
+                const answerRow = new AnswerRow(rowDto).answerRow;
+                return answerRow;
+              })
+              resolve(list);
+            }
+            else {
+              // reject()
+              console.log('no group rows in search' + msg)
+            }
+          })
+        }
+        catch (error: any) {
+          console.log(error)
+          //dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+        }
+
+
+      });
+    }, [Execute, KnowledgeAPI.endpointAnswer, workspace]);
 
     // action: 'Assign' or 'UnAssign'
     const assignQuestionAnswer = useCallback(

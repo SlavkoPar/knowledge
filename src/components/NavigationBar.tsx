@@ -20,7 +20,7 @@ export const NavigationBar = () => {
         activeAccount = instance.getActiveAccount();
         console.log('activeAccount.idTokenClaims.email', activeAccount?.idTokenClaims?.email)
         console.log(activeAccount ? activeAccount.name : 'Unknown')
-        console.log({activeAccount})
+        console.log({ activeAccount })
     }
 
     const request = {
@@ -54,28 +54,28 @@ export const NavigationBar = () => {
 
     const handleSignUp = async () => {
         await instance.loginPopup({
-          ...loginRequest,
-          prompt: 'create',
-          redirectUri: '/redirect',
+            ...loginRequest,
+            prompt: 'create',
+            redirectUri: '/redirect',
         })
-          .then(response => {
-            // Handle the successful login response here
-            console.log("Login success:", response.account);
-            const { environment, tenantId, name, username } = response.account;
-            const wsDto: IWorkspaceDto = {
-              Workspace: '',
-              TopId: '',
-              TenantId: tenantId!,
-              Environment: environment,
-              DisplayName: name!,
-              Email: username
-            };
-            // Optional: set the active account
-            localStorage.setItem('createWS', JSON.stringify(wsDto));
-          })
-          .catch((error) => 
-            console.log(error));
-      }
+            .then(response => {
+                // Handle the successful login response here
+                console.log("Login success:", response.account);
+                const { environment, tenantId, name, username } = response.account;
+                const wsDto: IWorkspaceDto = {
+                    Workspace: '',
+                    TopId: '',
+                    TenantId: tenantId!,
+                    Environment: environment,
+                    DisplayName: name!,
+                    Email: username
+                };
+                // Optional: set the active account
+                localStorage.setItem('createWS', JSON.stringify(wsDto));
+            })
+            .catch((error) =>
+                console.log(error));
+    }
 
     const handleLoginPopup = async () => {
         /**
@@ -186,15 +186,15 @@ export const NavigationBar = () => {
                     </a>
                     <div className="collapse navbar-collapse justify-content-end">
                         <DropdownButton variant="secondary" className="ml-auto" drop="start" title="Sign">
-                            <Dropdown.Item as="button" onClick={handleSignUp}>
-                                Create your Workspace
-                            </Dropdown.Item>
-                            <DropdownDivider className='mx-2' />
                             <Dropdown.Item as="button" onClick={handleLoginPopup}>
                                 Sign in using Popup
                             </Dropdown.Item>
                             <Dropdown.Item as="button" onClick={handleLoginRedirect}>
                                 Sign in using Redirect
+                            </Dropdown.Item>
+                            <DropdownDivider className='mx-2' />
+                            <Dropdown.Item as="button" onClick={handleSignUp}>
+                                Create your Workspace
                             </Dropdown.Item>
                         </DropdownButton>
                     </div>

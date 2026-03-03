@@ -5,7 +5,7 @@ import { useCategoryContext } from "@/categories/CategoryProvider";
 import { useGlobalContext } from "@/global/GlobalProvider";
 import AssignedAnswer from "./AssignedAnswer";
 //import { AutoSuggestAnswers } from '@/global/Components/AutoSuggests/AutoSuggestAnswers';
-import { type IAnswer } from "@/groups/types";
+import { type IAnswer, type IAnswerRow } from "@/groups/types";
 import AddAnswer from "@/categories/components/questions/AddAnswer"
 
 const AutoSuggestAnswers = lazy(() =>
@@ -27,6 +27,21 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
     const [showAdd, setShowAdd] = useState(false);
     const handleClose = () => setShowAdd(false);
 
+    const [lessThan15, setLessThan15] = useState(false);
+    const [lessThan15Answers, setLessThan15Answers] = useState<IAnswerRow[]>([]);
+
+    const myGetAnswerCount = async () => {
+        const alreadyAssignedIds = assignedAnswers.map(a => a.id);
+        const answers = await getAnswerCount();
+        return answers.filter((a: IAnswerRow) => !alreadyAssignedIds.includes(a.id));
+    }
+
+    const mySearchAnswers = async (filter: string, count: number) => {
+        const alreadyAssignedIds = assignedAnswers.map(a => a.id);
+        const answers = await searchAnswers(filter, count, questionKey);
+        return answers.filter((a: IAnswerRow) => !alreadyAssignedIds.includes(a.id));
+    }
+
     const closeModal = () => {
         handleClose();
     }
@@ -36,6 +51,8 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
     const { allGroupRows } = state;
     const [showAssign, setShowAssign] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    //const alreadyAssignedIds = assignedAnswers.map(a => a.id);
+
 
     const onSelectAnswer = async (assignedAnswerKey: IAssignedAnswerKey) => {
         // TODO in next version do not update MongoDB immediately, wait until user presses Save
@@ -57,25 +74,24 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
         //     nickName: globalState.authUser.nickName
         // }
         await assignQuestionAnswer('UnAssign', questionKey, assignedAnswerKey);
+        setErrorMsg('');
 
         // User could have canceled question update
         //setShowAssign(false);
     }
 
     const assignAnswer = async () => {
-        const count = await getAnswerCount();
-        if (count === 0) {
-            setErrorMsg('No answer available to assign. Please navigate to Answers and create an answer first.');
+        const list: IAnswerRow[] = await getAnswerCount();
+        const alreadyAssignedIds = assignedAnswers.map(a => a.id);
+        const listUnassigned = list.filter(a => !alreadyAssignedIds.includes(a.id));
+        if (listUnassigned.length === 0) {
+            setErrorMsg('No answers available to assign. Please navigate to Answers and create ones.');
             return;
         }
+        setLessThan15Answers(listUnassigned);
+        setLessThan15(true);
         setShowAssign(true);
     }
-
-    // useEffect(() => {
-    //     if (!allGroupRowsLoaded) {
-    //         loadAndCacheAllGroupRows();
-    //     }
-    // }, [allGroupRowsLoaded, loadAndCacheAllGroupRows])
 
     return (
         <div className={'mx-0 my-0 px-1 py-1 border border-2 rounded-2 border-info bg-info'} >
@@ -171,10 +187,12 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
                 <Modal.Body style={{ height: '40vh', width: '50vw' }} className="answers">
                     <Suspense fallback={<div>Loading...</div>}>
                         <AutoSuggestAnswers
-                            tekst={'tekst'}
+                            tekst={lessThan15 ? '' : 'tekst'}
                             onSelectAnswer={onSelectAnswer}
                             allGroupRows={allGroupRows}
-                            searchAnswers={searchAnswers}
+                            lessThan15Answers={lessThan15Answers}
+                            getAnswerCount={myGetAnswerCount}
+                            searchAnswers={(val: string, count: number) => mySearchAnswers(val, count)}
                         />
                     </Suspense>
                 </Modal.Body>
