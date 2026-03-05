@@ -184,7 +184,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       else {
         dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error('Zajeb allCategoryRows') } });
       }
-      resolve(allCategoryRows);
+      //resolve(allCategoryRows);
     })
   }, [loadAllCategoryRowsGlobal]);
 
@@ -200,7 +200,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       else {
         dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error('Zajeb allGroupRows') } });
       }
-      resolve(allGroupRows);
+      //resolve(allGroupRows);
     })
   }, [loadAllGroupRowsGlobal]);
 
@@ -222,9 +222,10 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     (async () => {
       //if (allCategoryRowsLoaded === undefined) {
       await loadAllCategoryRows();
+      await loadAllGroupRows();
       //}
     })()
-  }, [loadAllCategoryRows]);
+  }, [loadAllCategoryRows, loadAllGroupRows]);
 
   const getSubCats = useCallback(async (categoryId: string | null) => {
     try {

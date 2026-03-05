@@ -202,6 +202,7 @@ export interface IGlobalContext {
 	loadAllGroupRowsGlobal: () => Promise<Map<string, IGroupRow> | null>;
 	searchQuestions: (filter: string, count: number) => Promise<IQuestionRow[]>;
 	getQuestion: (questionKey: IQuestionKey) => Promise<IQuestionEx>;
+	createAnswer: (answer: IAnswer) => Promise<{answer: IAnswer|null, msg: string}>;
 	searchAnswers: (filter: string, count: number, questionKey?: IQuestionKey) => Promise<IAnswerRow[]>;
 	getAnswer: (answerKey: IAnswerKey) => Promise<IAnswer | null>;
 	createWorkspace: (wsDto: IWorkspaceDto) => Promise<void>;

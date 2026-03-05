@@ -1,11 +1,11 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Button, ListGroup, Modal } from "react-bootstrap";
 import type { IAssignedAnswer, IAssignedAnswerKey, IQuestionKey } from "@/categories/types";
 import { useCategoryContext } from "@/categories/CategoryProvider";
 import { useGlobalContext } from "@/global/GlobalProvider";
 import AssignedAnswer from "./AssignedAnswer";
 //import { AutoSuggestAnswers } from '@/global/Components/AutoSuggests/AutoSuggestAnswers';
-import { type IAnswer, type IAnswerRow } from "@/groups/types";
+import { type IAnswer, type IAnswerRow, type IGroupRow } from "@/groups/types";
 import AddAnswer from "@/categories/components/questions/AddAnswer"
 
 const AutoSuggestAnswers = lazy(() =>
@@ -47,8 +47,8 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
     }
 
     const { state, assignQuestionAnswer, getAnswerCount } = useCategoryContext();
-
     const { allGroupRows } = state;
+
     const [showAssign, setShowAssign] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     //const alreadyAssignedIds = assignedAnswers.map(a => a.id);
@@ -80,18 +80,32 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
         //setShowAssign(false);
     }
 
+
     const assignAnswer = async () => {
         const list: IAnswerRow[] = await getAnswerCount();
         const alreadyAssignedIds = assignedAnswers.map(a => a.id);
         const listUnassigned = list.filter(a => !alreadyAssignedIds.includes(a.id));
         if (listUnassigned.length === 0) {
-            setErrorMsg('No answers available to assign. Please navigate to Answers and create ones.');
+            setErrorMsg('No answers available to assign. Navigate to Answers and create ones.');
             return;
         }
+        setShowAssign(true);
         setLessThan15Answers(listUnassigned);
         setLessThan15(true);
-        setShowAssign(true);
     }
+
+    const addNewAnswer = async () => {
+        const list: IAnswerRow[] = await getAnswerCount();
+        if (list.length === 0) {
+            setErrorMsg('Please, Navigate to Answers and create ones.');
+            return;
+        }
+        setShowAdd(true);
+    }
+
+
+    // if(allGroupRows.size === 0)
+    //     return null;
 
     return (
         <div className={'mx-0 my-0 px-1 py-1 border border-2 rounded-2 border-info bg-info'} >
@@ -133,15 +147,12 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
                             style={{ border: '1px solid silver', fontSize: '12px' }}
                             variant={variant}
                             disabled={isDisabled}
-                            onClick={
-                                async (e) => {
-                                    // if (!allGroupRowsGlobalLoaded) {
-                                    //     await loadAndCacheAllGroupRows();
-                                    // }
-                                    setShowAdd(true);
-                                    e.preventDefault()
-                                }
-                            }>
+                            onClick={(e) => {
+                                addNewAnswer();
+                                e.preventDefault();
+                            }
+                            }
+                        >
                             Add a new answer
                         </Button>
 
@@ -162,12 +173,12 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
                 contentClassName={`${isDarkMode ? "bg-info bg-gradient" : ""}`}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>{questionTitle}</Modal.Title>
+                    <Modal.Title><label>Question:</label> {questionTitle}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <AddAnswer
-                        inLine={true}
                         closeModal={closeModal}
+                        showCloseButton={false}
                         onAnswerCreated={onAnswerCreated}
                     />
                 </Modal.Body>
@@ -202,3 +213,4 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
 };
 
 export default AssignedAnswers;
+

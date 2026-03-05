@@ -25,11 +25,12 @@ import type {
 
 import { CategoryRow, QuestionKey, Question, QuestionRow } from "@/categories/types";
 
-import type {
-  IAnswer, IAnswerDto, IAnswerKey, IAnswerRow, IAnswerRowDto, IAnswerRowDtosEx, IGroupRow, IGroupRowDto
-} from "@/groups/types";
+import {
+  AnswerRow,
+  GroupRow,
+  type IAnswer, type IAnswerDto, type IAnswerDtoEx, type IAnswerKey, type IAnswerRow, type IAnswerRowDto, type IAnswerRowDtosEx, type IGroupRow, type IGroupRowDto,
+  Answer, AnswerDto} from "@/groups/types";
 
-import { Answer, AnswerRow, GroupRow } from "@/groups/types";
 
 // import { escapeRegexCharacters } from 'common/utilities'
 
@@ -82,7 +83,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   // we reset changes, and again we use initialGlobalState
   // so, don't use globalDispatch inside of inner Provider, like Categories Provider
   const [globalState, dispatch] = useReducer(GlobalReducer, initGlobalState);
-  const { KnowledgeAPI, workspace, loading } = globalState;
+  const { KnowledgeAPI, workspace, loading, authUser } = globalState;
 
   console.log('--------> GlobalProvider')
 
@@ -190,7 +191,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
               cat.titlesUpTheTree = titlesUpTheTree;
               allCategoryRows.set(id, cat);
             })
-            resolve(allCategoryRows)
+            resolve(allCategoryRows); // ChatBotDlg is not under CategoryContext
             // with no dispatch
           });
       }
@@ -242,6 +243,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     });
   }, [KnowledgeAPI.endpointGroupRow, workspace]);
 
+  
+
   //const searchQuestions = useCallback(async (execute: (method: string, endpoint: string) => Promise<any>, filter: string, count: number): Promise<any> => {
   const searchQuestions = async (filter: string, count: number): Promise<any> => {
     return new Promise(async (resolve) => {
@@ -274,6 +277,41 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   }
   //}, []);
 
+const createAnswer = useCallback(
+    async (answer: IAnswer): Promise<{answer: IAnswer|null, msg: string}> => {
+      const { topId } = answer; // title, modified, 
+      // TODO
+      dispatch({ type: GlobalActionTypes.SET_LOADING, payload: {} });
+      try {
+        answer.created!.nickName = authUser.nickName;
+        const answerDto = new AnswerDto(answer, workspace).answerDto;
+        const url = `${KnowledgeAPI.endpointAnswer}`;
+        console.time()
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> createAnswer', answerDto)
+        await Execute("POST", url, answerDto)
+          .then(async (answerDtoEx: IAnswerDtoEx | null) => {
+            console.timeEnd();
+            if (answerDtoEx) {
+              console.log("::::::::::::::::::::", { answerDtoEx });
+              const { answerDto, msg } = answerDtoEx;
+              if (answerDto) {
+                const answer = new Answer(answerDto).answer;
+                answer.topId = topId;
+                console.log('Answer successfully created')
+                return {answer, msg: ''};
+              }
+              else {  
+                return {answer: null, msg};
+              }  
+            }
+            return {answer: null, msg: 'Unknown error'};
+          });
+      }
+      catch (error: any) {
+         return {answer: null, msg: error.message?? 'Unknown error'};
+      }
+      return {answer: null, msg: 'Unknown error'};
+    }, [KnowledgeAPI.endpointAnswer, workspace, authUser.nickName, dispatch]);
 
   const searchAnswers = async (filter: string, count: number, questionKey?: IQuestionKey): Promise<IAnswerRow[]> => {
     //const { allGroupRows } = globalState;
@@ -724,7 +762,7 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
       loadAllCategoryRowsGlobal,
       loadAllGroupRowsGlobal,
       searchQuestions, getQuestion,
-      searchAnswers, getAnswer,
+      createAnswer, searchAnswers, getAnswer,
       setNodesReloaded,
       createWorkspace, getWorkspace,
       addHistory, getAnswersRated, addHistoryFilter,

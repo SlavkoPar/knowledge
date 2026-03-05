@@ -1,40 +1,37 @@
-import { type ChangeEvent, type FormEvent, useState, useEffect, useRef } from "react";
-import { useDebounce } from "@uidotdev/usehooks";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Form, CloseButton, Row, Col, Stack } from "react-bootstrap";
-import { CreatedModifiedForm } from "@/common/CreateModifiedForm"
 import { FormButtons } from "@/common/FormButtons"
 import type { IGroupRow, IAnswer, IAnswerFormProps } from "@/groups/types";
 import { ActionTypes } from "@/groups/types";
-import { FormMode } from "@/groups/types";
 
 import { Select } from '@/common/components/Select';
 import { sourceOptions, statusOptions } from '@/common/Options';
-import GrpList from '@/global/Components/SelectGroup/GrpList'
+import SelectGrp from '@/global/Components/SelectGroup/SelectGrp'
 
-import { useGroupContext, useGroupDispatch } from "@/groups/GroupProvider";
+import { useCategoryContext, useCategoryDispatch } from "@/categories/CategoryProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
+import { type INavigatorMethods } from "@/global/Components/SelectGroup/types";
 
 const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0, closeModal }: IAnswerFormProps) => {
 
   // const { globalState } = useGlobalContext();
   // const { isDarkMode, variant, bg } = globalState;
 
-  const { state, onAnswerTitleChanged } = useGroupContext();
-  let { formMode } = state;
+  const { state } = useCategoryContext();
+  const { allGroupRows } = state;
 
-  const viewing = formMode === FormMode.ViewingAnswer;
-  const editing = formMode === FormMode.EditingAnswer;
-  const adding = formMode === FormMode.AddingAnswer;
 
-  const isDisabled = viewing;
+  const setRefElement = useCallback((node: INavigatorMethods | null) => {
+    node?.resetNavigator();
+  }, []);
 
-  const { topId, parentId, id, title: qTitle } = answer;
+  //const { topId, parentId, id, title: qTitle } = answer;
   //const answerKey = new AnswerKey(answer).answerKey;
   // const groupKey: IGroupKey = { topId, parentId, id: parentId! }; // proveri
 
-  const dispatch = useGroupDispatch();
+  const dispatch = useCategoryDispatch();
 
   const closeForm = () => {
     if (closeModal) {
@@ -54,10 +51,6 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
     }
   }
 
-  const [searchTerm, setSearchTerm] = useState(qTitle);
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
-
   // eslint-disable-next-line no-self-compare
   const nameRef = useRef<HTMLTextAreaElement>(null);
 
@@ -72,39 +65,21 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
       // console.log('AnswerForm.onSubmit', JSON.stringify(values, null, 2))
       submitForm(values)
       //props.handleClose(false);
-      setSearchTerm(values.title);
     }
   });
 
-  useEffect(() => {
-    const goBre = async () => {
-      // console.log('QuestionForm.useEffect - onQuestionTitleChanged', { debouncedSearchTerm, title: formik.values.title });
-      if (/*debouncedSearchTerm &&*/ formik.values.title !== debouncedSearchTerm) {
-        /*await*/ onAnswerTitleChanged(topId, parentId, id, formik.values.title);
-      }
-    };
-    goBre();
-  }, [debouncedSearchTerm, formik.values.title, onAnswerTitleChanged, topId, id]);
+  // useEffect(() => {
+  //   nameRef.current!.focus();
+  //   if (source !== 0) {
+  //     formik.setFieldValue('source', source)
+  //   }
+  // }, [source])
 
-  useEffect(() => {
+  const setParentId = (grp: IGroupRow) => {
+    formik.setFieldValue('parentId', grp.id);
+    formik.setFieldValue('groupTitle', grp.title);
     nameRef.current!.focus();
-    if (source !== 0) {
-      formik.setFieldValue('source', source)
-    }
-  }, [formik, nameRef, source])
-
-
-  const handleChangeTitle = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    formik.handleChange(event);
-    const value = event.target.value;
-    //if (value !== debouncedTitle)
-    //setTitle(value);
-    setSearchTerm(value);
-  };
-
-  const setParentId = (cat: IGroupRow) => {
-    formik.setFieldValue('parentId', cat.id);
-    formik.setFieldValue('groupTitle', cat.title);
+    document.getElementById('dropdown-basic')?.click();
   }
 
   //useEffect(() => {
@@ -112,11 +87,11 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
   //}, [qTitle]);
 
   return (
-    <div className="form-wrapper px-3 py-1 my-0 my-1 w-100 answer-form" >
+    <div className="ffform-wrapper px-3 py-1 my-0 my-1 w-100 answer-form" >
       {/* data-bs-theme={`${isDarkMode ? 'dark' : 'light'}`} */}
       {showCloseButton && <CloseButton onClick={closeForm} className="float-end" />}
       <Row className='text-center'>
-        <Form.Label>Answer  {viewing ? 'Viewing' : editing ? 'Editing' : 'Adding'}</Form.Label>
+        <Form.Label>New Answer</Form.Label>
       </Row>
       <Form onSubmit={formik.handleSubmit} className="answer-form">
 
@@ -125,17 +100,20 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
           <div className="p-1">
             <Form.Group controlId="parentId" className="group-select form-select-sm w-90">
               <Dropdown>
-                <Dropdown.Toggle variant="light" id="dropdown-basic" className="px-2 py-0 text-primary border" disabled={isDisabled}>
+                <Dropdown.Toggle variant="light" id="dropdown-basic" className="px-2 py-0 text-primary border">
                   <span className="text-wrap me-1">{formik.values.groupTitle}</span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="p-0 border" >
                   <Dropdown.Item className="p-0 m-0 rounded-3">
-                    <GrpList
-                      selId={formik.values.parentId}
-                      groupKey={null}  // TODO {groupKey}
-                      level={1}
+                    <SelectGrp
+                      ref={(el) => setRefElement(el)}
+                      allGroupRows={allGroupRows}
                       setParentId={setParentId}
                     />
+                    {/* // selId={formik.values.parentId}
+                    // groupKey={null}  // TODO {groupKey}
+                    // level={1}
+                    // setParentId={setParentId} */}
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
@@ -152,7 +130,6 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
                 value={formik.values.parentId ? formik.values.parentId : ''}
                 placeholder='Group'
                 className="text-primary w-100"
-                disabled={isDisabled}
                 hidden={true}
               />
               <Form.Text className="text-danger">
@@ -170,8 +147,8 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
             as="textarea"
             name="title"
             placeholder={formik.values.title === "new Answer" ? "new Answer" : "answer text"}
+            onChange={formik.handleChange}
             ref={nameRef}
-            onChange={handleChangeTitle}
             // onBlur={formik.handleBlur}
             // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
             //   if (isEdit && formik.initialValues.title !== formik.values.title)
@@ -180,7 +157,6 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
             value={formik.values.title}
             rows={3}
             className="text-primary w-100"
-            disabled={isDisabled}
           />
           <Form.Text className="text-danger">
             {formik.touched.title && formik.errors.title ? (
@@ -203,7 +179,6 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
                   // .then(() => { if (editing) formik.submitForm() })
                 }}
                 value={formik.values.source}
-                disabled={isDisabled}
                 classes="text-primary"
               />
               <Form.Text className="text-danger">
@@ -227,7 +202,6 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
                   //.then(() => { if (editing) formik.submitForm() })
                 }}
                 value={formik.values.status}
-                disabled={isDisabled}
                 classes="text-primary"
               />
               <Form.Text className="text-danger">
@@ -239,22 +213,14 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
           </Col>
         </Row>
 
-        {(viewing || editing) &&
-          <div className="my-1">
-            <CreatedModifiedForm
-              created={answer.created}
-              modified={answer.modified}
-              classes="text-primary"
-            />
-          </div>
-        }
-        {((formik.dirty && editing) || adding) &&
+
+        {/* {formik.dirty && ( */}
           <FormButtons
             cancelForm={cancelForm}
             handleSubmit={formik.handleSubmit}
             title={children}
           />
-        }
+        {/* )} */}
 
         {state.error && <div className="text-danger">{state.error.message}</div>}
 

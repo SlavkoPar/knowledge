@@ -11,3 +11,29 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.accordion-header.hide-icon>button.accordion-button::after {
+  display: none;
+  padding: 0rem 0.2rem !important;
+  padding-right: 0 !important;
+}
+
+.accordion-button {
+  padding: 0.2rem;
+  padding-right: 0;
+  /* background-color: var(--bs-accordion-btn-bg);
+    border: 0;
+    border-radius: 0;
+    overflow-anchor: none;
+    transition: var(--bs-accordion-transition); */
+}
+
+.accordion-body {
+  padding: 0;
+  padding-left: 0.5rem;
+  /* background-color: var(--bs-accordion-btn-bg);
+    border: 0;
+    border-radius: 0;
+    overflow-anchor: none;
+    transition: var(--bs-accordion-transition); */
+}

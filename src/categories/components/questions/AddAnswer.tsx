@@ -1,51 +1,77 @@
-//import AnswerForm from "groups/components/answers/AnswerForm"; PRE
-import { type IAnswer } from "@/groups/types";
+import { useCategoryContext } from '@/categories/CategoryProvider'
+import { useGlobalContext } from '@/global/GlobalProvider';
+import { initialAnswer } from '@/groups/GroupReducer';
+
+import AnswerForm from "@/categories/components/questions/AnswerForm";
+import { type IAnswer, type IGroupRow } from "@/groups/types";
 
 interface IProps {
-    inLine: boolean,
-    closeModal: () => void,
-    onAnswerCreated: (answer: IAnswer) => void
+    closeModal?: () => void;
+    showCloseButton?: boolean;
+    source?: number;
+    setError?: (msg: string) => void;
+    onAnswerCreated?: (answer: IAnswer) => void;
 }
 
-// const Add = ({ kind, answer, inLine } : { kind: IKind, answer: IAnswer, inLine: boolean}) => {
-const AddAnswer = ({ /*closeModal, onAnswerCreated*/ }: IProps) => {
-    // const globalState = useGlobalState();
-    //const { nickName } = globalState.authUser;
-    //const answer={...initialAnswer};
+const AddAnswer = ({ onAnswerCreated, closeModal, showCloseButton, source, setError }: IProps) => {
 
-    // const { createAnswer } = useCategoryContext();
-    // const [formValues] = useState(answer)
+    const { createAnswer } = useGlobalContext();
+    const { state } = useCategoryContext(); //, 
+    const { activeQuestion } = state;
+    const { topId } = activeQuestion!;
+    const activeAnswer: IAnswer = { ...initialAnswer };
 
-    /*
-    const submitAnswer = async (answerObject: IAnswer) => {
-        //delete answerObject.id;  PROVERI
-        const object: IAnswer = {
+    if (!closeModal) {
+        // const cat = state.topGroupRows.find(c => c.id === answerRow.parentId)
+        // answerRow.groupTitle = cat ? cat.title : '';
+    }
+
+    const cancelAdd = async () => {
+        closeModal!();
+    }
+
+    const submitForm = async (answerObject: IAnswer) => {
+        const newAnswer: IAnswer = {
             ...answerObject,
-            //_id: undefined,
+            topId: topId!,
             created: {
                 time: new Date(),
-                nickName: nickName
+                nickName: ''
+            },
+            modified: undefined
+        }
+        const { answer, msg } = await createAnswer(newAnswer);
+        if (answer) {
+            onAnswerCreated!(answer);
+            if (closeModal) {
+                closeModal();
+                //dispatch({ type: ActionTypes.CLEAN_TREE, payload: { id: q.parentId } })
+                //await openNode({ topId: '', id: q.parentId, answerId: q.id });
             }
         }
-        //const answer = await createAnswer(object);
-        //TODO vrati ovo
-        onAnswerCreated(answer)
-
+        else {
+            setError!(msg);
+        }
     }
-    */
 
+    if (!activeAnswer)
+        return null;
+
+    // activeAnswer.title += odakle
     return (
-        <span>Posle</span>
-        // <AnswerForm
-        //     answer={formValues}
-        //     mode={FormMode.adding}
-        //     submitForm={submitAnswer}
-        //     closeModal={closeModal}
-        //     showCloseButton={true}
-        // >
-        //     Create Answer
-        // </AnswerForm>
+        <AnswerForm
+            answer={activeAnswer!}
+            showCloseButton={showCloseButton ?? true}
+            source={source ?? 0}
+            closeModal={cancelAdd}
+            //formMode={FormMode.AddingAnswer}
+            submitForm={submitForm}
+        >
+            Create Answer
+        </AnswerForm >
     )
 }
 
 export default AddAnswer
+
+
