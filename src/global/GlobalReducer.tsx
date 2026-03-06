@@ -49,7 +49,7 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
         case GlobalActionTypes.SET_LOADING:
             return {
                 ...state,
-                loading: true
+                loading: action.payload.loading
             }
 
         case GlobalActionTypes.SET_STATE: {

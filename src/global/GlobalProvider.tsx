@@ -294,7 +294,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     async (answer: IAnswer): Promise<{ answer: IAnswer | null, msg: string }> => {
       const { topId } = answer; // title, modified, 
       // TODO
-      //dispatch({ type: GlobalActionTypes.SET_LOADING, payload: {} });
+      dispatch({ type: GlobalActionTypes.SET_LOADING, payload: {loading: true} });
       try {
         answer.created!.nickName = authUser.nickName;
         const answerDto = new AnswerDto(answer, workspace).answerDto;
@@ -303,6 +303,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> createAnswer', answerDto)
         const result = await Execute("POST", url, answerDto)
           .then(async (answerDtoEx: IAnswerDtoEx | Error) => {
+            dispatch({ type: GlobalActionTypes.SET_LOADING, payload: {loading: false} });
             console.timeEnd();
             if (answerDtoEx instanceof Error) {
               return { answer: null, msg: answerDtoEx.message };

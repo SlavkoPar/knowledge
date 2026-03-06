@@ -269,6 +269,7 @@ export type ActionMap<M extends Record<string, any>> = {
 
 export type GlobalPayload = {
 	[GlobalActionTypes.SET_LOADING]: {
+		loading: boolean;
 	};
 
 	[GlobalActionTypes.SET_STATE]: {
