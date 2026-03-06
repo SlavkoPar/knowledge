@@ -124,7 +124,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         console.log('------------------>>> Execute', method, endpoint, { response });
         if (response.status === 401) {
           dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error: new Error(`Unauthorized`) } });
-          return null;
+          return 'Unauthorized';
         }
         else if (response.ok) {
           if ((response.status === 200 || response.status === 201)) {
@@ -295,8 +295,11 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         console.time()
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> createAnswer', answerDto)
         const result = await Execute("POST", url, answerDto)
-          .then(async (answerDtoEx: IAnswerDtoEx | null) => {
+          .then(async (answerDtoEx: IAnswerDtoEx | string) => {
             console.timeEnd();
+            if (typeof answerDtoEx === 'string') {
+              return { answer: null, msg: answerDtoEx };
+            }
             if (answerDtoEx) {
               console.log("::::::::::::::::::::", { answerDtoEx });
               const { answerDto, msg } = answerDtoEx;
