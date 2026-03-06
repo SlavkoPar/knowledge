@@ -306,7 +306,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
             dispatch({ type: GlobalActionTypes.SET_LOADING, payload: {loading: false} });
             console.timeEnd();
             if (response instanceof Error) {
-              console.log('Error creating answer response:', response);
+              console.log('Error creating answer response:', response.message);
               return { answer: null, msg: response.message };
             }
             if (response) {
