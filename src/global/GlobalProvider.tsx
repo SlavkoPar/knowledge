@@ -302,15 +302,16 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         console.time()
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> createAnswer', answerDto)
         const result = await Execute("POST", url, answerDto)
-          .then(async (answerDtoEx: IAnswerDtoEx | Error) => {
+          .then(async (response: IAnswerDtoEx | Error) => {
             dispatch({ type: GlobalActionTypes.SET_LOADING, payload: {loading: false} });
             console.timeEnd();
-            if (answerDtoEx instanceof Error) {
-              return { answer: null, msg: answerDtoEx.message };
+            if (response instanceof Error) {
+              console.log('Error creating answer response:', response);
+              return { answer: null, msg: response.message };
             }
-            if (answerDtoEx) {
-              console.log("::::::::::::::::::::", { answerDtoEx });
-              const { answerDto, msg } = answerDtoEx;
+            if (response) {
+              console.log("::::::::::::::::::::", { answerDtoEx: response });
+              const { answerDto, msg } = response;
               if (answerDto) {
                 const answer = new Answer(answerDto).answer;
                 answer.topId = topId;

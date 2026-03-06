@@ -54,7 +54,7 @@ const AddAnswer = ({ onAnswerCreated, closeModal, showCloseButton, source }: IPr
             }
         }
         else {
-            setErrorMsg!(msg);
+            setErrorMsg(msg);
         }
     }
 
