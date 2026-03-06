@@ -180,7 +180,6 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
                         closeModal={closeModal}
                         showCloseButton={false}
                         onAnswerCreated={onAnswerCreated}
-                        setError={setErrorMsg}
                     />
                 </Modal.Body>
             </Modal>
