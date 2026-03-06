@@ -6,7 +6,7 @@ import { useGlobalContext } from "@/global/GlobalProvider";
 import AssignedAnswer from "./AssignedAnswer";
 //import { AutoSuggestAnswers } from '@/global/Components/AutoSuggests/AutoSuggestAnswers';
 import { type IAnswer, type IAnswerRow } from "@/groups/types";
-import AddAnswer from "@/categories/components/questions/AddAnswer"
+import AddAnswer from "@/categories/components/answers/AddAnswer"
 
 const AutoSuggestAnswers = lazy(() =>
     import("@/global/Components/AutoSuggests/AutoSuggestAnswers").then((module) => ({ default: module.AutoSuggestAnswers }))
@@ -180,6 +180,7 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
                         closeModal={closeModal}
                         showCloseButton={false}
                         onAnswerCreated={onAnswerCreated}
+                        setError={setErrorMsg}
                     />
                 </Modal.Body>
             </Modal>

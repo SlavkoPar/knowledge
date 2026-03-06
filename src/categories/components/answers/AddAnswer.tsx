@@ -2,7 +2,7 @@ import { useCategoryContext } from '@/categories/CategoryProvider'
 import { useGlobalContext } from '@/global/GlobalProvider';
 import { initialAnswer } from '@/groups/GroupReducer';
 
-import AnswerForm from "@/categories/components/questions/AnswerForm";
+import AnswerForm from "@/categories/components/answers/AnswerForm";
 import { type IAnswer } from "@/groups/types";
 
 interface IProps {

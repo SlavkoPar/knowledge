@@ -15,7 +15,7 @@ import CatList from '@/global/Components/SelectCategory/CatList'
 
 import { useCategoryContext, useCategoryDispatch } from "@/categories/CategoryProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
-import AssignedAnswers from './AssignedAnswers';
+import AssignedAnswers from '../answers/AssignedAnswers';
 import RelatedFilters from './RelatedFilters';
 
 const QuestionForm = ({ question, submitForm, children, showCloseButton, source = 0, closeModal }: IQuestionFormProps) => {
