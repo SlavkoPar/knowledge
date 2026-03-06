@@ -281,14 +281,14 @@ const createAnswer = useCallback(
     async (answer: IAnswer): Promise<{answer: IAnswer|null, msg: string}> => {
       const { topId } = answer; // title, modified, 
       // TODO
-      dispatch({ type: GlobalActionTypes.SET_LOADING, payload: {} });
+      //dispatch({ type: GlobalActionTypes.SET_LOADING, payload: {} });
       try {
         answer.created!.nickName = authUser.nickName;
         const answerDto = new AnswerDto(answer, workspace).answerDto;
         const url = `${KnowledgeAPI.endpointAnswer}`;
         console.time()
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> createAnswer', answerDto)
-        await Execute("POST", url, answerDto)
+        const result = await Execute("POST", url, answerDto)
           .then(async (answerDtoEx: IAnswerDtoEx | null) => {
             console.timeEnd();
             if (answerDtoEx) {
@@ -306,11 +306,11 @@ const createAnswer = useCallback(
             }
             return {answer: null, msg: 'Unknown error'};
           });
+        return result ?? {answer: null, msg: 'Unknown error'};
       }
       catch (error: any) {
          return {answer: null, msg: error.message?? 'Unknown error'};
       }
-      return {answer: null, msg: 'Unknown error'};
     }, [KnowledgeAPI.endpointAnswer, workspace, authUser.nickName, dispatch]);
 
   const searchAnswers = async (filter: string, count: number, questionKey?: IQuestionKey): Promise<IAnswerRow[]> => {
