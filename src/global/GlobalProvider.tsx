@@ -29,7 +29,8 @@ import {
   AnswerRow,
   GroupRow,
   type IAnswer, type IAnswerDto, type IAnswerDtoEx, type IAnswerKey, type IAnswerRow, type IAnswerRowDto, type IAnswerRowDtosEx, type IGroupRow, type IGroupRowDto,
-  Answer, AnswerDto} from "@/groups/types";
+  Answer, AnswerDto
+} from "@/groups/types";
 
 
 // import { escapeRegexCharacters } from 'common/utilities'
@@ -120,7 +121,12 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         };
 
         response = (await fetch(endpoint, options));
-        if (response.ok) {
+        console.log('------------------>>> Execute', method, endpoint, { response });
+        if (response.status === 401) {
+          dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error: new Error(`Unauthorized`) } });
+          return null;
+        }
+        else if (response.ok) {
           if ((response.status === 200 || response.status === 201)) {
             let responseData = null; //response;
             try {
@@ -203,7 +209,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     });
   }, [KnowledgeAPI.endpointCategoryRow, workspace]);
 
- 
+
 
   // ---------------------------
   // load all groupRows
@@ -243,7 +249,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     });
   }, [KnowledgeAPI.endpointGroupRow, workspace]);
 
-  
+
 
   //const searchQuestions = useCallback(async (execute: (method: string, endpoint: string) => Promise<any>, filter: string, count: number): Promise<any> => {
   const searchQuestions = async (filter: string, count: number): Promise<any> => {
@@ -277,8 +283,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   }
   //}, []);
 
-const createAnswer = useCallback(
-    async (answer: IAnswer): Promise<{answer: IAnswer|null, msg: string}> => {
+  const createAnswer = useCallback(
+    async (answer: IAnswer): Promise<{ answer: IAnswer | null, msg: string }> => {
       const { topId } = answer; // title, modified, 
       // TODO
       //dispatch({ type: GlobalActionTypes.SET_LOADING, payload: {} });
@@ -298,18 +304,18 @@ const createAnswer = useCallback(
                 const answer = new Answer(answerDto).answer;
                 answer.topId = topId;
                 console.log('Answer successfully created')
-                return {answer, msg: ''};
+                return { answer, msg: '' };
               }
-              else {  
-                return {answer: null, msg};
-              }  
+              else {
+                return { answer: null, msg };
+              }
             }
-            return {answer: null, msg: 'Unknown error'};
+            return { answer: null, msg: 'Unknown error' };
           });
-        return result ?? {answer: null, msg: 'Unknown error'};
+        return result ?? { answer: null, msg: 'Unknown error' };
       }
       catch (error: any) {
-         return {answer: null, msg: error.message?? 'Unknown error'};
+        return { answer: null, msg: error.message ?? 'Unknown error' };
       }
     }, [KnowledgeAPI.endpointAnswer, workspace, authUser.nickName, dispatch]);
 
@@ -561,7 +567,7 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
     });
   }
 
-  
+
   const createWorkspace = useCallback(
     async (wsDto: IWorkspaceDto) => {
       //dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });
