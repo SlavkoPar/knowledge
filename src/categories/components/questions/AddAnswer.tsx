@@ -3,7 +3,7 @@ import { useGlobalContext } from '@/global/GlobalProvider';
 import { initialAnswer } from '@/groups/GroupReducer';
 
 import AnswerForm from "@/categories/components/questions/AnswerForm";
-import { type IAnswer, type IGroupRow } from "@/groups/types";
+import { type IAnswer } from "@/groups/types";
 
 interface IProps {
     closeModal?: () => void;

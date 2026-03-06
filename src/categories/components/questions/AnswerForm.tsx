@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, type FormEvent } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Form, CloseButton, Row, Col, Stack } from "react-bootstrap";
@@ -21,7 +21,6 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
 
   const { state } = useCategoryContext();
   const { allGroupRows } = state;
-
 
   const setRefElement = useCallback((node: INavigatorMethods | null) => {
     node?.resetNavigator();
@@ -68,12 +67,12 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
     }
   });
 
-  // useEffect(() => {
-  //   nameRef.current!.focus();
-  //   if (source !== 0) {
-  //     formik.setFieldValue('source', source)
-  //   }
-  // }, [source])
+  useEffect(() => {
+    nameRef.current!.focus();
+    if (source !== 0) {
+      formik.setFieldValue('source', source)
+    }
+  }, [source])
 
   const setParentId = (grp: IGroupRow) => {
     formik.setFieldValue('parentId', grp.id);
@@ -110,10 +109,6 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
                       allGroupRows={allGroupRows}
                       setParentId={setParentId}
                     />
-                    {/* // selId={formik.values.parentId}
-                    // groupKey={null}  // TODO {groupKey}
-                    // level={1}
-                    // setParentId={setParentId} */}
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

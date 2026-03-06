@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FormEvent, useState, useEffect, useRef } from "react";
+import { type ChangeEvent, type FormEvent, useState, useEffect, useRef, useCallback } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -11,10 +11,11 @@ import { FormMode } from "@/groups/types";
 
 import { Select } from '@/common/components/Select';
 import { sourceOptions, statusOptions } from '@/common/Options';
-import GrpList from '@/global/Components/SelectGroup/GrpList'
+import SelectGrp from '@/global/Components/SelectGroup/SelectGrp'
 
 import { useGroupContext, useGroupDispatch } from "@/groups/GroupProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
+import type { INavigatorMethods } from "@/global/Components/SelectGroup/types";
 
 const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0, closeModal }: IAnswerFormProps) => {
 
@@ -22,7 +23,7 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
   // const { isDarkMode, variant, bg } = globalState;
 
   const { state, onAnswerTitleChanged } = useGroupContext();
-  let { formMode } = state;
+  let { formMode, allGroupRows } = state;
 
   const viewing = formMode === FormMode.ViewingAnswer;
   const editing = formMode === FormMode.EditingAnswer;
@@ -111,6 +112,10 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
   //  setSearchTerm(qTitle);
   //}, [qTitle]);
 
+  const setRefElement = useCallback((node: INavigatorMethods | null) => {
+    node?.resetNavigator();
+  }, []);
+
   return (
     <div className="form-wrapper px-3 py-1 my-0 my-1 w-100 answer-form" >
       {/* data-bs-theme={`${isDarkMode ? 'dark' : 'light'}`} */}
@@ -130,12 +135,17 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="p-0 border" >
                   <Dropdown.Item className="p-0 m-0 rounded-3">
-                    <GrpList
+                     <SelectGrp
+                      ref={(el) => setRefElement(el)}
+                      allGroupRows={allGroupRows}
+                      setParentId={setParentId}
+                    />
+                    {/* <GrpList
                       selId={formik.values.parentId}
                       groupKey={null}  // TODO {groupKey}
                       level={1}
                       setParentId={setParentId}
-                    />
+                    /> */}
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

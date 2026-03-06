@@ -176,7 +176,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   // load all categoryRows
   // ---------------------------
   const loadAllCategoryRows = useCallback(async (): Promise<Map<string, ICategoryRow> | null> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async () => {
       const allCategoryRows = await loadAllCategoryRowsGlobal();
       if (allCategoryRows) {
         dispatch({ type: ActionTypes.SET_ALL_CATEGORY_ROWS, payload: { allCategoryRows } });
@@ -192,7 +192,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   // load all groupRows
   // ---------------------------
   const loadAllGroupRows = useCallback(async (): Promise<Map<string, IGroupRow> | null> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async () => {
       const allGroupRows = await loadAllGroupRowsGlobal();
       if (allGroupRows) {
         dispatch({ type: ActionTypes.SET_ALL_GROUP_ROWS, payload: { allGroupRows } });

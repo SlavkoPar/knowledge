@@ -1,11 +1,11 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Button, ListGroup, Modal } from "react-bootstrap";
 import type { IAssignedAnswer, IAssignedAnswerKey, IQuestionKey } from "@/categories/types";
 import { useCategoryContext } from "@/categories/CategoryProvider";
 import { useGlobalContext } from "@/global/GlobalProvider";
 import AssignedAnswer from "./AssignedAnswer";
 //import { AutoSuggestAnswers } from '@/global/Components/AutoSuggests/AutoSuggestAnswers';
-import { type IAnswer, type IAnswerRow, type IGroupRow } from "@/groups/types";
+import { type IAnswer, type IAnswerRow } from "@/groups/types";
 import AddAnswer from "@/categories/components/questions/AddAnswer"
 
 const AutoSuggestAnswers = lazy(() =>
