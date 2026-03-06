@@ -123,11 +123,19 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         response = (await fetch(endpoint, options));
         console.log('------------------>>> Execute', method, endpoint, { response });
         if (response.status === 401) {
-          dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error: new Error(`Unauthorized`) } });
-          return 'Unauthorized';
+          const error = new Error(`Unauthorized, please sign in again`);
+          dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+          return error;
         }
-        else if (response.ok) {
-          if ((response.status === 200 || response.status === 201)) {
+
+        if (!response.ok) {
+          // Handle other non-2xx status codes
+          const error = new Error(`HTTP error! status: ${response.status}`);
+          dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });  
+          return error;
+        }
+
+        if ((response.status === 200 || response.status === 201)) {
             let responseData = null; //response;
             try {
               responseData = await response.json();
@@ -139,7 +147,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
               return responseData;
             }
           }
-        }
         else {
           const { errors } = await response.json();
           const error = new Error(
@@ -295,10 +302,10 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         console.time()
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> createAnswer', answerDto)
         const result = await Execute("POST", url, answerDto)
-          .then(async (answerDtoEx: IAnswerDtoEx | string) => {
+          .then(async (answerDtoEx: IAnswerDtoEx | Error) => {
             console.timeEnd();
-            if (typeof answerDtoEx === 'string') {
-              return { answer: null, msg: answerDtoEx };
+            if (answerDtoEx instanceof Error) {
+              return { answer: null, msg: answerDtoEx.message };
             }
             if (answerDtoEx) {
               console.log("::::::::::::::::::::", { answerDtoEx });
