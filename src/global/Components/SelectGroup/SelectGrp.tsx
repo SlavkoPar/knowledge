@@ -36,8 +36,8 @@ const SelectGrp = ({ ref, allGroupRows, setParentId }: MapProps) => {
         const { id, hasSubGroups, numOfAnswers, title } = row;
         return (
             <Accordion.Item eventKey={id}>
-                <Accordion.Header className={`${!hasSubGroups ? 'hide-icon' : ''} group-row`}>
-                    <div onClick={() => setParentGrp(row) }>
+                <Accordion.Header className={`${!hasSubGroups ? 'hide-icon' : ''} `}>
+                    <div className="px-1  m-0 group-row" onClick={() => setParentGrp(row) }>
                         {title}
                     </div>
 

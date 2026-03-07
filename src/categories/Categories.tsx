@@ -172,7 +172,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                             <CategoryList categoryRow={{...initialCategory, categoryRows: topRows }}  isExpanded={true} />
                         </div>
                     </Col>
-                    <Col xs={0} md={7}>
+                    <Col xs={0} md={6}>
                         {/* visible on medium screens and above. */}
                         <div id='div-details' className="d-none d-md-block">
                             {activeCategory && formMode === FormMode.ViewingCategory && <ViewCategory inLine={false} />}
