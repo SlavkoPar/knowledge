@@ -129,32 +129,45 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
           };
 
           response = (await fetch(endpoint, options));
-          if (response.ok) {
-            if ((response.status === 200 || response.status === 201)) {
-              let responseData = null; //response;
-              try {
-                responseData = await response.json();
-              }
-              catch (error) {
-                dispatch({
-                  type: ActionTypes.SET_ERROR, payload: {
-                    error: new Error(`Response status: ${response.status}`),
-                    whichRowId
-                  }
-                });
-              }
-              finally {
-                return responseData;
-              }
+
+          if (response.status === 401) {
+            const error = new Error(`Unauthorized, please sign in again`);
+            dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+            return error;
+          }
+
+          if (!response.ok) {
+            // Handle other non-2xx status codes
+            // TODO sta je sa response.status === 404
+            const error = new Error(`HTTP error! status: ${response.status}`);
+            dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+            return error;
+          }
+
+          if ((response.status === 200 || response.status === 201)) {
+            let responseData = null; //response;
+            try {
+              responseData = await response.json();
+            }
+            catch (error) {
+              dispatch({
+                type: ActionTypes.SET_ERROR, payload: {
+                  error: new Error(`Response status: ${response.status}`),
+                  whichRowId
+                }
+              });
+            }
+            finally {
+              return responseData;
             }
           }
-          else {
-            const { errors } = await response.json();
-            const error = new Error(
-              errors?.map((e: { message: any; }) => e.message).join('\n') ?? 'unknown',
-            )
-            dispatch({ type: ActionTypes.SET_ERROR, payload: { error, whichRowId } });
-          }
+          // else {
+          //   const { errors } = await response.json();
+          //   const error = new Error(
+          //     errors?.map((e: { message: any; }) => e.message).join('\n') ?? 'unknown',
+          //   )
+          //   dispatch({ type: ActionTypes.SET_ERROR, payload: { error, whichRowId } });
+          // }
         }
         catch (e) {
           console.log('-------------->>> execute', method, endpoint, e)
@@ -610,9 +623,13 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
         const url = `${KnowledgeAPI.endpointGroup}`; //
         console.time()
         await Execute("POST", url, groupDto, id)
-          .then(async (groupDtoEx: IGroupDtoEx) => {   //  | null
+          .then(async (dtoEx: IGroupDtoEx | Error) => {   //  | null
             console.timeEnd();
-            const { groupDto } = groupDtoEx;
+            if (dtoEx instanceof Error) {
+              dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
+              return;
+            }
+            const { groupDto } = dtoEx;
             if (groupDto) {
               //groupDto.TopId = topId!;
               const group = new Group(groupDto).group;
@@ -737,16 +754,20 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
 
   const updateGroup = useCallback(
     async (group: IGroup) => { // , closeForm: boolean
-      //const { topId, id, variations, title, kind, modified } = group;
+      const { id } = group;
       dispatch({ type: ActionTypes.SET_LOADING_GROUP, payload: {} });
       try {
         const groupDto = new GroupDto(group, workspace).groupDto;
         const url = `${KnowledgeAPI.endpointGroup}`;
         console.time()
         await Execute("PUT", url, groupDto)
-          .then((groupDtoEx: IGroupDtoEx) => {
+          .then((dtoEx: IGroupDtoEx | Error) => {
             console.timeEnd();
-            const { groupDto, msg } = groupDtoEx;
+            if (dtoEx instanceof Error) {
+              dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
+              return;
+            }
+            const { groupDto, msg } = dtoEx;
             if (groupDto) {
               const group = new Group(groupDto).group;
               const { topId } = group;
@@ -780,9 +801,13 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
       console.time()
       dispatch({ type: ActionTypes.SET_LOADING_GROUPS, payload: {} });
       await Execute("DELETE", url, groupDto)    //Modified: {  Time: new Date(), NickName: globalState.authUser.nickName }
-        .then(async (groupDtoEx: IGroupDtoEx) => {
+        .then(async (dtoEx: IGroupDtoEx | Error) => {
           console.timeEnd();
-          const { groupDto, msg } = groupDtoEx;
+          if (dtoEx instanceof Error) {
+            dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
+            return;
+          }
+          const { groupDto, msg } = dtoEx;
           if (msg === "OK") {
             console.log('Group successfully deleted', { groupRow })
             let parentRow: IGroupRow | undefined = undefined;
@@ -957,11 +982,15 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
         console.time()
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> createAnswer', answerDto)
         await Execute("POST", url, answerDto)
-          .then(async (answerDtoEx: IAnswerDtoEx | null) => {
+          .then(async (dtoEx: IAnswerDtoEx | Error) => {
             console.timeEnd();
-            if (answerDtoEx) {
-              console.log("::::::::::::::::::::", { answerDtoEx });
-              const { answerDto } = answerDtoEx;
+            if (dtoEx instanceof Error) {
+              dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
+              return;
+            }
+            if (dtoEx) {
+              console.log("::::::::::::::::::::", { answerDtoEx: dtoEx });
+              const { answerDto } = dtoEx;
               if (answerDto) {
                 const answer = new Answer(answerDto).answer;
                 answer.topId = topId;
@@ -1002,9 +1031,13 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> updateAnswer', answerDto)
         let answerRet: IAnswer | null = null;
         await Execute("PUT", url, answerDto)
-          .then(async (answerDtoEx: IAnswerDtoEx) => {
+          .then(async (dtoEx: IAnswerDtoEx | Error) => {
             console.timeEnd();
-            const { answerDto, msg } = answerDtoEx;
+            if (dtoEx instanceof Error) {
+              dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
+              return;
+            }
+            const { answerDto, msg } = dtoEx;
             if (answerDto) {
               answerRet = new Answer(answerDto).answer!;
               console.log('Answer successfully updated: ', answerRet)
@@ -1053,8 +1086,12 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
         const url = `${KnowledgeAPI.endpointAnswer}`;
         console.time()
         await Execute("DELETE", url, answerDto)
-          .then(async (answerDtoEx: IAnswerDtoEx) => {
-            const { answerDto } = answerDtoEx;
+          .then(async (dtoEx: IAnswerDtoEx | Error) => {
+            if (dtoEx instanceof Error) {
+              dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
+              return;
+            }
+            const { answerDto } = dtoEx;
             console.timeEnd();
             if (answerDto) {
               const answer = new Answer(answerDto).answer;
@@ -1076,7 +1113,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
               })
             }
             else {
-              console.error(answerDtoEx);
+              console.error(dtoEx);
               dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error('Server Error'), whichRowId: id } });
             }
           });

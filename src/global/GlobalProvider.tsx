@@ -299,7 +299,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         const answerDto = new AnswerDto(answer, workspace).answerDto;
         const url = `${KnowledgeAPI.endpointAnswer}`;
         console.time()
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> createAnswer', answerDto)
         const result = await Execute("POST", url, answerDto)
           .then(async (response: IAnswerDtoEx | Error) => {
             console.timeEnd();
