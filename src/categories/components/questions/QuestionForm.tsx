@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FormEvent, useState, useEffect, useRef } from "react";
+import { type ChangeEvent, type FormEvent, useState, useEffect, useRef, useCallback } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -11,12 +11,13 @@ import { FormMode, QuestionKey } from "@/categories/types";
 
 import { Select } from '@/common/components/Select';
 import { sourceOptions, statusOptions } from '@/common/Options'
-import CatList from '@/global/Components/SelectCategory/CatList'
 
 import { useCategoryContext, useCategoryDispatch } from "@/categories/CategoryProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
 import AssignedAnswers from '../answers/AssignedAnswers';
 import RelatedFilters from './RelatedFilters';
+import SelectCat from "@/global/Components/SelectCategory/SelectCat";
+import type { INavigatorMethods } from "@/global/Components/SelectCategory/types";
 
 const QuestionForm = ({ question, submitForm, children, showCloseButton, source = 0, closeModal }: IQuestionFormProps) => {
 
@@ -25,6 +26,7 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
 
   const { state, onQuestionTitleChanged } = useCategoryContext();
   let { formMode } = state;
+  const { allCategoryRows } = state;
 
   // const AssignedAnswers = lazy(() =>
   //   // named export
@@ -121,6 +123,11 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
   //  setSearchTerm(qTitle);
   //}, [qTitle]);
 
+  const setRefElement = useCallback((node: INavigatorMethods | null) => {
+      node?.resetNavigator();
+    }, []);
+  
+
   return (
     <div className="form-wrapper px-3 py-1 my-0 my-1 w-100 question-form" >
       {/* data-bs-theme={`${isDarkMode ? 'dark' : 'light'}`} */}
@@ -140,10 +147,15 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="p-0 border" >
                   <Dropdown.Item className="p-0 m-0 rounded-3">
-                    <CatList
+                    {/* <CatList
                       selId={formik.values.parentId}
                       categoryKey={null}  // TODO {categoryKey}
                       level={1}
+                      setParentId={setParentId}
+                    /> */}
+                    <SelectCat
+                      ref={(el) => setRefElement(el)}
+                      allCategoryRows={allCategoryRows}
                       setParentId={setParentId}
                     />
                   </Dropdown.Item>
