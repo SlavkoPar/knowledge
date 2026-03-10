@@ -425,7 +425,6 @@ const ChatBotDlg = ({  onHide }: IProps) => {
     //     scrollableRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     // };
     console.log("=====================>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> rendering ChatBotDlg")
-    const handleClose = () => setShow(false);
 
     if (allCategoryRows2.length === 0) // || catsOptions.length === 0)
         return <div>Loading ...</div>
