@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 
 import { ActionTypes, type IGroupKey, type IAnswerKey, FormMode } from "./types";
 
+import { useNavigate } from "react-router-dom";
 import { useGlobalContext, useGlobalState } from '@/global/GlobalProvider';
 
 import { GroupProvider, useGroupContext, useGroupDispatch } from "./GroupProvider";
@@ -45,13 +46,16 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
         loadingAnswers, loadingAnswer
     } = state;
 
-    const { searchAnswers, setLastRouteVisited, setChatBotDlgEnabled } = useGlobalContext();
-    const { isDarkMode, chatBotDlgEnabled, lastRouteVisited } = useGlobalState();
+    const { searchAnswers, setLastRouteVisited } = useGlobalContext();
+    const { isDarkMode, lastRouteVisited } = useGlobalState();
 
     const [modalShow, setModalShow] = useState(false);
     // const handleClose = () => {
     //     setModalShow(false);
     // }
+
+    const navigate = useNavigate();
+
 
     const [newAnswer, setNewAnswer] = useState({ ...initialAnswer });
 
@@ -109,11 +113,9 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                     }
                 }
 
-                if (!chatBotDlgEnabled) // show ChatBotDlg button
-                    setChatBotDlgEnabled();
             }
         })()
-    }, [groupId_answerId, groupId_answerId_done, topRowsLoaded, keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, fromChatBotDlg, chatBotDlgEnabled, setChatBotDlgEnabled]);
+    }, [groupId_answerId, groupId_answerId_done, topRowsLoaded, keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, fromChatBotDlg]);
 
     const route = `/knowledge/groups`;
     useEffect(() => {
@@ -188,6 +190,19 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                             }
                             {activeAnswer && formMode === FormMode.AddingAnswer && <AddAnswer />}
                         </div>
+                    </Col>
+                </Row>
+                <Row className="my-1 h-auto">
+                    <Col xs={12}>
+                        <Button onClick={(e) => {
+                            navigate('/categories');
+                            e.preventDefault();
+                        }}
+                            className="border rounded-5 me-1 mb-1 buddy-fixed"
+                        >
+                            <b>Welcome,</b><br /> I am Stamena,<br /> and You are not.
+                            <br />I am here to help You!
+                        </Button>
                     </Col>
                 </Row>
             </Container>

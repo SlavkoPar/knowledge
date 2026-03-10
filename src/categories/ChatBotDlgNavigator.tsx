@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import { Accordion } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,20 +11,24 @@ import { type ICategoryRow } from '@/categories/types';
 //import Q from '@/assets/Q.png';
 //import A from '@/assets/A.png';
 import type { AccordionEventKey } from 'react-bootstrap/esm/AccordionContext';
-import type { IChatBotDlgNavigatorMethods } from './global/types';
-// import { useCategoryDispatch } from '@/categories/CategoryProvider';
-
+import type { IAccordionMethods } from '@/global/types';
+import { faFolder } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useCategoryContext } from './CategoryProvider';
 
 //const PINK = 'rgba(255, 192, 203, 0.6)';
 //const BLUE = 'rgb(224, 207, 252)';
 
-const ChatBotDlgNavigator = forwardRef<IChatBotDlgNavigatorMethods, { allCategoryRows: ICategoryRow[] }>(
+const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: ICategoryRow[] }>(
     ({ allCategoryRows }, ref) => {
 
-        const navigate = useNavigate();
+        const { expandNodesUpToTheTree } = useCategoryContext();
+        // const navigate = useNavigate();
         // const linkGo = (link: string) => {
-        //     navigate(link);
+        //     //navigate(link);
+        //     expandNodesUpToTheTree({ topId: '', id: link, parentId: null }, null, true);
         // }
+
 
         const [topRows, setTopRows] = useState<ICategoryRow[]>([]);
 
@@ -55,22 +59,38 @@ const ChatBotDlgNavigator = forwardRef<IChatBotDlgNavigatorMethods, { allCategor
         */
 
         const CatRow = ({ row }: { row: ICategoryRow }) => {
-            const { id, hasSubCategories, title, link } = row;
+            const { topId, parentId, id, hasSubCategories, title, link } = row;
+            console.log('CatRow', { id, hasSubCategories, title, link });
+            //const myLink = link === '' ? `/categories/${topId}_${id}_null` : '';
             return (
                 <Accordion.Item eventKey={id}>
                     <Accordion.Header className={`${!hasSubCategories ? 'hide-icon' : ''}`}>
+                        <FontAwesomeIcon icon={faFolder} size='sm' style={{ color: 'gray' }} />
                         {/* <ContextAwareToggle eventKey={row.id} hasSubCategories={row.hasSubCategories} isExpanded={row.isExpanded ? true : false}> */}
-                            {row.link
-                                ? <a href="#" className="p-1 m-1 cat-link category-row" onClick={() => navigate(`${link}/from_chat`)}>{title}</a>
-                                : <span className="p-1 m-1 cat-title category-row">{title}</span>
-                            }
+                        {row.link === ''
+                            ? <a href="#"
+                                className="p-1 m-1 cat-link category-row"
+                                // onClick={() => linkGo(`${myLink}/from_chat`)}
+                                onClick={() => {
+                                    expandNodesUpToTheTree(
+                                        { topId, id, parentId },
+                                        null,
+                                        true
+                                    )
+                                }
+                                }
+                            >
+                                {title}
+                            </a>
+                            : <span className="p-1 m-1 cat-title category-row">{title}</span>
+                        }
                         {/* </ContextAwareToggle> */}
                     </Accordion.Header>
                     <Accordion.Body>
                         {/* <Card.Body> */}
-                            {row.hasSubCategories &&
-                                <CatList rows={row.categoryRows} />
-                            }
+                        {row.hasSubCategories &&
+                            <CatList rows={row.categoryRows} />
+                        }
                         {/* </Card.Body> */}
                     </Accordion.Body>
                     {/* <Accordion.Collapse eventKey={row.id}>

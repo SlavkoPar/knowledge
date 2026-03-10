@@ -12,7 +12,7 @@ import SelectGrp from '@/global/Components/SelectGroup/SelectGrp'
 
 import { useCategoryContext, useCategoryDispatch } from "@/categories/CategoryProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
-import { type INavigatorMethods } from "@/global/Components/SelectGroup/types";
+import { type IAccordionMethods } from "@/global/types";
 
 const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0, closeModal }: IAnswerFormProps) => {
 
@@ -22,7 +22,7 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
   const { state } = useCategoryContext();
   const { allGroupRows } = state;
 
-  const setRefElement = useCallback((node: INavigatorMethods | null) => {
+  const setRefElement = useCallback((node: IAccordionMethods | null) => {
     node?.resetNavigator();
   }, []);
 

@@ -27,8 +27,5 @@ export enum CatActionTypes {
 	SET_PARENT_CAT = 'SET_PARENT_CAT'
 }
 
-export interface INavigatorMethods {
-	resetNavigator: () => void;
-	//loadSubTree: (categoryRow: ICategoryRow | null) => void;
-}
+
 

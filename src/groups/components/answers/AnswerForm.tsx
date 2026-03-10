@@ -15,7 +15,7 @@ import SelectGrp from '@/global/Components/SelectGroup/SelectGrp'
 
 import { useGroupContext, useGroupDispatch } from "@/groups/GroupProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
-import type { INavigatorMethods } from "@/global/Components/SelectGroup/types";
+import type { IAccordionMethods } from "@/global/types";
 
 const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0, closeModal }: IAnswerFormProps) => {
 
@@ -112,7 +112,7 @@ const AnswerForm = ({ answer, submitForm, children, showCloseButton, source = 0,
   //  setSearchTerm(qTitle);
   //}, [qTitle]);
 
-  const setRefElement = useCallback((node: INavigatorMethods | null) => {
+  const setRefElement = useCallback((node: IAccordionMethods | null) => {
     node?.resetNavigator();
   }, []);
 

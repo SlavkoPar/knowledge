@@ -75,8 +75,7 @@ const initGlobalState: IGlobalState = {
   loading: true,
   topRows: [],
   nodesReLoaded: false,
-  lastRouteVisited: '/knowledge/categories',
-  chatBotDlgEnabled: false
+  lastRouteVisited: '/knowledge/categories'
 }
 
 export const GlobalProvider: React.FC<Props> = ({ children }) => {
@@ -761,9 +760,6 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
     dispatch({ type: GlobalActionTypes.SET_LAST_ROUTE_VISITED, payload: { lastRouteVisited } });
   }, []);
 
-  const setChatBotDlgEnabled = () => {
-    dispatch({ type: GlobalActionTypes.SET_ENABLE_CHATBOT_DLG });
-  }
 
   if (loading) {
     return <div>Loading...</div>;
@@ -779,8 +775,7 @@ const getSubCats = useCallback(async (categoryId: string | null) => {
       createAnswer, searchAnswers, getAnswer,
       setNodesReloaded,
       createWorkspace, getWorkspace,
-      addHistory, getAnswersRated, addHistoryFilter,
-      setChatBotDlgEnabled
+      addHistory, getAnswersRated, addHistoryFilter
     }}>
       <GlobalDispatchContext.Provider value={dispatch}>
         {children}

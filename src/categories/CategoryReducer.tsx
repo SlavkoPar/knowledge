@@ -209,6 +209,15 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
       }
     }
 
+
+    case ActionTypes.SHOW_MODAL_CHATBOT: {
+      const { show } = action.payload;
+      return {
+        ...state,
+        modalChatBotShown: show
+      }
+    }
+
     case ActionTypes.SET_NODE_EXPANDED_UP_THE_TREE: {
       const { category, questionId, question, formMode } = action.payload;
       return {

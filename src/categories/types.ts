@@ -576,6 +576,7 @@ export interface ICategoriesState {
 	loadingQuestion: boolean, questionLoaded: boolean,
 	error?: Error;
 	whichRowId?: string; // category.id or question.id
+	modalChatBotShown: boolean;
 }
 
 export interface ILocStorage {
@@ -605,8 +606,8 @@ export interface ICategoriesContext {
 	deleteCategoryVariation: (categoryKey: ICategoryKey, name: string) => void,
 	expandCategory: (expandInfo: IExpandInfo) => Promise<any>
 	collapseCategory: (categoryRow: ICategoryRow) => void,
-	// findCategory: (categoryRows: ICategoryRow[], id: string) => ICategoryRow | undefined;
 	onCategoryTitleChanged: (topId: string, id: string, title: string) => Promise<void>;
+	showModalChatBot: (show: boolean) => void;
 	//////////////
 	// questions
 	loadCategoryQuestions: (catParams: ILoadCategoryQuestions) => Promise<void>;  //(parentInfo: IParentInfo) => void,
@@ -737,6 +738,7 @@ export enum ActionTypes {
 	SET_CATEGORY_ADDED = 'SET_CATEGORY_ADDED',
 	SET_ALL_CATEGORY_ROWS = 'SET_ALL_CATEGORY_ROWS',
 	SET_ALL_GROUP_ROWS = 'SET_ALL_GROUP_ROWS',
+	SHOW_MODAL_CHATBOT = 'SHOW_MODAL_CHATBOT',
 
 	SET_CATEGORY_TO_VIEW = 'SET_CATEGORY_TO_VIEW',
 	SET_CATEGORY_TO_EDIT = 'SET_CATEGORY_TO_EDIT',
@@ -885,6 +887,11 @@ export type Payload = {
 
 	[ActionTypes.SET_CATEGORY]: {
 		categoryRow: ICategory;
+	};
+
+	[ActionTypes.SHOW_MODAL_CHATBOT]: {
+		categoryRow?: ICategory;
+		show: boolean
 	};
 
 	// [ActionTypes.SET_CATEGORY_ROW]: {

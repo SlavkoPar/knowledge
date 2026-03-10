@@ -86,6 +86,10 @@ export class HistoryFilterDto {
 	historyFilterDto: IHistoryFilterDto;
 }
 
+export interface IAccordionMethods {
+	resetNavigator: () => void;
+	//loadSubTree: (categoryRow: ICategoryRow | null) => void;
+}
 
 // export class History {
 // 	constructor(dto: IHistoryDto) {
@@ -103,10 +107,6 @@ export class HistoryFilterDto {
 // 	history: IHistory;
 // }
 
-export interface IChatBotDlgNavigatorMethods {
-	resetNavigator: () => void;
-	//loadSubTree: (categoryRow: ICategoryRow | null) => void;
-}
 
 export interface IAuthUser {
 	color?: string,
@@ -174,7 +174,6 @@ export interface IGlobalState {
 	topRows: ICategoryRow[];
 	nodesReLoaded: boolean; // categoryNodeLoaded || groupNodeLoaded  ( to prevent showing of ChatBotDlg)
 	lastRouteVisited: string;
-	chatBotDlgEnabled: boolean;
 }
 
 
@@ -211,7 +210,6 @@ export interface IGlobalContext {
 	getAnswersRated: (questionKey: IQuestionKey) => Promise<any>;
 	addHistoryFilter: (historyFilter: IHistoryFilter) => Promise<void>;
 	setNodesReloaded: () => void;
-	setChatBotDlgEnabled: () => void;
 }
 
 export enum GlobalActionTypes {

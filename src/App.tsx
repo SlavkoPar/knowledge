@@ -1,5 +1,5 @@
-import { useEffect, useState, lazy, Suspense } from 'react';
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { useEffect, lazy, Suspense } from 'react';
+import { Container, Row, Col } from "react-bootstrap";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
 import { useGlobalContext, useGlobalDispatch, useGlobalState } from '@/global/GlobalProvider'
@@ -19,10 +19,6 @@ const Groups = lazy(() =>
   import("@/groups/Groups").then((module) => ({ default: module.default }))
 );
 
-const ChatBotDlg = lazy(() =>
-  // named export
-  import("./ChatBotDlg").then((module) => ({ default: module.default }))
-);
 
 import About from './About';
 import Health from './Health';
@@ -33,7 +29,7 @@ import AboutShort from './AboutShort';
 
 function App() {
 
-  const { authUser, isAuthenticated, everLoggedIn, lastRouteVisited, chatBotDlgEnabled } = useGlobalState();
+  const { authUser, isAuthenticated, everLoggedIn, lastRouteVisited } = useGlobalState();
   const { nickName } = authUser;
 
   let location = useLocation();
@@ -42,8 +38,6 @@ function App() {
   const { createWorkspace, getWorkspace } = useGlobalContext();
 
   const { instance } = useMsal();
-
-  const [showModalChatBot, setModalChatBotShow] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -125,16 +119,16 @@ function App() {
 
 
   useEffect(() => {
-    if (locationPathname !== lastRouteVisited || !locationPathname.includes('/from_chat')) {
-      navigate(lastRouteVisited);
-    }
+    // if (locationPathname !== lastRouteVisited || !locationPathname.includes('/from_chat')) {
+    //   navigate(lastRouteVisited);
+    // }
   }, [lastRouteVisited])
 
   if (!isAuthenticated) // || !categoryRowsLoaded) // || !groupRowsLoaded)
     return <div>App loading</div>
 
   //alert(process.env.REACT_APP_API_URL)
-  console.log('Appppppppppppppppppppppppppppppppppppppppppppppppp')
+  console.log('Appppppppppppppppppppppp')
 
   return (
     <Container fluid className="App" data-bs-theme="light">
@@ -148,7 +142,7 @@ function App() {
               <Routes>
                 <Route path="/" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
                 <Route path="/knowledge" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
-                <Route path="/knowledge/categories/:categoryId_questionId/:fromChatBotDlg" element={<Categories />} />
+                <Route path="/categories/:showChatBot/:categoryId_questionId/:fromChatBotDlg" element={<Categories />} />
                 <Route path="/knowledge/categories" element={<Categories />} />
                 <Route path="/categories" element={<Categories />} />
                 <Route path="/groups/:groupId_AnswerId" element={<Groups />} />
@@ -162,26 +156,6 @@ function App() {
           </div>
         </Col>
       </Row>
-      {/* {<ModalChatBot show={modalChatBotShow} onHide={() => { setModalChatBotShow(false) }} />} */}
-      {chatBotDlgEnabled &&
-        <>
-          {showModalChatBot &&
-            <Suspense fallback={<div>Loading...</div>}>
-              <ChatBotDlg show={showModalChatBot} onHide={() => { setModalChatBotShow(false) }} />
-            </Suspense>
-          }
-          <Button onClick={(e) => {
-            setModalChatBotShow(!showModalChatBot);
-            e.stopPropagation();
-          }}
-            className="border rounded-5 me-1 mb-1 buddy-fixed"
-          >
-            <b>Welcome,</b><br /> I am Stamena,<br /> and You are not.
-            <br />I am here to help You!
-          </Button>
-        </>
-      }
-
     </Container>
   );
 }

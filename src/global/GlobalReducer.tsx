@@ -159,12 +159,7 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
             };
         }
 
-        case GlobalActionTypes.SET_ENABLE_CHATBOT_DLG: {
-            return {
-                ...state,
-                chatBotDlgEnabled: true
-            };
-        }
+        
 
         default: {
             throw Error('Unknown action: ' + str);

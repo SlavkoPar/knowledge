@@ -20,10 +20,6 @@ export interface IGrpInfo {
 }
 
 
-export interface INavigatorMethods {
-	resetNavigator: () => void;
-	//loadSubTree: (categoryRow: ICategoryRow | null) => void;
-}
 
 export interface IRow {
 	topId: string;

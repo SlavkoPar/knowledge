@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Button, Offcanvas } from "react-bootstrap";
 //import { useNavigate } from "react-router-dom";
 
 import { useGlobalContext, useGlobalState } from '@/global/GlobalProvider';
+
 
 import { useParams } from 'react-router-dom' // useRouteMatch
 import { AutoSuggestQuestions } from '@/categories/AutoSuggestQuestions';
@@ -11,7 +12,7 @@ import { AutoSuggestQuestions } from '@/categories/AutoSuggestQuestions';
 // import { faFolder } from '@fortawesome/free-solid-svg-icons'
 
 import { type ICategoryRow, type IQuestion, type IQuestionEx, type IQuestionKey, QuestionKey } from '@/categories/types';
-import type { IChatBotDlgNavigatorMethods, IHistory, IHistoryFilter } from '@/global/types';
+import type { IAccordionMethods, IHistory, IHistoryFilter } from '@/global/types';
 import { type IChatBotAnswer, type INewQuestion, type INextAnswer, useAI } from '@/hooks/useAI'
 
 import Q from '@/assets/Q.png';
@@ -27,11 +28,10 @@ type ChatBotParams = {
 
 
 interface IProps {
-    show: boolean,
     onHide: () => void;
 }
 
-const ChatBotDlg = ({ show, onHide }: IProps) => {
+const ChatBotDlg = ({  onHide }: IProps) => {
     let { tekst } = useParams<ChatBotParams>();
     const [autoSuggestionValue, setAutoSuggestionValue] = useState(tekst!)
     const [setNewQuestion, getCurrQuestion, getNextChatBotAnswer] = useAI(/*[]*/);
@@ -50,10 +50,8 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     const [catsSelected] = useState(true);
     const [showAutoSuggest, setShowAutoSuggest] = useState(true); //false);
 
-
     const [allCategoryRows, setAllCategoryRows] = useState<Map<string, ICategoryRow>>(new Map<string, ICategoryRow>());
     const [allCategoryRows2, setAllCategoryRows2] = useState<ICategoryRow[]>([]);
-    const childRef = useRef<IChatBotDlgNavigatorMethods | null>(null);
 
     const [pastEvents, setPastEvents] = useState<IChild[]>([]);
 
@@ -86,10 +84,13 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     }, [allCategoryRowsLoaded, loadAllCategoryRowsGlobal]);
 
 
+    const setRefElement = useCallback((node: IAccordionMethods | null) => {
+        node?.resetNavigator();
+    }, []);
 
     const onEntering = async (/*node: HTMLElement, isAppearing: boolean*/): Promise<any> => {
         const startTime = performance.now();
-        await childRef?.current?.resetNavigator();
+        //await childRef?.current?.resetNavigator();
         // const rows = await childRef?.current?.getTopRows();
         // setTopRows(rows || []);
         const endTime = performance.now();
@@ -424,7 +425,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
     //     scrollableRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     // };
     console.log("=====================>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> rendering ChatBotDlg")
-
+    const handleClose = () => setShow(false);
 
     if (allCategoryRows2.length === 0) // || catsOptions.length === 0)
         return <div>Loading ...</div>
@@ -499,7 +500,7 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
             </Button> */}
 
             {/* backdrop="static" */}
-            <Offcanvas show={show} onHide={onHide} placement='end' scroll={true} backdrop={true} onEntering={onEntering}> {/* backdropClassName='chat-bot-dlg' */}
+            <Offcanvas show={true} onHide={onHide} placement='end' scroll={true} backdrop={true} onEntering={onEntering}> {/* backdropClassName='chat-bot-dlg' */}
                 <Offcanvas.Header closeButton>
                     <Offcanvas.Title className="fs-6">
                         I am your Buddy
@@ -509,7 +510,10 @@ const ChatBotDlg = ({ show, onHide }: IProps) => {
                     <Container id='container' fluid className='text-primary'> {/* align-items-center" */}
                         <Row className="m-0">
                             <Col className='border border-0 border-primary mx-1 text-white p-0'>
-                                <ChatBotDlgNavigator allCategoryRows={allCategoryRows2} ref={childRef} />
+                                <ChatBotDlgNavigator
+                                    allCategoryRows={allCategoryRows2}
+                                    ref={(el) => setRefElement(el)}
+                                />
                             </Col>
                         </Row>
                         {/* badge */}

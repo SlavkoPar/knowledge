@@ -17,7 +17,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import AssignedAnswers from '../answers/AssignedAnswers';
 import RelatedFilters from './RelatedFilters';
 import SelectCat from "@/global/Components/SelectCategory/SelectCat";
-import type { INavigatorMethods } from "@/global/Components/SelectCategory/types";
+import type { IAccordionMethods } from "@/global/types";
 
 const QuestionForm = ({ question, submitForm, children, showCloseButton, source = 0, closeModal }: IQuestionFormProps) => {
 
@@ -96,7 +96,7 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
     goBre();
   }, [debouncedSearchTerm, formik.values.title, onQuestionTitleChanged, topId, id]);
 
-  
+
 
   useEffect(() => {
     nameRef.current!.focus();
@@ -123,10 +123,10 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
   //  setSearchTerm(qTitle);
   //}, [qTitle]);
 
-  const setRefElement = useCallback((node: INavigatorMethods | null) => {
-      node?.resetNavigator();
-    }, []);
-  
+  const setRefElement = useCallback((node: IAccordionMethods | null) => {
+    node?.resetNavigator();
+  }, []);
+
 
   return (
     <div className="form-wrapper px-3 py-1 my-0 my-1 w-100 question-form" >
@@ -263,12 +263,12 @@ const QuestionForm = ({ question, submitForm, children, showCloseButton, source 
 
         {(viewing || editing) &&
           <div className="my-1">
-              <AssignedAnswers
-                questionKey={questionKey!}
-                questionTitle={searchTerm}
-                assignedAnswers={assignedAnswers}
-                isDisabled={isDisabled}
-              />
+            <AssignedAnswers
+              questionKey={questionKey!}
+              questionTitle={searchTerm}
+              assignedAnswers={assignedAnswers}
+              isDisabled={isDisabled}
+            />
 
             <RelatedFilters
               questionKey={questionKey!}

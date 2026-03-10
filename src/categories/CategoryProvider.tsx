@@ -74,7 +74,9 @@ export const initialState: ICategoriesState = {
   error: undefined,
 
   rowExpanding: false,
-  rowExpanded: false
+  rowExpanded: false,
+
+  modalChatBotShown: false
 }
 
 export const CategoryProvider: React.FC<IProps> = ({ children }) => {
@@ -343,6 +345,9 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       return cat;
     }, []);
 
+  const showModalChatBot = useCallback((show: boolean) => {
+    dispatch({ type: ActionTypes.SHOW_MODAL_CHATBOT, payload: { show } });
+  }, []);
 
   const expandNodesUpToTheTree = useCallback(
     async (catKey: ICategoryKey, questionId: string | null, fromChatBotDlg = false): Promise<boolean> => {
@@ -364,7 +369,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
           dispatch({
             type: ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE, payload: {
               fromChatBotDlg,
-              categoryId_questionId_done: `${id}_${questionId}`
+              categoryId_questionId_done: `${topId}_${id}_${questionId}`
             }
           })
           // ---------------------------------------------------------------------------
@@ -378,12 +383,11 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
               const { categoryRowDto } = categoryRowDtoEx;
               console.timeEnd();
               if (categoryRowDto) {
-                let category: ICategory | null = null;
                 let question: IQuestion | null = null;
                 const topRowNew: ICategoryRow | null = new CategoryRow(categoryRowDto).categoryRow;
                 const bottomRow = await findCategoryRow(topRowNew, id!);
+                let category: ICategory | null = { ...bottomRow!, doc1: '' };
                 if (parentId !== null) {
-                  category = { ...bottomRow!, doc1: '' };
                   if (questionId) {
                     const questionRow = bottomRow!.questionRows!.find(q => q.id === questionId && q.included)!;
                     if (questionRow) {
@@ -746,7 +750,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
         const url = `${KnowledgeAPI.endpointCategory}`;
         console.time()
         await Execute("PUT", url, categoryDto)
-          .then((dtoEx: ICategoryDtoEx|Error) => {
+          .then((dtoEx: ICategoryDtoEx | Error) => {
             console.timeEnd();
             if (dtoEx instanceof Error) {
               dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
@@ -786,12 +790,12 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       console.time()
       dispatch({ type: ActionTypes.SET_LOADING_CATEGORIES, payload: {} });
       await Execute("DELETE", url, categoryDto)    //Modified: {  Time: new Date(), NickName: globalState.authUser.nickName }
-        .then(async (dtoEx: ICategoryDtoEx|Error) => {
+        .then(async (dtoEx: ICategoryDtoEx | Error) => {
           console.timeEnd();
           if (dtoEx instanceof Error) {
-              dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
-              return;
-            }
+            dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
+            return;
+          }
           const { categoryDto, msg } = dtoEx;
           if (msg === "OK") {
             console.log('Category successfully deleted', { categoryRow })
@@ -969,7 +973,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> createQuestion', questionDto)
         await Execute("POST", url, questionDto)
           .then(async (dtoEx: IQuestionDtoEx | Error) => {
-             if (dtoEx instanceof Error) {
+            if (dtoEx instanceof Error) {
               dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
               return;
             }
@@ -1017,7 +1021,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> updateQuestion', questionDto)
         let questionRet: IQuestion | null = null;
         await Execute("PUT", url, questionDto)
-          .then(async (dtoEx: IQuestionDtoEx|Error) => {
+          .then(async (dtoEx: IQuestionDtoEx | Error) => {
             console.timeEnd();
             if (dtoEx instanceof Error) {
               dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
@@ -1072,7 +1076,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
         const url = `${KnowledgeAPI.endpointQuestion}`;
         console.time()
         await Execute("DELETE", url, questionDto)
-          .then(async (dtoEx: IQuestionDtoEx|Error) => {
+          .then(async (dtoEx: IQuestionDtoEx | Error) => {
             if (dtoEx instanceof Error) {
               dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
               return;
@@ -1268,7 +1272,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
         const url = `${KnowledgeAPI.endpointQuestionAnswer}/${action}`;
         console.time()
         await Execute("POST", url, dto)
-          .then(async (dtoEx: IQuestionDtoEx|Error) => {
+          .then(async (dtoEx: IQuestionDtoEx | Error) => {
             console.timeEnd();
             if (dtoEx instanceof Error) {
               dispatch({ type: ActionTypes.SET_ERROR, payload: { error: dtoEx, whichRowId: id } });
@@ -1343,6 +1347,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   const contextValue: ICategoriesContext = {
     state, loadAllCategoryRows, getSubCats, getCat,
     loadAllGroupRows,
+    showModalChatBot,
     expandNodesUpToTheTree,
     loadTopRows,
     addCategory, cancelAddCategory, createCategory,

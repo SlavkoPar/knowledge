@@ -10,17 +10,15 @@ import { Accordion } from "react-bootstrap";
 //import Q from '@/assets/Q.png';
 //import A from '@/assets/A.png';
 import type { AccordionEventKey } from 'react-bootstrap/esm/AccordionContext';
-import type { INavigatorMethods } from './types';
+import type { IAccordionMethods } from '@/global/types';
 import type { ICategoryRow } from '@/categories/types';
-//import type { IChatBotDlgNavigatorMethods } from './global/types';
-// import { useCategoryDispatch } from '@/categories/CategoryProvider';
 
 // const PINK = 'rgba(255, 192, 203, 0.6)';
 // const BLUE = 'rgb(224, 207, 252)';
 
 // 2. Type the component's props, including the optional ref
 type MapProps = {
-    ref?: Ref<INavigatorMethods>;
+    ref?: Ref<IAccordionMethods>;
     allCategoryRows: Map<string, ICategoryRow>;
     setParentId: (row: ICategoryRow) => void;
 };
@@ -37,7 +35,7 @@ const SelectCat = ({ ref, allCategoryRows, setParentId }: MapProps) => {
         return (
             <Accordion.Item eventKey={id}>
                 <Accordion.Header className={`${!hasSubCategories ? 'hide-icon' : ''} `}>
-                    <div className="px-1  m-0 category-row" onClick={() => setParentGrp(row) }>
+                    <div className="px-1  m-0 category-row" onClick={() => setParentGrp(row)}>
                         {title}
                     </div>
 

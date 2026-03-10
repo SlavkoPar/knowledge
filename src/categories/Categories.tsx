@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Container, Row, Col, Button } from "react-bootstrap";
 
 import { useParams } from 'react-router-dom';
@@ -20,6 +20,7 @@ import ModalAddQuestion from './ModalAddQuestion';
 import AddCategory from './components/AddCategory';
 import { AutoSuggestQuestions } from './AutoSuggestQuestions';
 import AddQuestion from './components/questions/AddQuestion';
+import ChatBotDlg from '@/categories/ChatBotDlg';
 
 interface IProps {
     categoryId_questionId?: string;
@@ -32,7 +33,7 @@ interface IProps {
 // );
 
 const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
-    const { state, expandNodesUpToTheTree, loadTopRows, addCategory } = useCategoryContext();
+    const { state, showModalChatBot, expandNodesUpToTheTree, loadTopRows, addCategory } = useCategoryContext();
     const {
         allCategoryRows, //allCategoryRowsLoaded,
         topRows, topRowsLoading, topRowsLoaded,
@@ -43,13 +44,16 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
         activeQuestion,
         formMode,
         loadingCategories, loadingCategory,
-        loadingQuestions, loadingQuestion
+        loadingQuestions, loadingQuestion,
+        modalChatBotShown
     } = state;
 
-    const { searchQuestions, setLastRouteVisited, setChatBotDlgEnabled } = useGlobalContext();
-    const { isDarkMode, chatBotDlgEnabled, lastRouteVisited } = useGlobalState();
+    const { searchQuestions, setLastRouteVisited } = useGlobalContext();
+    const { isDarkMode, lastRouteVisited } = useGlobalState();
+
 
     const [modalShow, setModalShow] = useState(false);
+    //const [showChatBot, setshowChatBot] = useState(showModalChatBot || false);
     // const handleClose = () => {
     //     setModalShow(false);
     // }
@@ -92,35 +96,34 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                     }
                     else if (categoryId_questionId !== categoryId_questionId_done) { //} && !nodeOpened) {
                         const arr = categoryId_questionId.split('_');
-                        const categoryId = arr[0];
-                        const questionId = arr[1];
-                        const catKey: ICategoryKey = { topId: '', id: categoryId, parentId: 'ROOT' };
+                        const topId = arr[0];
+                        const categoryId = arr[1];
+                        const questionId = arr[2];
+                        const catKey: ICategoryKey = { topId, id: categoryId, parentId: null };
                         console.log('zovem expandNodesUpToTheTree 1111111111111111111)', { categoryId_questionId }, { categoryId_questionId_done })
-                        await expandNodesUpToTheTree(catKey, questionId !== 'null' ? questionId : null, fromChatBotDlg === 'from_chat')
+                        //await expandNodesUpToTheTree(catKey, questionId !== 'null' ? questionId : null, fromChatBotDlg === 'from_chat')
+                        await expandNodesUpToTheTree(catKey, questionId !== 'null' ? questionId : null, fromChatBotDlg === 'from_chat');
                         console.log('zavrsio expandNodeUpToTheTree 1111111111111111111 DONE)', { categoryId_questionId })
                     }
                 }
                 else if (keyExpanded && !nodeOpened) {
                     const { topId, categoryId, questionId } = keyExpanded;
                     if (categoryId !== '') {
-                        const catKey: ICategoryKey = { topId, id: categoryId, parentId: 'ROOT' }
+                        const catKey: ICategoryKey = { topId, id: categoryId, parentId: null };
                         console.log('zovem expandNodeUpToTheTree 2222222222222)', { keyExpanded, catKey })
                         await expandNodesUpToTheTree(catKey, questionId);
                         console.log('zavrsio expandNodeUpToTheTree 2222222222222 DONE)')
                     }
                 }
-
-                if (!chatBotDlgEnabled) // show ChatBotDlg button
-                    setChatBotDlgEnabled();
             }
         })()
-    }, [categoryId_questionId, categoryId_questionId_done, topRowsLoaded, keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, fromChatBotDlg, chatBotDlgEnabled, setChatBotDlgEnabled]);
+    }, [categoryId_questionId, categoryId_questionId_done, topRowsLoaded, keyExpanded, nodeOpening, nodeOpened, expandNodesUpToTheTree, fromChatBotDlg]);
 
     const route = `/knowledge/categories`;
     useEffect(() => {
         if (lastRouteVisited !== route)
             setLastRouteVisited(route);
-    }, [lastRouteVisited, setLastRouteVisited]); 
+    }, [lastRouteVisited, setLastRouteVisited]);
 
     if (categoryId_questionId !== 'add_question') {
         if (/*keyExpanded ||*/ (categoryId_questionId && categoryId_questionId !== categoryId_questionId_done)) {
@@ -169,7 +172,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                 <Row className="my-1 h-auto">
                     <Col xs={12} md={5}>
                         <div className="categories-border" style={{ position: 'relative' }}>
-                            <CategoryList categoryRow={{...initialCategory, categoryRows: topRows }}  isExpanded={true} />
+                            <CategoryList categoryRow={{ ...initialCategory, categoryRows: topRows }} isExpanded={true} />
                         </div>
                     </Col>
                     <Col xs={0} md={6}>
@@ -187,6 +190,27 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                             }
                             {activeQuestion && formMode === FormMode.AddingQuestion && <AddQuestion />}
                         </div>
+                    </Col>
+                </Row>
+
+                <Row className="my-1 h-auto">
+                    <Col xs={12}>
+                        {modalChatBotShown &&
+                            <Suspense fallback={<div>Loading...</div>}>
+                                <ChatBotDlg onHide={() => {
+                                    showModalChatBot(false);
+                                }} />
+                            </Suspense>
+                        }
+                        <Button onClick={(e) => {
+                            dispatch({ type: ActionTypes.SHOW_MODAL_CHATBOT, payload: { show: true } });
+                            e.stopPropagation();
+                        }}
+                            className="border rounded-5 me-1 mb-1 buddy-fixed"
+                        >
+                            <b>Welcome,</b><br /> I am Stamena,<br /> and You are not.
+                            <br />I am here to help You!
+                        </Button>
                     </Col>
                 </Row>
             </Container>
@@ -239,7 +263,7 @@ const Categories = () => {
 
     if (categoryId_questionId) {
         const arr = categoryId_questionId!.split('_');
-        console.assert(arr.length === 2, "expected 'categoryId_questionId'")
+        console.assert(arr.length === 3, "expected 'topId_categoryId_questionId'")
     }
     // const globalState = useGlobalState();
     // const { isAuthenticated } = globalState;
