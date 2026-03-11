@@ -1,11 +1,6 @@
 import { forwardRef, useImperativeHandle, useState, useCallback } from 'react';
 import { Accordion } from "react-bootstrap";
 // import { useNavigate } from "react-router-dom";
-
-
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faFolder } from '@fortawesome/free-solid-svg-icons'
-
 import { type ICategoryRow } from '@/categories/types';
 
 //import Q from '@/assets/Q.png';
@@ -28,7 +23,6 @@ const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: Map
         //     //navigate(link);
         //     expandNodesUpToTheTree({ topId: '', id: link, parentId: null }, null, true);
         // }
-
 
         const [topRows, setTopRows] = useState<ICategoryRow[]>([]);
 
@@ -114,8 +108,6 @@ const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: Map
             )
         }
 
-
-
         const onSelectCategory = async (eventKey: AccordionEventKey, e: React.SyntheticEvent<unknown>) => {
             const id = eventKey![0];
             console.log('onSelectCategory', { e, eventKey, id });
@@ -141,22 +133,20 @@ const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: Map
         }, [allCategoryRows]);
 
         //////////////////
-        const resetNavigator = (): void => {
-           
-            setTopRows([]);
-            allCategoryRows.forEach(async (row) => {
-                row.categoryRows = [];
-                if (row.parentId === null) {
-                    await loadSubTree(row);
-                    setTopRows(prevTopRows => [...prevTopRows, row]);
-                }
-            });
-        }
-
 
         useImperativeHandle(ref, () => ({
-            resetNavigator
-        }), []);
+            resetNavigator: () => {
+                setTopRows([]);
+                allCategoryRows.forEach(async (row) => {
+                    row.categoryRows = [];
+                    if (row.parentId === null) {
+                        await loadSubTree(row);
+                        setTopRows(prevTopRows => [...prevTopRows, row]);
+                    }
+                });
+            }
+        }), [loadSubTree, allCategoryRows]);
+
 
         return (
             <Accordion defaultActiveKey="" alwaysOpen={true} onSelect={onSelectCategory} className='category-bg'>
