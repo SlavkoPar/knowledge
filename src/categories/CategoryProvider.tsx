@@ -345,10 +345,11 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
       return cat;
     }, []);
 
-  const showModalChatBot = useCallback((show: boolean) => {
-    dispatch({ type: ActionTypes.SHOW_MODAL_CHATBOT, payload: { show } });
+  const openModalChatBot = useCallback((show: boolean) => {
+    dispatch({ type: ActionTypes.OPEN_MODAL_CHATBOT, payload: { show } });
   }, []);
 
+  
   const expandNodesUpToTheTree = useCallback(
     async (catKey: ICategoryKey, questionId: string | null, fromChatBotDlg = false): Promise<boolean> => {
       return new Promise(async (resolve) => {
@@ -1347,7 +1348,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   const contextValue: ICategoriesContext = {
     state, loadAllCategoryRows, getSubCats, getCat,
     loadAllGroupRows,
-    showModalChatBot,
+    openModalChatBot,
     expandNodesUpToTheTree,
     loadTopRows,
     addCategory, cancelAddCategory, createCategory,

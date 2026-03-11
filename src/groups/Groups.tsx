@@ -195,7 +195,7 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                 <Row className="my-1 h-auto">
                     <Col xs={12}>
                         <Button onClick={(e) => {
-                            navigate('/categories');
+                            navigate('/categories/open_chatbot/null/from_chat');
                             e.preventDefault();
                         }}
                             className="border rounded-5 me-1 mb-1 buddy-fixed"

@@ -607,7 +607,7 @@ export interface ICategoriesContext {
 	expandCategory: (expandInfo: IExpandInfo) => Promise<any>
 	collapseCategory: (categoryRow: ICategoryRow) => void,
 	onCategoryTitleChanged: (topId: string, id: string, title: string) => Promise<void>;
-	showModalChatBot: (show: boolean) => void;
+	openModalChatBot: (show: boolean) => void;
 	//////////////
 	// questions
 	loadCategoryQuestions: (catParams: ILoadCategoryQuestions) => Promise<void>;  //(parentInfo: IParentInfo) => void,
@@ -738,7 +738,7 @@ export enum ActionTypes {
 	SET_CATEGORY_ADDED = 'SET_CATEGORY_ADDED',
 	SET_ALL_CATEGORY_ROWS = 'SET_ALL_CATEGORY_ROWS',
 	SET_ALL_GROUP_ROWS = 'SET_ALL_GROUP_ROWS',
-	SHOW_MODAL_CHATBOT = 'SHOW_MODAL_CHATBOT',
+	OPEN_MODAL_CHATBOT = 'OPEN_MODAL_CHATBOT',
 
 	SET_CATEGORY_TO_VIEW = 'SET_CATEGORY_TO_VIEW',
 	SET_CATEGORY_TO_EDIT = 'SET_CATEGORY_TO_EDIT',
@@ -796,7 +796,8 @@ export const doNotModifyTree = [
 	// zasto je bilo ActionTypes.SET_CATEGORY_UPDATED,
 	//ActionTypes.ADD_NEW_QUESTION_TO_ROW,
 	ActionTypes.CANCEL_CATEGORY_FORM,
-	ActionTypes.CANCEL_ADD_CATEGORY
+	ActionTypes.CANCEL_ADD_CATEGORY,
+	ActionTypes.OPEN_MODAL_CHATBOT
 	// ActionTypes.CLOSE_CATEGORY_FORM
 ]
 
@@ -889,9 +890,9 @@ export type Payload = {
 		categoryRow: ICategory;
 	};
 
-	[ActionTypes.SHOW_MODAL_CHATBOT]: {
+	[ActionTypes.OPEN_MODAL_CHATBOT]: {
 		categoryRow?: ICategory;
-		show: boolean
+		show: boolean;
 	};
 
 	// [ActionTypes.SET_CATEGORY_ROW]: {

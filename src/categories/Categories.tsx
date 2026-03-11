@@ -23,6 +23,7 @@ import AddQuestion from './components/questions/AddQuestion';
 import ChatBotDlg from '@/categories/ChatBotDlg';
 
 interface IProps {
+    open_chatbot?: string;
     categoryId_questionId?: string;
     fromChatBotDlg?: string;
 }
@@ -32,8 +33,9 @@ interface IProps {
 //     import("@/categories/AutoSuggestQuestions").then((module) => ({ default: module.AutoSuggestQuestions }))
 // );
 
-const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
-    const { state, showModalChatBot, expandNodesUpToTheTree, loadTopRows, addCategory } = useCategoryContext();
+const Providered = ({ open_chatbot, categoryId_questionId, fromChatBotDlg }: IProps) => {
+    console.log('Providered renderira', { open_chatbot, categoryId_questionId, fromChatBotDlg })
+    const { state, openModalChatBot, expandNodesUpToTheTree, loadTopRows, addCategory } = useCategoryContext();
     const {
         allCategoryRows, //allCategoryRowsLoaded,
         topRows, topRowsLoading, topRowsLoaded,
@@ -48,15 +50,12 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
         modalChatBotShown
     } = state;
 
+    
+
     const { searchQuestions, setLastRouteVisited } = useGlobalContext();
     const { isDarkMode, lastRouteVisited } = useGlobalState();
 
-
     const [modalShow, setModalShow] = useState(false);
-    //const [showChatBot, setshowChatBot] = useState(showModalChatBot || false);
-    // const handleClose = () => {
-    //     setModalShow(false);
-    // }
 
     const [newQuestion, setNewQuestion] = useState({ ...initialQuestion });
 
@@ -67,8 +66,13 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
         dispatch({ type: ActionTypes.SET_QUESTION_SELECTED, payload: { questionKey } })
     }
 
-
     let tekst = '';
+
+    useEffect(() => {
+        if (open_chatbot === 'open_chatbot' && !modalChatBotShown) {
+            openModalChatBot(true);
+        }
+    }, [])
 
     useEffect(() => {
         (async () => {
@@ -83,7 +87,7 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
     useEffect(() => {
         (async () => {
             if (!nodeOpening && topRowsLoaded && topRows.length > 0) {
-                if (categoryId_questionId) {
+                if (categoryId_questionId && categoryId_questionId !== 'null') {
                     if (categoryId_questionId === 'add_question') {
                         const sNewQuestion = localStorage.getItem('New_Question');
                         if (sNewQuestion) {
@@ -125,12 +129,12 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
             setLastRouteVisited(route);
     }, [lastRouteVisited, setLastRouteVisited]);
 
-    if (categoryId_questionId !== 'add_question') {
-        if (/*keyExpanded ||*/ (categoryId_questionId && categoryId_questionId !== categoryId_questionId_done)) {
-            console.log("zzzzzz loading...", { keyExpanded, categoryId_questionId, categoryId_questionId_done })
-            return <div>loading...</div>
-        }
-    }
+    // if (categoryId_questionId !== 'add_question') {
+    //     if (/*keyExpanded ||*/ (categoryId_questionId && categoryId_questionId !== categoryId_questionId_done)) {
+    //         console.log("zzzzzz loading...", { keyExpanded, categoryId_questionId, categoryId_questionId_done })
+    //         return <div>loading...</div>
+    //     }
+    // }
 
     //if (!nodeOpened)
     //if (!allCategoryRowsLoaded || !topRowsLoaded || topRows.length === 0) {
@@ -198,12 +202,12 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
                         {modalChatBotShown &&
                             <Suspense fallback={<div>Loading...</div>}>
                                 <ChatBotDlg onHide={() => {
-                                    showModalChatBot(false);
+                                    openModalChatBot(false);
                                 }} />
                             </Suspense>
                         }
                         <Button onClick={(e) => {
-                            dispatch({ type: ActionTypes.SHOW_MODAL_CHATBOT, payload: { show: true } });
+                            dispatch({ type: ActionTypes.OPEN_MODAL_CHATBOT, payload: { show: true } });
                             e.stopPropagation();
                         }}
                             className="border rounded-5 me-1 mb-1 buddy-fixed"
@@ -250,19 +254,20 @@ const Providered = ({ categoryId_questionId, fromChatBotDlg }: IProps) => {
 };
 
 type Params = {
+    open_chatbot?: string;
     categoryId_questionId?: string;
     fromChatBotDlg?: string;
 };
 
 const Categories = () => {
 
-    let { categoryId_questionId, fromChatBotDlg } = useParams<Params>();
+    let { open_chatbot, categoryId_questionId, fromChatBotDlg } = useParams<Params>();
 
     if (categoryId_questionId && categoryId_questionId === 'categories')
         categoryId_questionId = undefined;
 
-    if (categoryId_questionId) {
-        const arr = categoryId_questionId!.split('_');
+    if (categoryId_questionId && categoryId_questionId !== 'null') {
+        const arr = categoryId_questionId.split('_');
         console.assert(arr.length === 3, "expected 'topId_categoryId_questionId'")
     }
     // const globalState = useGlobalState();
@@ -273,7 +278,7 @@ const Categories = () => {
 
     return (
         <CategoryProvider>
-            <Providered categoryId_questionId={categoryId_questionId} fromChatBotDlg={fromChatBotDlg} />
+            <Providered open_chatbot={open_chatbot} categoryId_questionId={categoryId_questionId} fromChatBotDlg={fromChatBotDlg} />
         </CategoryProvider>
     )
 }

@@ -210,7 +210,7 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
     }
 
 
-    case ActionTypes.SHOW_MODAL_CHATBOT: {
+    case ActionTypes.OPEN_MODAL_CHATBOT: {
       const { show } = action.payload;
       return {
         ...state,

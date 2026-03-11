@@ -142,7 +142,7 @@ function App() {
               <Routes>
                 <Route path="/" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
                 <Route path="/knowledge" element={(!isAuthenticated && !everLoggedIn) ? <AboutShort /> : <Categories />} />
-                <Route path="/categories/:showChatBot/:categoryId_questionId/:fromChatBotDlg" element={<Categories />} />
+                <Route path="/categories/:open_chatbot/:categoryId_questionId/:fromChatBotDlg" element={<Categories />} />
                 <Route path="/knowledge/categories" element={<Categories />} />
                 <Route path="/categories" element={<Categories />} />
                 <Route path="/groups/:groupId_AnswerId" element={<Groups />} />
