@@ -64,25 +64,25 @@ const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: ICa
             //const myLink = link === '' ? `/categories/${topId}_${id}_null` : '';
             return (
                 <Accordion.Item eventKey={id}>
-                    <Accordion.Header className={`${!hasSubCategories ? 'hide-icon' : ''}`}>
+                    <Accordion.Header className={`${!hasSubCategories ? 'hide-icon' : ''}`} onClick={() => {
+                        expandNodesUpToTheTree(
+                            { topId, id, parentId },
+                            null,
+                            true
+                        )
+                    }
+                    }>
                         <FontAwesomeIcon icon={faFolder} size='sm' style={{ color: 'gray' }} />
                         {/* <ContextAwareToggle eventKey={row.id} hasSubCategories={row.hasSubCategories} isExpanded={row.isExpanded ? true : false}> */}
-                        {row.link === ''
+                        {row.link !== ''
                             ? <a href="#"
-                                className="p-1 m-1 cat-link category-row"
-                                // onClick={() => linkGo(`${myLink}/from_chat`)}
-                                onClick={() => {
-                                    expandNodesUpToTheTree(
-                                        { topId, id, parentId },
-                                        null,
-                                        true
-                                    )
-                                }
-                                }
+                                className="p-1 m-1 cat-link"
+                            // onClick={() => linkGo(`${myLink}/from_chat`)}
+
                             >
                                 {title}
                             </a>
-                            : <span className="p-1 m-1 cat-title category-row">{title}</span>
+                            : <span className="p-1 mx-1 title cat-title">{title}</span>
                         }
                         {/* </ContextAwareToggle> */}
                     </Accordion.Header>
@@ -118,6 +118,11 @@ const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: ICa
             const id = eventKey![0];
             const cat = allCategoryRows.find(x => id === x.id);
             if (cat) {
+                // expandNodesUpToTheTree(
+                //     { topId: cat.topId, id: cat.id, parentId: cat.parentId },
+                //     null,
+                //     true
+                // )
                 //cat.isExpanded = !cat.isExpanded;
                 //e.stopPropagation();
                 //e.preventDefault();
@@ -155,7 +160,7 @@ const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: ICa
         }), []);
 
         return (
-            <Accordion defaultActiveKey="" alwaysOpen={true} onSelect={onSelectCategory} >
+            <Accordion defaultActiveKey="" alwaysOpen={true} onSelect={onSelectCategory} className='category-bg'>
                 <CatList rows={topRows}></CatList>
             </Accordion>
         );

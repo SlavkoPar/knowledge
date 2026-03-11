@@ -266,7 +266,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
   }, [allCategoryRows]);
 
   const loadTopRows = useCallback(async () => {
-    return new Promise(async (resolve) => {
+    return new Promise(async () => {
       //const { keyExpanded } = state;
       try {
         dispatch({ type: ActionTypes.SET_TOP_ROWS_LOADING, payload: {} });
@@ -286,7 +286,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
               return new CategoryRow(dto).categoryRow;
             })
             dispatch({ type: ActionTypes.SET_TOP_ROWS, payload: { topRows } });
-            resolve(true);
+            //resolve(true);
           });
       }
       catch (error: any) {

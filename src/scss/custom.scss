@@ -58,6 +58,18 @@
     background-color: $indigo-300;
     color: #fff;
   }
+
+  // button { // for expand/collapse icon
+  //   background-color: $indigo-100;
+  //   border: none;
+  //   color: inherit;
+  //   padding: 0;
+  //   cursor: pointer;
+  // }
+}
+
+.accordion-header > button {
+  background-color: $indigo-100 !important;
 }
 
 .category-spinner {

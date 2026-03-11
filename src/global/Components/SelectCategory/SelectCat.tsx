@@ -71,12 +71,12 @@ const SelectCat = ({ ref, allCategoryRows, setParentId }: MapProps) => {
         }
     }
 
-    const loadSubTree = useCallback(async (grpRow: ICategoryRow): Promise<boolean> => {
-        const { id } = grpRow;
+    const loadSubTree = useCallback(async (catRow: ICategoryRow): Promise<boolean> => {
+        const { id } = catRow;
         allCategoryRows.forEach(async (row) => {
             if (row.id !== id && row.parentId === id) {
                 await loadSubTree(row);
-                grpRow.categoryRows.push(row);
+                catRow.categoryRows.push(row);
             }
         });
         return true;

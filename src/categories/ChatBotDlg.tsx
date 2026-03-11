@@ -477,6 +477,7 @@ const ChatBotDlg = ({  onHide }: IProps) => {
                 .cat-title {
                     // text-decoration:  none;
                     color: inherit;
+                    background-color: light;
                 }
 
                 .accordion-header.hide-icon > button.accordion-button::after {
