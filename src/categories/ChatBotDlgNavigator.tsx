@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useImperativeHandle, useState, useCallback } from 'react';
 import { Accordion } from "react-bootstrap";
 // import { useNavigate } from "react-router-dom";
 
@@ -19,7 +19,7 @@ import { useCategoryContext } from './CategoryProvider';
 //const PINK = 'rgba(255, 192, 203, 0.6)';
 //const BLUE = 'rgb(224, 207, 252)';
 
-const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: ICategoryRow[] }>(
+const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: Map<string, ICategoryRow> }>(
     ({ allCategoryRows }, ref) => {
 
         const { expandNodesUpToTheTree } = useCategoryContext();
@@ -114,42 +114,41 @@ const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: ICa
             )
         }
 
+
+
         const onSelectCategory = async (eventKey: AccordionEventKey, e: React.SyntheticEvent<unknown>) => {
             const id = eventKey![0];
-            const cat = allCategoryRows.find(x => id === x.id);
-            if (cat) {
-                // expandNodesUpToTheTree(
-                //     { topId: cat.topId, id: cat.id, parentId: cat.parentId },
-                //     null,
-                //     true
-                // )
-                //cat.isExpanded = !cat.isExpanded;
-                //e.stopPropagation();
-                //e.preventDefault();
-            }
-            console.log('onSelectCategory', { cat, eventKey, e });
+            console.log('onSelectCategory', { e, eventKey, id });
+            // const cat = allCategoryRows.find(x => id === x.id);
+            // if (cat) {
+            //     /
+            //     //cat.isExpanded = !cat.isExpanded;
+            //     //e.stopPropagation();
+            //     //e.preventDefault();
+            // }
+            // console.log('onSelectCategory', { cat, eventKey, e });
         }
 
-        //////////////////
-        const loadSubTree = async (categoryRow: ICategoryRow): Promise<boolean> => {
-            const { id } = categoryRow;
+        const loadSubTree = useCallback(async (catRow: ICategoryRow): Promise<boolean> => {
+            const { id } = catRow;
             allCategoryRows.forEach(async (row) => {
                 if (row.id !== id && row.parentId === id) {
                     await loadSubTree(row);
-                    categoryRow.categoryRows.push(row);
+                    catRow.categoryRows.push(row);
                 }
             });
             return true;
-        };
+        }, [allCategoryRows]);
 
         //////////////////
         const resetNavigator = (): void => {
+           
             setTopRows([]);
-            allCategoryRows.forEach(async (categoryRow) => {
-                categoryRow.categoryRows = [];
-                if (categoryRow.parentId === null) {
-                    await loadSubTree(categoryRow);
-                    setTopRows(prevTopRows => [...prevTopRows, categoryRow]);
+            allCategoryRows.forEach(async (row) => {
+                row.categoryRows = [];
+                if (row.parentId === null) {
+                    await loadSubTree(row);
+                    setTopRows(prevTopRows => [...prevTopRows, row]);
                 }
             });
         }

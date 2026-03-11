@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Container, Row, Col, Button, Offcanvas } from "react-bootstrap";
 //import { useNavigate } from "react-router-dom";
 
 import { useGlobalContext, useGlobalState } from '@/global/GlobalProvider';
+import { useCategoryContext } from '@/categories/CategoryProvider';
 
 
 import { useParams } from 'react-router-dom' // useRouteMatch
@@ -11,15 +12,13 @@ import { AutoSuggestQuestions } from '@/categories/AutoSuggestQuestions';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faFolder } from '@fortawesome/free-solid-svg-icons'
 
-import { type ICategoryRow, type IQuestion, type IQuestionEx, type IQuestionKey, QuestionKey } from '@/categories/types';
+import { type IQuestion, type IQuestionEx, type IQuestionKey, QuestionKey } from '@/categories/types';
 import type { IAccordionMethods, IHistory, IHistoryFilter } from '@/global/types';
 import { type IChatBotAnswer, type INewQuestion, type INextAnswer, useAI } from '@/hooks/useAI'
 
 import Q from '@/assets/Q.png';
 import A from '@/assets/A.png';
 import ChatBotDlgNavigator from './ChatBotDlgNavigator';
-// import { useCategoryDispatch } from '@/categories/CategoryProvider';
-
 type ChatBotParams = {
     source: string;
     tekst: string;
@@ -40,18 +39,17 @@ const ChatBotDlg = ({  onHide }: IProps) => {
     const [showAnswer, setShowAnswer] = useState(false);
     const [chatBotAnswer, setChatBotAnswer] = useState<IChatBotAnswer | null>(null);
     const [hasMoreAnswers, setHasMoreAnswers] = useState<boolean>(false);
-    const [allCategoryRowsLoaded, setAllCategoryRowsLoaded] = useState<boolean>(false);
 
 
-    const { loadAllCategoryRowsGlobal, getQuestion, addHistory, addHistoryFilter, searchQuestions } = useGlobalContext();
+    const { getQuestion, addHistory, addHistoryFilter, searchQuestions } = useGlobalContext();
     const { authUser, isDarkMode } = useGlobalState();
     //const navigate = useNavigate();
 
     const [catsSelected] = useState(true);
     const [showAutoSuggest, setShowAutoSuggest] = useState(true); //false);
 
-    const [allCategoryRows, setAllCategoryRows] = useState<Map<string, ICategoryRow>>(new Map<string, ICategoryRow>());
-    const [allCategoryRows2, setAllCategoryRows2] = useState<ICategoryRow[]>([]);
+    const { state } = useCategoryContext();
+    const { allCategoryRows } = state;
 
     const [pastEvents, setPastEvents] = useState<IChild[]>([]);
 
@@ -69,21 +67,7 @@ const ChatBotDlg = ({  onHide }: IProps) => {
         hasMoreAnswers?: boolean
     }
     // const deca: JSX.Element[] = [];
-
-    useEffect(() => {
-        (async () => {
-            if (!allCategoryRowsLoaded) {
-                const allCategoryRows = await loadAllCategoryRowsGlobal();
-                if (allCategoryRows) {
-                    setAllCategoryRowsLoaded(true);
-                    setAllCategoryRows(allCategoryRows);
-                    setAllCategoryRows2(Array.from(allCategoryRows.values()));
-                }
-            }
-        })()
-    }, [allCategoryRowsLoaded, loadAllCategoryRowsGlobal]);
-
-
+  
     const setRefElement = useCallback((node: IAccordionMethods | null) => {
         node?.resetNavigator();
     }, []);
@@ -426,7 +410,7 @@ const ChatBotDlg = ({  onHide }: IProps) => {
     // };
     console.log("=====================>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> rendering ChatBotDlg")
 
-    if (allCategoryRows2.length === 0) // || catsOptions.length === 0)
+    if (allCategoryRows.size === 0) // || catsOptions.length === 0)
         return <div>Loading ...</div>
 
     return (
@@ -511,7 +495,7 @@ const ChatBotDlg = ({  onHide }: IProps) => {
                         <Row className="m-0">
                             <Col className='border border-0 border-primary mx-1 text-white p-0'>
                                 <ChatBotDlgNavigator
-                                    allCategoryRows={allCategoryRows2}
+                                    allCategoryRows={allCategoryRows}
                                     ref={(el) => setRefElement(el)}
                                 />
                             </Col>
