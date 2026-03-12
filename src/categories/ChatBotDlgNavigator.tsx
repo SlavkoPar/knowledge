@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState, useCallback } from 'react';
+import { type Ref, useImperativeHandle, useState, useCallback } from 'react';
 import { Accordion } from "react-bootstrap";
 // import { useNavigate } from "react-router-dom";
 import { type ICategoryRow } from '@/categories/types';
@@ -14,8 +14,15 @@ import { useCategoryContext } from './CategoryProvider';
 //const PINK = 'rgba(255, 192, 203, 0.6)';
 //const BLUE = 'rgb(224, 207, 252)';
 
-const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: Map<string, ICategoryRow> }>(
-    ({ allCategoryRows }, ref) => {
+type MapProps = {
+    ref?: Ref<IAccordionMethods>;
+    allCategoryRows: Map<string, ICategoryRow>;
+};
+
+const ChatBotDlgNavigator = ({ ref, allCategoryRows }: MapProps) => {
+
+//const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: Map<string, ICategoryRow> }>(
+    // ({ allCategoryRows }, ref) => {
 
         const { expandNodesUpToTheTree } = useCategoryContext();
         // const navigate = useNavigate();
@@ -136,6 +143,9 @@ const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: Map
 
         useImperativeHandle(ref, () => ({
             resetNavigator: () => {
+                if (topRows.length > 0) {  
+                    return
+                }
                 setTopRows([]);
                 allCategoryRows.forEach(async (row) => {
                     row.categoryRows = [];
@@ -153,6 +163,6 @@ const ChatBotDlgNavigator = forwardRef<IAccordionMethods, { allCategoryRows: Map
                 <CatList rows={topRows}></CatList>
             </Accordion>
         );
-    });
+    };
 
 export default ChatBotDlgNavigator;
