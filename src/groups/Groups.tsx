@@ -154,6 +154,7 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
                                         onSelectAnswer={onSelectAnswer}
                                         allGroupRows={allGroupRows}
                                         searchAnswers={searchAnswers}
+                                        lessThan15Answers={[]}
                                     />
                                 </Suspense>
                             </div>

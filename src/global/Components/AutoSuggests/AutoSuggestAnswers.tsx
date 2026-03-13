@@ -46,7 +46,7 @@ export class AutoSuggestAnswers extends React.Component<{
 	onSelectAnswer: (answerKey: IAnswerKey, underFilter: string) => void,
 	allGroupRows: Map<string, IGroupRow>,
 	lessThan15Answers: IAnswerRow[],
-	getAnswerCount: () => Promise<IAnswerRow[]>,
+	getAnswerCount?: () => Promise<IAnswerRow[]>,
 	searchAnswers: (filter: string, count: number) => Promise<IAnswerRow[]>
 }, any> {
 	// region Fields
@@ -80,7 +80,7 @@ export class AutoSuggestAnswers extends React.Component<{
 
 
 	async loadSuggestions(value: string) {
-		if (this.lessThan15Answers.length === 0) {
+		if (this.lessThan15Answers.length === 0 && typeof this.getAnswerCount === 'function') {
 			this.setState({
 				isLoading: true
 			});
@@ -238,7 +238,7 @@ export class AutoSuggestAnswers extends React.Component<{
 		const escapedValue = escapeRegexCharacters(search.trim());
 		let answerRows: IAnswerRow[] = []
 		try {
-			if (escapedValue === '') {
+			if (escapedValue === '' && typeof this.getAnswerCount === 'function') {
 				if (this.lessThan15Answers.length > 0) {
 					answerRows = [...this.lessThan15Answers];
 					this.lessThan15Answers = [];
