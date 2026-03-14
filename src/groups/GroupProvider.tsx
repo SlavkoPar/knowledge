@@ -317,8 +317,8 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
     }, []);
 
 
-  const expandNodesUpToTheTree = useCallback(
-    async (grpKey: IGroupKey, answerId: string | null, fromChatBotDlg = false): Promise<boolean> => {
+const expandNodesUpToTheTree = useCallback(
+    async (grpKey: IGroupKey, answerId: string | null): Promise<boolean> => {
       return new Promise(async (resolve) => {
         try {
           let { topId, parentId, id } = grpKey;
@@ -326,7 +326,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
           if (id) {
             // const groupRow: IGroupRow | undefined = allGroupRows.get(id);
             // if (groupRow) {
-            //   //topId = groupRow.topId;
+            //   topId = groupRow.topId;
             //   parentId = groupRow.parentId;
             // }
             // else {
@@ -336,7 +336,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
           }
           dispatch({
             type: ActionTypes.SET_NODE_EXPANDING_UP_THE_TREE, payload: {
-              groupId_answerId_done: `${id}_${answerId}`
+              groupId_answerId_done: `${topId}_${id}_${answerId}`
             }
           })
           // ---------------------------------------------------------------------------
@@ -350,14 +350,13 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
               const { groupRowDto } = groupRowDtoEx;
               console.timeEnd();
               if (groupRowDto) {
-                let group: IGroup | null = null;
                 let answer: IAnswer | null = null;
                 const topRowNew: IGroupRow | null = new GroupRow(groupRowDto).groupRow;
                 const bottomRow = await findGroupRow(topRowNew, id!);
+                let group: IGroup | null = { ...bottomRow!, doc1: '' };
                 if (parentId !== null) {
-                  //topRow = groupRow!;
-                  group = { ...bottomRow!, doc1: '' };
-                  if (answerId) {
+                }
+                if (answerId) {
                     const answerRow = bottomRow!.answerRows!.find(q => q.id === answerId && q.included)!;
                     if (answerRow) {
                       group = null;
@@ -368,11 +367,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
                       }
                     }
                   }
-                }
-                else {
-                  console.log('WHAT') // TODO
-                }
-                console.log('>>> expandNodeUpToTheTree groupRow', { topRowNew, groupRow: bottomRow, answerId: "'" + (answerId ?? 'jok') + "'" + (answerId ?? "JOK") })
+                console.log('>>> expandNodeUpToTheTree groupRow', { groupRow: bottomRow, answerId: "'" + (answerId ?? 'jok') + "'" + (answerId ?? "JOK") })
                 const formMode = answerId
                   ? canEdit
                     ? FormMode.EditingAnswer
@@ -380,6 +375,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
                   : canEdit
                     ? FormMode.EditingGroup
                     : FormMode.ViewingGroup;
+
                 dispatch({
                   type: ActionTypes.SET_NODE_EXPANDED_UP_THE_TREE, payload: {
                     grpKey,
@@ -387,8 +383,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
                     group: group!,
                     answerId: answerId ?? null,
                     answer,
-                    formMode,
-                    fromChatBotDlg //: fromChatBotDlg === 'true'
+                    formMode
                   }
                 })
                 resolve(true);
@@ -404,6 +399,7 @@ export const GroupProvider: React.FC<IProps> = ({ children }) => {
         }
       })
     }, [workspace, KnowledgeAPI.endpointGroupRow, Execute, allGroupRows, findGroupRow, canEdit]);
+
 
 
   const getGroupRow = useCallback(

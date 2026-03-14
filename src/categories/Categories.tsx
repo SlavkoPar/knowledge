@@ -34,7 +34,7 @@ interface IProps {
 // );
 
 const Providered = ({ open_chatbot, categoryId_questionId, fromChatBotDlg }: IProps) => {
-    console.log('Providered renderira', { open_chatbot, categoryId_questionId, fromChatBotDlg })
+    console.log('Providered renderishe', { open_chatbot, categoryId_questionId, fromChatBotDlg })
     const { state, openModalChatBot, expandNodesUpToTheTree, loadTopRows, addCategory } = useCategoryContext();
     const {
         allCategoryRows, //allCategoryRowsLoaded,

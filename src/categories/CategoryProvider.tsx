@@ -389,7 +389,8 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
                 const bottomRow = await findCategoryRow(topRowNew, id!);
                 let category: ICategory | null = { ...bottomRow!, doc1: '' };
                 if (parentId !== null) {
-                  if (questionId) {
+                }
+                if (questionId) {
                     const questionRow = bottomRow!.questionRows!.find(q => q.id === questionId && q.included)!;
                     if (questionRow) {
                       category = null;
@@ -404,7 +405,6 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
                       }
                     }
                   }
-                }
                 console.log('>>> expandNodeUpToTheTree categoryRow', { categoryRow: bottomRow, questionId: "'" + (questionId ?? 'jok') + "'" + (questionId ?? "JOK") })
                 const formMode = questionId
                   ? canEdit

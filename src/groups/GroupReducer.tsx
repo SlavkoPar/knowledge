@@ -596,13 +596,15 @@ const innerReducer = (state: IGroupsState, action: Actions): IGroupsState => {
         topRows: state.topRows.filter(row => row.parentId === null),
         keyExpanded: {
           topId,
-          groupId: groupId,
+          groupId,
           answerId
         },
         /////nodeOpened: false, // keep topRows, and openNode
         activeGroup: null,
         activeAnswer: null,
-        selectedAnswerId: null
+        selectedAnswerId: answerId,
+        nodeOpened: false,
+        nodeOpening: false
       };
     }
 

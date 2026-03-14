@@ -96,7 +96,6 @@ export class GroupRowDto {
 }
 
 export class GroupRow {
-
 	constructor(groupRowDto: IGroupRowDto) {
 		const { TopId, Id, ParentId, Kind, Title, Link, Header, Variations, Level,
 			HasSubGroups, RowDtos,

@@ -593,13 +593,15 @@ const innerReducer = (state: ICategoriesState, action: Actions): ICategoriesStat
         topRows: state.topRows.filter(row => row.parentId === null),
         keyExpanded: {
           topId,
-          categoryId: categoryId,
+          categoryId,
           questionId
         },
         /////nodeOpened: false, // keep topRows, and openNode
         activeCategory: null,
         activeQuestion: null,
-        selectedQuestionId: null
+        selectedQuestionId: questionId,
+        nodeOpened: false,
+        nodeOpening: false
       };
     }
 
