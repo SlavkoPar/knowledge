@@ -64,6 +64,7 @@ const Providered = ({ groupId_answerId, fromChatBotDlg }: IProps) => {
     const onSelectAnswer = async (answerKey: IAnswerKey) => {
         //navigate(`/groups/${answerKey.topId}_${answerKey.id}`)
         dispatch({ type: ActionTypes.SET_ANSWER_SELECTED, payload: { answerKey } })
+
     }
 
 

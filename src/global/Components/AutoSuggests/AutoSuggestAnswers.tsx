@@ -137,7 +137,7 @@ export class AutoSuggestAnswers extends React.Component<{
 				renderSuggestion={this.renderSuggestion}
 				renderSectionTitle={this.renderSectionTitle}
 				getSectionSuggestions={this.getSectionSuggestions}
-				alwaysRenderSuggestions={true}
+				// alwaysRenderSuggestions={true}
 				// onSuggestionHighlighted={this.onSuggestionHighlighted} (sl)
 				onSuggestionHighlighted={this.onSuggestionHighlighted.bind(this)}
 				highlightFirstSuggestion={false}
