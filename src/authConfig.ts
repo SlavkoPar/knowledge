@@ -16,7 +16,7 @@ export const msalConfig = {
     auth: {
         clientId: '5fb55a5e-39ac-48a6-8c92-140ddde5136e', // This is the ONLY mandatory field that you need to supply.
         authority: 'https://login.microsoftonline.com/2f4006c5-c4ea-4165-846f-914b5b75685b', // Replace the placeholder with your tenant subdomain
-        redirectUri: 'http://localhost:5173/knowledge', // You must register this URI on Microsoft Entra admin center/App Registration. Defaults to window.location.origin
+        redirectUri: 'https://slavkopar.github.io/knowledge', // You must register this URI on Microsoft Entra admin center/App Registration. Defaults to window.location.origin
         postLogoutRedirectUri: '/', // Indicates the page to navigate after logout.
     },
     cache: {
