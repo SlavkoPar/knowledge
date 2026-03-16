@@ -72,6 +72,12 @@ label {
   margin-bottom: 3;
 }
 
+label.related-filters {
+  color: silver;
+  margin-bottom: 3;
+  font-size: 0.5rem
+}
+
 .form-wrapper {
   border: 1px solid silver;
   border-radius: 9px
