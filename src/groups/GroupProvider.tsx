@@ -969,6 +969,7 @@ const expandNodesUpToTheTree = useCallback(
   const createAnswer = useCallback(
     async (answer: IAnswer) => {
       const { topId, id, parentId } = answer; // title, modified, 
+      const grandParentId = allGroupRows.get(parentId)?.parentId ?? null;
       // TODO
       dispatch({ type: ActionTypes.SET_LOADING_GROUP, payload: {} });
       try {
@@ -992,9 +993,9 @@ const expandNodesUpToTheTree = useCallback(
                 answer.topId = topId;
                 console.log('Answer successfully created')
                 //dispatch({ type: ActionTypes.CLOSE_ANSWER_FORM })
-                await loadAllGroupRows() // numOfAnswers changed
-                  .then(async () => {
-                    const parentGroupKey: IGroupKey = { topId, parentId, id: parentId! };
+                // await loadAllGroupRows() // numOfAnswers changed
+                //   .then(async () => {
+                    const parentGroupKey: IGroupKey = { topId, parentId: grandParentId, id: parentId! };
                     const expandInfo: IExpandInfo = {
                       groupKey: parentGroupKey,
                       formMode: FormMode.EditingAnswer
@@ -1002,7 +1003,7 @@ const expandNodesUpToTheTree = useCallback(
                     await expandGroup(expandInfo).then(() => {
                       dispatch({ type: ActionTypes.SET_ANSWER, payload: { formMode: FormMode.EditingAnswer, answer } });
                     });
-                  })
+                  //})
               }
             }
           });
