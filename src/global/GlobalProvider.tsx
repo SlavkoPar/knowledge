@@ -210,8 +210,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       catch (error: any) {
         console.log(error)
         dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+        resolve(null);
       }
-      resolve(null);
     });
   }, [KnowledgeAPI.endpointCategoryRow, workspace]);
 

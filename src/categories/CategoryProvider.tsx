@@ -349,7 +349,7 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
     dispatch({ type: ActionTypes.OPEN_MODAL_CHATBOT, payload: { show } });
   }, []);
 
-  
+
   const expandNodesUpToTheTree = useCallback(
     async (catKey: ICategoryKey, questionId: string | null, fromChatBotDlg = false): Promise<boolean> => {
       return new Promise(async (resolve) => {
@@ -391,20 +391,20 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
                 if (parentId !== null) {
                 }
                 if (questionId) {
-                    const questionRow = bottomRow!.questionRows!.find(q => q.id === questionId && q.included)!;
-                    if (questionRow) {
-                      category = null;
-                      question = {
-                        ...questionRow,
-                        assignedAnswers: [],
-                        numOfAssignedAnswers: 0,
-                        numOfRelatedFilters: 0,
-                        relatedFilters: [],
-                        source: 0,
-                        status: 0
-                      }
+                  const questionRow = bottomRow!.questionRows!.find(q => q.id === questionId && q.included)!;
+                  if (questionRow) {
+                    category = null;
+                    question = {
+                      ...questionRow,
+                      assignedAnswers: [],
+                      numOfAssignedAnswers: 0,
+                      numOfRelatedFilters: 0,
+                      relatedFilters: [],
+                      source: 0,
+                      status: 0
                     }
                   }
+                }
                 console.log('>>> expandNodeUpToTheTree categoryRow', { categoryRow: bottomRow, questionId: "'" + (questionId ?? 'jok') + "'" + (questionId ?? "JOK") })
                 const formMode = questionId
                   ? canEdit
@@ -963,7 +963,8 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
 
   const createQuestion = useCallback(
     async (question: IQuestion) => {
-      const { topId, id, parentId } = question; // title, modified, 
+      const { topId, parentId, id } = question; // title, modified, 
+      const grandParentId = allCategoryRows.get(parentId)?.parentId ?? null;
       // TODO
       dispatch({ type: ActionTypes.SET_LOADING_CATEGORY, payload: {} });
       try {
@@ -987,17 +988,19 @@ export const CategoryProvider: React.FC<IProps> = ({ children }) => {
                 question.topId = topId;
                 console.log('Question successfully created')
                 //dispatch({ type: ActionTypes.CLOSE_QUESTION_FORM })
-                await loadAllCategoryRows() // numOfQuestions changed
-                  .then(async () => {
-                    const parentCategoryKey: ICategoryKey = { topId, parentId, id: parentId! };
-                    const expandInfo: IExpandInfo = {
-                      categoryKey: parentCategoryKey,
-                      formMode: FormMode.EditingQuestion
-                    }
-                    await expandCategory(expandInfo).then(() => {
-                      dispatch({ type: ActionTypes.SET_QUESTION, payload: { formMode: FormMode.EditingQuestion, question } });
-                    });
-                  })
+
+                //if (grandParentId) {
+                  const parentCategoryKey: ICategoryKey = { topId, parentId: grandParentId, id: parentId! };
+                  const expandInfo: IExpandInfo = {
+                    categoryKey: parentCategoryKey,
+                    formMode: FormMode.EditingQuestion
+                  }
+                  await expandCategory(expandInfo).then(() => {
+                    dispatch({ type: ActionTypes.SET_QUESTION, payload: { formMode: FormMode.EditingQuestion, question } });
+                  });
+                //}
+
+                //await loadAllCategoryRows(); // numOfQuestions changed
               }
             }
           });
