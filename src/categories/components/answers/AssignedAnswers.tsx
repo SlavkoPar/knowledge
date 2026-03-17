@@ -157,7 +157,7 @@ const AssignedAnswers = ({ questionKey, questionTitle, assignedAnswers, isDisabl
                         </Button>
 
                     </div>
-                    <div className="text-muted d-block">
+                    <div className="text-muted d-block fs-6">
                         {errorMsg && <span className="text-danger">{errorMsg}</span>}
                     </div>
                 </>
