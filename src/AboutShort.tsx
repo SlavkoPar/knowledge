@@ -74,7 +74,7 @@ const AboutShort: React.FC<IAboutShort> = () => {
                 Integrate our
                 <i>Javascript Knowledge-Lib</i> at your Web site &nbsp;&nbsp;
                 <br />
-                <a href="https://knowledge-share-demo.com" target="_blank" rel="noopener noreferrer">Visit demo at WordPress site</a>
+                <a href="https://knowledge-share-demo.com" target="_blank" rel="noopener noreferrer">Visit demo with Chatbot at the WordPress site</a>
               </li>
             </ol>
           </div>

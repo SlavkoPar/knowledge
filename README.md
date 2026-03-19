@@ -7,8 +7,9 @@
 
 In the project directory, you can run:
 
-### `yarn start`
-### `yarn run deploy`
+### `yarn dev`
+### `build deploy`
+### `yarn deploy`
 
 
 ## Idea
@@ -20,5 +21,5 @@ It is very boring an unefficient.
 
 With our  **Knowledge** app, you can easily build and maintain your Knowledge database.\
 
-## Examle of Integration of our Knowledge-lib on some site.
+## Example of Integration of our Knowledge-lib with Chatbot.
    [Knowledge Demo on WordPress site ](https://knowledge-share-demo.com/)

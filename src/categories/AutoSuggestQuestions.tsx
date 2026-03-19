@@ -396,7 +396,7 @@ export class AutoSuggestQuestions extends React.Component<{
 		return (
 			<div>
 				{/* <input {...restInputProps} ref={inputAutosuggest} /> */}
-				<input ref={ref} autoFocus {...restInputProps} />
+				<input ref={ref} autoFocus {...restInputProps} placeholder='Search Question'/>
 			</div>
 		);
 	}
