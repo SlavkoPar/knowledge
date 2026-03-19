@@ -74,7 +74,7 @@ const AboutShort: React.FC<IAboutShort> = () => {
                 Integrate our
                 <i>Javascript Knowledge-Lib</i> at your Web site &nbsp;&nbsp;
                 <br />
-                <a href="https://knowledge-share-demo.com" target="_blank" rel="noopener noreferrer">Example at WordPress site</a>
+                <a href="https://knowledge-share-demo.com" target="_blank" rel="noopener noreferrer">Visit demo at WordPress site</a>
               </li>
             </ol>
           </div>
@@ -200,7 +200,7 @@ const AboutShort: React.FC<IAboutShort> = () => {
               <Accordion.Body>
                 <ul>
                   <li>
-                    <a href="https://github.com/SlavkoPar/NewKnowledgeAPI" target="_blank" rel="noopener noreferrer">ASP.NET Core Web API</a>
+                    <a href="https://github.com/SlavkoPar/KnowledgeAPI" target="_blank" rel="noopener noreferrer">ASP.NET Core Web API</a>
                   </li>
                   <li>
                     <a href="https://github.com/SlavkoPar/knowledge" target="_blank" rel="noopener noreferrer">React Single Page App</a>
