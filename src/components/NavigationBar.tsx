@@ -194,7 +194,7 @@ export const NavigationBar = () => {
                             </Dropdown.Item>
                             <DropdownDivider className='mx-2' />
                             <Dropdown.Item as="button" onClick={handleSignUp}>
-                                Create your Workspace
+                                Sign Up (Create your Workspace)
                             </Dropdown.Item>
                         </DropdownButton>
                     </div>
